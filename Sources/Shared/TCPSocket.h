@@ -23,11 +23,13 @@ class TCPSocket {
   TCPSocket();
   TCPSocket(int socketDescriptor);
 //  void setTimeout(long sec, long uSec);
-  int shutdownSocket(ShutdownOption option);
   int bind(const SocketAddress & socketAddress);
   TCPSocket accept();
-  void close();
   int listen(int allowedConnectionNumber);
+  int send(const std::string &data);
+  int receive(std:: string &data);
+  int shutdownSocket(ShutdownOption option);
+  void close();
 
 };
 

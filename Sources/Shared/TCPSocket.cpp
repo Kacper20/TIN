@@ -34,10 +34,19 @@ TCPSocket TCPSocket::accept() {
   return clientTalkingSocket;
 }
 
+int TCPSocket::send(const std::string &data) {
+  return ::send(this->socketDescriptor, data.c_str(), data.size(), 0);
+}
+
+int TCPSocket::receive(std::string &data) {
+  return 0;
+}
+
 
 void TCPSocket::close() {
   ::close(this->socketDescriptor);
 }
+
 int TCPSocket::shutdownSocket(ShutdownOption option) {
   int shutdownType = [option] () {
     switch (option) {
