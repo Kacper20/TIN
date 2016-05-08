@@ -1048,7 +1048,7 @@ private:
 };
 
 /** \brief Experimental and untested: represents an element of the "path" to
- * access a node.
+ * access a Node.
  */
 class JSON_API PathArgument {
 public:
@@ -1070,12 +1070,12 @@ private:
   Kind kind_;
 };
 
-/** \brief Experimental and untested: represents a "path" to access a node.
+/** \brief Experimental and untested: represents a "path" to access a Node.
  *
  * Syntax:
- * - "." => root node
- * - ".[n]" => elements at index 'n' of root node (an array value)
- * - ".name" => member named 'name' of root node (an object value)
+ * - "." => root Node
+ * - ".[n]" => elements at index 'n' of root Node (an array value)
+ * - ".name" => member named 'name' of root Node (an object value)
  * - ".name1.name2.name3"
  * - ".[0][1][2].name1[3]"
  * - ".%" => member name is provided as parameter
@@ -1092,8 +1092,8 @@ public:
 
   const Value& resolve(const Value& root) const;
   Value resolve(const Value& root, const Value& defaultValue) const;
-  /// Creates the "path" to access the specified node and returns a reference on
-  /// the node.
+  /// Creates the "path" to access the specified Node and returns a reference on
+  /// the Node.
   Value& make(Value& root) const;
 
 private:

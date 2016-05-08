@@ -12,9 +12,12 @@
 struct SocketAddress {
 
  private:
-  sockaddr_in address;
+  void configure();
 
-  SocketAddress(int address, int portNumber);
+ public:
+  sockaddr_in address;
+  SocketAddress();
+  SocketAddress(int address, short portNumber);
   SocketAddress(std::string addressWithPort);
 };
 

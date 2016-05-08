@@ -4,3 +4,6 @@
 
 #include "NodeNetworkLayer.h"
 
+void NodeNetworkLayer::startListeningOnRequests() {
+
+}

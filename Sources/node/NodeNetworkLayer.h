@@ -18,6 +18,8 @@ class NodeNetworkLayer {
 
  private:
 
+ public:
+  void startListeningOnRequests();
 
 
 
