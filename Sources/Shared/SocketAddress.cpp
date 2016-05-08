@@ -29,5 +29,5 @@ SocketAddress::SocketAddress(std::string addressWithPort) {
   auto portSubstring = addressWithPort.substr(positionOfSeparator + 1, addressWithPort.size());
   short port = atoi(portSubstring.c_str());
   this->address.sin_port = htons(port);
-  inet_aton(addressWithPort.c_str(), &this->address.sin_addr);
+  inet_aton(addressSubstring.c_str(), &this->address.sin_addr);
 }
