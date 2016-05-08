@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include "../Shared/TCPSocket.h"
 
 #ifndef TIN_NODENETWORKLAYER_H
 #define TIN_NODENETWORKLAYER_H

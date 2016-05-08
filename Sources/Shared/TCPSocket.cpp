@@ -20,8 +20,7 @@ TCPSocket::TCPSocket(int socketDescriptor) {
 //}
 
 int TCPSocket::bind(const SocketAddress &socketAddress) {
-  return 1;
-//  return ::bind(this->socketDescriptor, );
+  return ::bind(this->socketDescriptor, (sockaddr *)&socketAddress.address, sizeof(struct sockaddr));
 }
 
 int TCPSocket::listen(int allowedConnectionNumber) {

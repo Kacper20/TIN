@@ -3,7 +3,9 @@
 //
 
 #include "NodeNetworkLayer.h"
-
 void NodeNetworkLayer::startListeningOnRequests() {
 
+  TCPSocket socket = TCPSocket();
+  SocketAddress myAddress = SocketAddress();
+  socket.bind(myAddress);
 }

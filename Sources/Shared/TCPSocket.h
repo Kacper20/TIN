@@ -24,6 +24,7 @@ class TCPSocket {
 //  void setTimeout(long sec, long uSec);
   int shutdownSocket(ShutdownOption option);
   int bind(const SocketAddress & socketAddress);
+//  TCPSocket accept
   int listen(int allowedConnectionNumber);
 
 };
