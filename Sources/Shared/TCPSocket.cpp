@@ -27,6 +27,17 @@ int TCPSocket::listen(int allowedConnectionNumber) {
   return ::listen(this->socketDescriptor, allowedConnectionNumber);
 }
 
+TCPSocket TCPSocket::accept() {
+  int newSocketDescriptor = ::accept(this->socketDescriptor, 0, 0);
+  TCPSocket clientTalkingSocket = *this;
+  clientTalkingSocket.socketDescriptor = newSocketDescriptor;
+  return clientTalkingSocket;
+}
+
+
+void TCPSocket::close() {
+  ::close(this->socketDescriptor);
+}
 int TCPSocket::shutdownSocket(ShutdownOption option) {
   int shutdownType = [option] () {
     switch (option) {

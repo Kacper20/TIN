@@ -18,10 +18,10 @@ class NodeNetworkLayer {
 
 
  private:
+  TCPSocket *clientConnectionSocket;
 
  public:
   void startListeningOnRequests();
-
 
 
 

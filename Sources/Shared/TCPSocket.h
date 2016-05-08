@@ -6,6 +6,7 @@
 #define TIN_TCPSOCKET_H
 //#include <sys/_types/_timeval.h>
 #include "SocketAddress.h"
+#include <unistd.h>
 enum ShutdownOption {
   READ, READ_WRITE, WRITE
 };
@@ -24,7 +25,8 @@ class TCPSocket {
 //  void setTimeout(long sec, long uSec);
   int shutdownSocket(ShutdownOption option);
   int bind(const SocketAddress & socketAddress);
-//  TCPSocket accept
+  TCPSocket accept();
+  void close();
   int listen(int allowedConnectionNumber);
 
 };
