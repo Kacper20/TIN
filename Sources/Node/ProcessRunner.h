@@ -7,6 +7,8 @@
 
 
 #include <string>
+#include <unistd.h>
+
 class ProcessRunner {
 
  public:
