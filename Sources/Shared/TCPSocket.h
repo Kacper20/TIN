@@ -17,6 +17,7 @@ class TCPSocket {
   SocketAddress* socketAddress;
   //Internal descriptor of a socket
   int socketDescriptor;
+
 //  timeval timeoutValue;
 
  public:
@@ -29,6 +30,7 @@ class TCPSocket {
   int send(const std::string &data);
   int receive(std:: string &data);
   int shutdownSocket(ShutdownOption option);
+  int internalDescriptor();
   void close();
 
 };

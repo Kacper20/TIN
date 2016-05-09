@@ -42,7 +42,6 @@ int TCPSocket::receive(std::string &data) {
   return 0;
 }
 
-
 void TCPSocket::close() {
   ::close(this->socketDescriptor);
 }
@@ -57,4 +56,8 @@ int TCPSocket::shutdownSocket(ShutdownOption option) {
   }();
 
   return shutdown(this->socketDescriptor, shutdownType);
+}
+
+int TCPSocket::internalDescriptor() {
+  return this->socketDescriptor;
 }
