@@ -1,0 +1,8 @@
+//
+// Created by Kacper Harasim on 08.05.2016.
+//
+
+#ifndef TIN_OSXSPECIFICHEADERS_H
+#define TIN_OSXSPECIFICHEADERS_H
+
+#endif //TIN_OSXSPECIFICHEADERS_H
