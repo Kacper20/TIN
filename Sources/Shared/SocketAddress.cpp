@@ -13,6 +13,7 @@ SocketAddress::SocketAddress(int address, short portNumber) {
 }
 
 SocketAddress::SocketAddress() {
+  configure();
   this->address.sin_port = 0;
   this->address.sin_addr.s_addr = INADDR_ANY;
 }
