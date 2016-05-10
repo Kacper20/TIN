@@ -21,7 +21,6 @@ void NodeNetworkLayer::startListeningOnRequests() {
     perror("Error while accepting connection");
   }
   std::cout << "Accepted connection\n";
-  this->clientConnectionSocket = &newSocket;
   //Close socket that was listening
   socket.close();
 }
