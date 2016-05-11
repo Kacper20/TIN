@@ -26,6 +26,7 @@ class TCPSocket {
 //  void setTimeout(long sec, long uSec);
   int bind(const SocketAddress & socketAddress);
   TCPSocket accept();
+  int connect(int socketDescriptor, SocketAddress & socketAddress);
   int listen(int allowedConnectionNumber);
   int send(const std::string &data);
   int receive(std:: string &data);
