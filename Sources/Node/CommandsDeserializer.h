@@ -7,10 +7,11 @@
 #include "../Libraries/json/json.h"
 #include <string>
 #include "Commands/Command.h"
+#include <memory>
 
 class CommandsDeserializer {
  public:
-  Command parseToCommand(std::string json );
+  std::shared_ptr<Command> parseToCommand(std::string json );
 };
 
 

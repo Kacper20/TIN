@@ -3,4 +3,10 @@
 //
 
 #include "Command.h"
+#include "../../Shared/JSONConstants.h"
 
+Json::Value Command::generateJSON() {
+  Json::Value root;
+  root[JSONConstants::MessageType] = descriptionForCommandType(this->commandType);
+  return root;
+}

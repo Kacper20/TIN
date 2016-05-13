@@ -6,16 +6,20 @@
 #include "Commands/AddProcessCommand.h"
 
 
-Command CommandsDeserializer::parseToCommand(std::string json) {
+std::shared_ptr<Command> CommandsDeserializer::parseToCommand(std::string json) {
 
   std::string typeSpecificator = "messageType";
+  Json::Reader reader;
   Json::Value root;
+  bool parsingSucceed = reader.parse(json.c_str(), root);
+  if (!parsingSucceed) {
+    //TODO: Create our own logger as singleton and run it here - error handle.
+    return nullptr;
+  }
   const std::string type = root[typeSpecificator].asString();
-  switch (type) {
-        case "startNewProcess":
-
-
-
+  if (type == descriptionForCommandType(CommandType::NEW_PROCESS)) {
+    std::shared_ptr<Command> deserializedCommand(new AddProcessCommand(root));
+    return deserializedCommand;
   }
   return nullptr;
 }

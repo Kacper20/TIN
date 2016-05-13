@@ -6,7 +6,7 @@
 #define TIN_MESSAGESOCKETCOMPOSER_H
 
 
-class MessageComposer {
+class MessageBoundariesComposer {
 
 };
 

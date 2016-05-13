@@ -6,18 +6,26 @@
 #define TIN_COMMAND_H
 
 #include "../../Libraries/json/json.h"
+#include "../../Shared/JSONConstants.h"
 
-enum CommandType {
+enum class CommandType {
   NEW_PROCESS
 };
+
+static std::string descriptionForCommandType(CommandType type) {
+  switch (type) {
+    case CommandType::NEW_PROCESS:
+      return "startNewProcess";
+    }
+}
+
 class Command {
 
  private:
   CommandType commandType;
  public:
-
   Command(CommandType commandType) : commandType(commandType) {}
-  virtual Json::Value generateJSON() = 0;
+  virtual Json::Value generateJSON();
 
 };
 
