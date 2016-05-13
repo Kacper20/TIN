@@ -11,8 +11,8 @@ std::shared_ptr<Command> CommandsDeserializer::parseToCommand(std::string json) 
   std::string typeSpecificator = "messageType";
   Json::Reader reader;
   Json::Value root;
-  bool parsingSucceed = reader.parse(json.c_str(), root);
-  if (!parsingSucceed) {
+  bool parsingSucceeded = reader.parse(json.c_str(), root);
+  if (!parsingSucceeded) {
     //TODO: Create our own logger as singleton and run it here - error handle.
     return nullptr;
   }

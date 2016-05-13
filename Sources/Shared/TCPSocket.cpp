@@ -5,13 +5,13 @@
 #include "TCPSocket.h"
 
 TCPSocket::TCPSocket() {
-  this->socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
-  this->socketAddress = NULL;
+  socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
+  socketAddress = NULL;
 }
 
 TCPSocket::TCPSocket(int socketDescriptor) {
-  this->socketDescriptor = socketDescriptor;
-  this->socketAddress = NULL;
+  socketDescriptor = socketDescriptor;
+  socketAddress = NULL;
 }
 
 //void TCPSocket::setTimeout(long sec, long uSec) {
@@ -20,11 +20,11 @@ TCPSocket::TCPSocket(int socketDescriptor) {
 //}
 
 int TCPSocket::bind(const SocketAddress &socketAddress) {
-  return ::bind(this->socketDescriptor, (sockaddr *)&socketAddress.address, sizeof(struct sockaddr));
+  return ::bind(socketDescriptor, (sockaddr *)&socketAddress.address, sizeof(struct sockaddr));
 }
 
 int TCPSocket::listen(int allowedConnectionNumber) {
-  return ::listen(this->socketDescriptor, allowedConnectionNumber);
+  return ::listen(socketDescriptor, allowedConnectionNumber);
 }
 
 int TCPSocket::connect(int socketDescriptor, SocketAddress & socketAddress) {
@@ -32,14 +32,14 @@ int TCPSocket::connect(int socketDescriptor, SocketAddress & socketAddress) {
 }
 
 TCPSocket TCPSocket::accept() {
-  int newSocketDescriptor = ::accept(this->socketDescriptor, 0, 0);
+  int newSocketDescriptor = ::accept(socketDescriptor, 0, 0);
   TCPSocket clientTalkingSocket = *this;
   clientTalkingSocket.socketDescriptor = newSocketDescriptor;
   return clientTalkingSocket;
 }
 
 int TCPSocket::send(const std::string &data) {
-  return ::send(this->socketDescriptor, data.c_str(), data.size(), 0);
+  return ::send(socketDescriptor, data.c_str(), data.size(), 0);
 }
 
 int TCPSocket::receive(std::string &data, int bytes) {
@@ -50,7 +50,7 @@ int TCPSocket::receive(std::string &data, int bytes) {
 }
 
 void TCPSocket::close() {
-  ::close(this->socketDescriptor);
+  ::close(socketDescriptor);
 }
 
 int TCPSocket::shutdownSocket(ShutdownOption option) {
@@ -62,9 +62,9 @@ int TCPSocket::shutdownSocket(ShutdownOption option) {
     }
   }();
 
-  return shutdown(this->socketDescriptor, shutdownType);
+  return shutdown(socketDescriptor, shutdownType);
 }
 
 int TCPSocket::internalDescriptor() {
-  return this->socketDescriptor;
+  return socketDescriptor;
 }

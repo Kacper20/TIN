@@ -6,7 +6,10 @@
 #define TIN_MESSAGESOCKETCOMPOSER_H
 
 
+#include <string>
 class MessageBoundariesComposer {
+ public:
+  std::string createMessageWithBoundariesFromMessage(std::string message);
 
 };
 

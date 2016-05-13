@@ -5,13 +5,13 @@
 #include "AddProcessCommand.h"
 AddProcessCommand::AddProcessCommand(Json::Value json) : Command(CommandType::NEW_PROCESS){
   Json::Value processDetails = json[descriptionForCommandType(CommandType::NEW_PROCESS)];
-  this->processContent = processDetails["content"].asString();
+  processContent = processDetails["content"].asString();
 }
 
 Json::Value AddProcessCommand::generateJSON() {
   Json::Value root = Command::generateJSON();
   Json::Value details;
-  details[JSONConstants::ProcessContent] = this->processContent;
+  details[JSONConstants::ProcessContent] = processContent;
   root[JSONConstants::ProcessDetails] = details;
   return root;
 }
