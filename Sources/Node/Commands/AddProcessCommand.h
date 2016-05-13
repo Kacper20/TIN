@@ -9,6 +9,11 @@
 
 class AddProcessCommand: public Command {
 
+ private:
+  std::string processContent;
+  CommandType  command
+ public:
+  AddProcessCommand (Json::Value json);
 };
 
 
