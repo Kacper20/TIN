@@ -29,7 +29,7 @@ class TCPSocket {
   int connect(int socketDescriptor, SocketAddress & socketAddress);
   int listen(int allowedConnectionNumber);
   int send(const std::string &data);
-  int receive(std:: string &data);
+  int receive(std::string &data, int bytes);
   int shutdownSocket(ShutdownOption option);
   int internalDescriptor();
   void close();

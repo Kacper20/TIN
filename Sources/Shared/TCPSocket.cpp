@@ -42,7 +42,10 @@ int TCPSocket::send(const std::string &data) {
   return ::send(this->socketDescriptor, data.c_str(), data.size(), 0);
 }
 
-int TCPSocket::receive(std::string &data) {
+int TCPSocket::receive(std::string &data, int bytes) {
+  char buffer[bytes];
+  //TODO: Fill out the implementation
+
   return 0;
 }
 
