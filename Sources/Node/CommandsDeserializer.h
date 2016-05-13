@@ -6,10 +6,11 @@
 #define TIN_COMMANDSRECOGNIZER_H
 #include "../Libraries/json/json.h"
 #include <string>
+#include "Commands/Command.h"
 
-class CommandsRecognizer {
+class CommandsDeserializer {
  public:
-  void parseToCommand(std::string json );
+  Command parseToCommand(std::string json );
 };
 
 
