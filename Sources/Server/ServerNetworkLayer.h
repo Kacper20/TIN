@@ -12,8 +12,8 @@ class ServerNetworkLayer {
 
 public:
     ServerNetworkLayer() : nodeConnectionSocket(nullptr) {}
-    int connectToNode();
-    //int readScript(std::string filename);
+    int connectToNode(const std::string addressWithPort);
+    int sendScript(const std::string filename) const;
 };
 
 #endif //TIN_SERVERNETWORKLAYER_H
