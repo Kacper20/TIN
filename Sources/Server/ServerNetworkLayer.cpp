@@ -5,6 +5,7 @@
 #include "ServerNetworkLayer.h"
 #include "../Libraries/json/json.h"
 #include <iostream>
+#include <string>
 
 int ServerNetworkLayer::connectToNode(const std::string addressWithPort) {
     nodeConnectionSocket = new TCPSocket();
@@ -39,7 +40,7 @@ int ServerNetworkLayer::sendScript(const std::string filename) const {
     long messageSizeInt = message.size();
     // Our TCPSocket.send method currently only accepts string, so that's what we will send
     std::string messageSizeStr;
-    messageSizeStr += messageSizeInt;
+    messageSizeStr += std::to_string(messageSizeInt);
     std::cout << messageSizeStr << std::endl;
     // Send the size of the message and get the number of bytes sent, will be useful for checking if any errors occurred
     //TODO: error checking
