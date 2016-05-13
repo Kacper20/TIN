@@ -27,6 +27,10 @@ int TCPSocket::listen(int allowedConnectionNumber) {
   return ::listen(this->socketDescriptor, allowedConnectionNumber);
 }
 
+int TCPSocket::connect(int socketDescriptor, SocketAddress & socketAddress) {
+  return ::connect(socketDescriptor, (sockaddr *)&socketAddress.address, sizeof(sockaddr));
+}
+
 TCPSocket TCPSocket::accept() {
   int newSocketDescriptor = ::accept(this->socketDescriptor, 0, 0);
   TCPSocket clientTalkingSocket = *this;
