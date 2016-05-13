@@ -14,13 +14,13 @@ SocketAddress::SocketAddress(int address, short portNumber) {
 
 SocketAddress::SocketAddress() {
   configure();
-  this->address.sin_port = 0;
-  this->address.sin_addr.s_addr = INADDR_ANY;
+  address.sin_port = 0;
+  address.sin_addr.s_addr = INADDR_ANY;
 }
 
 void SocketAddress::configure() {
-  this->address.sin_family = AF_INET;
-  memset(&this->address.sin_zero, 0, 8);
+  address.sin_family = AF_INET;
+  memset(&address.sin_zero, 0, 8);
 }
 
 SocketAddress::SocketAddress(std::string addressWithPort) {
@@ -29,6 +29,6 @@ SocketAddress::SocketAddress(std::string addressWithPort) {
   auto addressSubstring = addressWithPort.substr(0, positionOfSeparator);
   auto portSubstring = addressWithPort.substr(positionOfSeparator + 1, addressWithPort.size());
   short port = atoi(portSubstring.c_str());
-  this->address.sin_port = htons(port);
-  inet_aton(addressSubstring.c_str(), &this->address.sin_addr);
+  address.sin_port = htons(port);
+  inet_aton(addressSubstring.c_str(), &address.sin_addr);
 }
