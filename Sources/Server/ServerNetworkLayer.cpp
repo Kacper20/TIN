@@ -23,16 +23,29 @@ int ServerNetworkLayer::sendScript(const std::string filename) const {
         return -1;
     }
     //TODO: load script from file
+    // Prepare our JSON
     Json::Value value;
-    // In reverse order, because StyledWriter.write writes them in reverse, I think
-    value["text"] = "echo \'Imagination is the essence to discovery.\'";
-    value["type"] = "script";
+    Json::Value processDetails;
+    processDetails["content"] = "echo \'Imagination is the essence of discovery.\'";
+    value["messageType"] = "startNewProcess";
+    value["processDetails"] = processDetails;
+    // Make a c++ string object out of it
+    std::string message;
     Json::StyledWriter writer;
-    std::string message = writer.write(value);
-    //TODO: should we send the size of the message first, then the message itself?
-    std::cout << "Message going out!" << std::endl << message << std::endl;
+    message = writer.write(value);
+    std::cout << message << std::endl;
+    //TODO: Send the size of the message first
+    // Count the size of the message
+    long messageSizeInt = message.size();
+    // Our TCPSocket.send method currently only accepts string, so that's what we will send
+    std::string messageSizeStr;
+    messageSizeStr += messageSizeInt;
+    std::cout << messageSizeStr << std::endl;
+    // Send the size of the message and get the number of bytes sent, will be useful for checking if any errors occurred
+    //TODO: error checking
     int bytesSent = nodeConnectionSocket->send(message);
-    std::cout << "Sent " << bytesSent << " bytes" << std::endl;
+    // Send the message
+    bytesSent = nodeConnectionSocket->send(message);
 
     return 0;
 }
