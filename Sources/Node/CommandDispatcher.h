@@ -12,7 +12,7 @@
 class CommandDispatcher {
 
  public:
-  void executeCommand(Command commandToExecute);
+  void addCommandToQueue(std::shared_ptr<Command> commandToExecute);
 };
 
 

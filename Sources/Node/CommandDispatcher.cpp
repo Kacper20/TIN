@@ -4,7 +4,6 @@
 
 #include "CommandDispatcher.h"
 
-void CommandDispatcher::executeCommand(Command commandToExecute) {
-
+void CommandDispatcher::addCommandToQueue(std::shared_ptr<Command> commandToExecute) {
 
 }

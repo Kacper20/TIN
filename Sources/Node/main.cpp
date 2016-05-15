@@ -1,7 +1,7 @@
 #include <iostream>
 #include <thread>
-#include "NodeNetworkLayer.h"
 #include "CommandsDeserializer.h"
+#include "CommandDispatcher.h"
 #include "NodeServer.h"
 using namespace std;
 
@@ -15,16 +15,15 @@ struct ServerReceivingTask {
 
 int main() {
 
+  CommandDispatcher dispatcher = CommandDispatcher();
   NodeServer server = NodeServer([](std::shared_ptr<Command> commandToDispatch) {
     //WARN: It's called from another thread -
-    //TODO: Add it to dispatcher queue :-)
+    //TODO: Add it to dispatcher queue :-) This queue adding should run on ANOTHER thread so that main is only synchronizing everything
     std::cout << "Ready to dispatch" << std::endl;
+    dispatcher.addCommandToQueue(commandToDispatch);
   });
-  cout << "Hello, World!" << endl;
 
   ServerReceivingTask task(server);
   std::thread serverThread(task);
   serverThread.join();
-
-  std::cout << "END EXEC" << std::endl;
 }
