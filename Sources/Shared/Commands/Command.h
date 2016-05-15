@@ -6,7 +6,7 @@
 #define TIN_COMMAND_H
 
 #include "../../Libraries/json/json.h"
-#include "../../Shared/JSONConstants.h"
+#include "../JSONConstants.h"
 
 enum class CommandType {
   NEW_PROCESS

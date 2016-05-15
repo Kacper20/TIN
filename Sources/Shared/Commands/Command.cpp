@@ -3,7 +3,7 @@
 //
 
 #include "Command.h"
-#include "../../Shared/JSONConstants.h"
+#include "../JSONConstants.h"
 
 Json::Value Command::generateJSON() {
   Json::Value root;

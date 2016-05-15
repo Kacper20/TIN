@@ -3,7 +3,7 @@
 //
 
 #include "CommandsDeserializer.h"
-#include "Commands/AddProcessCommand.h"
+#include "../Shared/Commands/AddProcessCommand.h"
 
 
 std::shared_ptr<Command> CommandsDeserializer::parseToCommand(std::string json) {

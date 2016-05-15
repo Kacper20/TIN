@@ -17,6 +17,7 @@ struct SocketAddress {
  public:
   sockaddr_in address;
   SocketAddress();
+  SocketAddress(short portNumber);
   SocketAddress(int address, short portNumber);
   SocketAddress(std::string addressWithPort);
 };

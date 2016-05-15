@@ -6,14 +6,17 @@
 #define TIN_SERVERNETWORKLAYER_H
 
 #include "../Shared/TCPSocket.h"
+#include "../Shared/MessageNetworkManager.h"
 
 class ServerNetworkLayer {
-    TCPSocket* nodeConnectionSocket;
+ private:
+  TCPSocket nodeConnectionSocket;
+  MessageNetworkManager networkManager;
 
-public:
-    ServerNetworkLayer() : nodeConnectionSocket(nullptr) {}
-    int connectToNode(const std::string addressWithPort);
-    int sendScript(const std::string filename) const;
+ public:
+  ServerNetworkLayer() : nodeConnectionSocket(TCPSocket()), networkManager(nodeConnectionSocket) {}
+  int connectToNode(const std::string addressWithPort);
+  int sendMessage(const std::string message) const;
 };
 
 #endif //TIN_SERVERNETWORKLAYER_H
