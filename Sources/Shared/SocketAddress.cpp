@@ -4,6 +4,7 @@
 
 #include <arpa/inet.h>
 #include <cstdlib>
+#include <cstring>
 #include "SocketAddress.h"
 
 SocketAddress::SocketAddress(short portNumber) {
