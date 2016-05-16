@@ -7,6 +7,8 @@
 
 #include "../Shared/Commands/Command.h"
 #include <queue>
+#include <condition_variable>
+#include <mutex>
 /*
  * Class that takes care of dispatching methods ie. recognizes them, and performs all of the logic.
  */
