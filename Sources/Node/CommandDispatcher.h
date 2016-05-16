@@ -11,6 +11,8 @@
  */
 class CommandDispatcher {
 
+ private:
+  std::queue<Command> commandsQueue;
  public:
   void addCommandToQueue(std::shared_ptr<Command> commandToExecute);
 };
