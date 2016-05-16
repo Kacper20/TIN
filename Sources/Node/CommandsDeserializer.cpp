@@ -2,8 +2,9 @@
 // Created by Kacper Harasim on 09.05.2016.
 //
 
+#include <iostream>
 #include "CommandsDeserializer.h"
-#include "Commands/AddProcessCommand.h"
+#include "../Shared/Commands/AddProcessCommand.h"
 
 
 std::shared_ptr<Command> CommandsDeserializer::parseToCommand(std::string json) {
@@ -14,6 +15,7 @@ std::shared_ptr<Command> CommandsDeserializer::parseToCommand(std::string json) 
   bool parsingSucceeded = reader.parse(json.c_str(), root);
   if (!parsingSucceeded) {
     //TODO: Create our own logger as singleton and run it here - error handle.
+    std::cout << "Could not parse json" << std::endl;
     return nullptr;
   }
   const std::string type = root[typeSpecificator].asString();

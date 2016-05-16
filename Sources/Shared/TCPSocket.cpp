@@ -10,7 +10,7 @@ TCPSocket::TCPSocket() {
 }
 
 TCPSocket::TCPSocket(int socketDescriptor) {
-  socketDescriptor = socketDescriptor;
+  this->socketDescriptor = socketDescriptor;
   socketAddress = NULL;
 }
 
@@ -31,22 +31,16 @@ int TCPSocket::connect(int socketDescriptor, SocketAddress & socketAddress) {
   return ::connect(socketDescriptor, (sockaddr *)&socketAddress.address, sizeof(sockaddr));
 }
 
-TCPSocket TCPSocket::accept() {
-  int newSocketDescriptor = ::accept(socketDescriptor, 0, 0);
-  TCPSocket clientTalkingSocket = *this;
-  clientTalkingSocket.socketDescriptor = newSocketDescriptor;
-  return clientTalkingSocket;
+int TCPSocket::accept() {
+  return ::accept(socketDescriptor, 0, 0);
 }
 
-int TCPSocket::send(const std::string &data) {
-  return ::send(socketDescriptor, data.c_str(), data.size(), 0);
+ssize_t TCPSocket::send(const void *data, size_t size, int flags) const {
+  return ::send(socketDescriptor, data, size, flags);
 }
 
-int TCPSocket::receive(std::string &data, int bytes) {
-  char buffer[bytes];
-  //TODO: Fill out the implementation
-
-  return 0;
+ssize_t TCPSocket::receive(void *data, size_t size, int flags) const {
+  return ::recv(socketDescriptor, data, size, flags);
 }
 
 void TCPSocket::close() {

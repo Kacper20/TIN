@@ -3,24 +3,52 @@
 //
 
 #include "NodeNetworkLayer.h"
-void NodeNetworkLayer::startListeningOnRequests() {
 
-  TCPSocket socket = TCPSocket();
-  SocketAddress myAddress = SocketAddress();
-  std::cout << "Binding socket to address\n";
-  if (socket.bind(myAddress) == -1) {
+
+NodeNetworkLayer::~NodeNetworkLayer() {
+  delete(clientConnectedSocket);
+}
+
+void NodeNetworkLayer::listenOnServerConnection() {
+
+  SocketAddress myAddress = SocketAddress(short(NETWORK_PORT));
+  std::cout << "Binding listeningSocket to address\n";
+  if (listeningSocket.bind(myAddress) == -1) {
     perror("Error while binding occured");
+    exit(-1);
   }
   std::cout <<"Binded successfuly\n";
-  if (socket.listen(1) == -1 ) {
+  if (listeningSocket.listen(1) == -1 ) {
     perror("Error while listening occured");
+    exit(-1);
   }
   std::cout << "Listen called\n";
-  TCPSocket newSocket = socket.accept();
-  if (newSocket.internalDescriptor() == -1) {
+  int newDescriptor = listeningSocket.accept();
+  if (newDescriptor == -1) {
     perror("Error while accepting connection");
+    exit(-1);
   }
+  clientConnectedSocket = new TCPSocket(newDescriptor);
+
   std::cout << "Accepted connection\n";
-  //Close socket that was listening
-  socket.close();
+  //Close listeningSocket that was listening - we only support one client by design.
+  listeningSocket.close();
+  std::cout << "Calling completion func" << std::endl;
+  return;
 }
+
+void NodeNetworkLayer::startReceivingMessages(std::function<void(std::string)> messageReceivedCompletion) {
+  MessageNetworkManager manager = MessageNetworkManager(*clientConnectedSocket);
+  std::string buffer;
+  while(1) {
+    ssize_t receivedBytes = manager.receiveMessage(buffer);
+    if (receivedBytes < 0) {
+      return;
+    }
+    if (receivedBytes != 0) {
+      messageReceivedCompletion(buffer);
+    }
+  }
+}
+
+

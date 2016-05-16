@@ -6,6 +6,12 @@
 #include <cstdlib>
 #include "SocketAddress.h"
 
+SocketAddress::SocketAddress(short portNumber) {
+  configure();
+  this->address.sin_port = htons(portNumber);
+  this->address.sin_addr.s_addr = INADDR_ANY;
+}
+
 SocketAddress::SocketAddress(int address, short portNumber) {
   configure();
   this->address.sin_port = htons(portNumber);

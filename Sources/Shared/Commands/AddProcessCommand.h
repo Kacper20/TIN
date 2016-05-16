@@ -13,6 +13,7 @@ class AddProcessCommand: public Command {
   std::string processContent;
  public:
   AddProcessCommand (Json::Value json);
+  AddProcessCommand (std::string processContent);
   Json::Value generateJSON();
 };
 

@@ -15,7 +15,7 @@ class TCPSocket {
 
  private:
   SocketAddress* socketAddress;
-  //Internal descriptor of a socket
+  //Internal descriptor of a listeningSocket
   int socketDescriptor;
 
 //  timeval timeoutValue;
@@ -25,15 +25,14 @@ class TCPSocket {
   TCPSocket(int socketDescriptor);
 //  void setTimeout(long sec, long uSec);
   int bind(const SocketAddress & socketAddress);
-  TCPSocket accept();
+  int accept();
   int connect(int socketDescriptor, SocketAddress & socketAddress);
   int listen(int allowedConnectionNumber);
-  int send(const std::string &data);
-  int receive(std::string &data, int bytes);
+  ssize_t send(const void *data, size_t size, int flags) const ;
+  ssize_t receive(void *data, size_t size, int flags) const ;
   int shutdownSocket(ShutdownOption option);
   int internalDescriptor();
   void close();
-
 };
 
 
