@@ -13,17 +13,29 @@ struct ServerReceivingTask {
   }
 };
 
+struct CommandsDispatchingTask {
+  CommandDispatcher* dispatcher;
+  CommandsDispatchingTask(CommandDispatcher* dispatcher) {
+    this->dispatcher = dispatcher;
+  }
+  void operator() () {
+    dispatcher->startLookingForTasks();
+  }
+};
+
 int main() {
 
-  CommandDispatcher dispatcher = CommandDispatcher();
-  NodeServer server = NodeServer([](std::shared_ptr<Command> commandToDispatch) {
+  CommandDispatcher dispatcher;
+  NodeServer server = NodeServer([&dispatcher](std::shared_ptr<Command> commandToDispatch) {
     //WARN: It's called from another thread -
-    //TODO: Add it to dispatcher queue :-) This queue adding should run on ANOTHER thread so that main is only synchronizing everything
     std::cout << "Ready to dispatch" << std::endl;
     dispatcher.addCommandToQueue(commandToDispatch);
   });
+  CommandsDispatchingTask dispatcherTask(&dispatcher);
+  std::thread dispatcherThread(dispatcherTask);
 
-  ServerReceivingTask task(server);
-  std::thread serverThread(task);
+  ServerReceivingTask serverTask(server);
+  std::thread serverThread(serverTask);
   serverThread.join();
+  dispatcherThread.join();
 }
