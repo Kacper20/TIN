@@ -16,9 +16,86 @@ This part looks as follows:
 ##### Sending process to node:
 ```
 {
-	“messageType” “startNewProcess”;
+	“messageType” : “startNewProcess”;
 	“processDetails” : {
-		“content” : "" // shell script
+	    "processID" : number;
+		“content” : ""; // shell script
+		"schedule" : ["begin" : number, "end" : number] // schedule for process
 	}
+}
+```
+
+##### Requesting statistics from specific run on node:
+```
+{
+    "messageType" : "requestStatistics";
+    "specificData" : {
+        "processID" : number;
+        "timeFrame" : ["begin" : number, "end" : number]  //specifying time frame
+    }
+}
+```
+
+##### Send requested data to server:
+```
+{
+    "messageType" : "sendStatistics";
+    "specyficData" : ["timeFrame" : number, "runData" : ""]
+}
+```
+
+##### Request deleting process on node:
+```
+{
+    "messageType" : "deleteProcess";
+    "processID" : number
+}
+```
+
+##### Delete process on node:
+```
+{
+    "messageType" : "deleteProcess";
+    "processID" : number;
+}
+```
+
+### Node - Admin Communication
+
+##### Insert process Code:
+```
+{
+    "messageType" : "insertCode";
+    "processDetails" : {
+        "processID" : number;
+        "schedule" : ["begin" : number, "end" : number];
+        "content" : "" //shell script
+    }
+}
+```
+
+##### Request statistics from process:
+```
+{
+    "messageType" : "requestStats";
+    "details" : {
+        "processID" : number;
+        "timeFrame" : ["begin" : number, "end" : number]
+    }
+}
+```
+
+##### Request system statistics:
+```
+{
+    "messageType" : "systemStatistics"
+}
+```
+
+##### Delete process:
+```
+{
+    "messageType" : "deleteProcess";
+    "processID" : number
 }
 ```
