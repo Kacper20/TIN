@@ -26,6 +26,7 @@ struct CommandsDispatchingTask {
 int main() {
 
   CommandDispatcher dispatcher;
+
   NodeServer server = NodeServer([&dispatcher](std::shared_ptr<Command> commandToDispatch) {
     //WARN: It's called from another thread -
     std::cout << "Ready to dispatch" << std::endl;

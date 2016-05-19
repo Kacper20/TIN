@@ -3,3 +3,7 @@
 //
 
 #include "FileManager.h"
+
+int FileManager::createDirectoryAtPath(std::string path) {
+  return mkdir("foo", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+}
