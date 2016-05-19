@@ -5,6 +5,8 @@
 #ifndef TIN_NODESERVER_H
 #define TIN_NODESERVER_H
 #include "../Shared/Commands/Command.h"
+#include <functional>
+#include <memory>
 
 class NodeServer {
 
