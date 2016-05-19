@@ -8,6 +8,7 @@
 
 #include <string>
 #include <unistd.h>
+#include <wait.h>
 
 class ProcessRunner {
 

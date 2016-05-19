@@ -1,5 +1,6 @@
 //
 // Created by Kacper Harasim on 08.05.2016.
+//  Modified by Daria Danilenko on 18.05.2016
 //
 
 #ifndef TIN_SOCKETADDRESS_H
@@ -16,7 +17,9 @@ struct SocketAddress {
 
  public:
   sockaddr_in address;
+  sockaddr_in6 address_v6;
   SocketAddress();
+  SocketAddress(short portNumber);
   SocketAddress(int address, short portNumber);
   SocketAddress(std::string addressWithPort);
 };
