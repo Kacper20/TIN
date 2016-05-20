@@ -9,8 +9,6 @@ This part looks as follows:
 }
 ```
 
-
-
 ### Node - Server Communication
 
 ##### Sending process to node:
@@ -20,23 +18,25 @@ This part looks as follows:
 	“processDetails” : {
 	    "processID" : number;
 		“content” : ""; // shell script
-		"schedule" : ["begin" : number, "end" : number] // schedule for process
+		"schedule" : ["start" : ""] //time when process should be run - format is hh:mm:ss.s
 	}
 }
 ```
 
 ##### Requesting statistics from specific run on node:
+Requesting process statistic from runs is specified timeframe
 ```
 {
     "messageType" : "requestStatistics";
     "specificData" : {
         "processID" : number;
-        "timeFrame" : ["begin" : number, "end" : number]  //specifying time frame
+        "timeFrame" : ["begin" : "", "end" : ""]  //specifying time frame - format YYYY-MM-DDThh:mm:ss.s
     }
 }
 ```
 
 ##### Send requested data to server:
+Respond to server request
 ```
 {
     "messageType" : "sendStatistics";
@@ -68,7 +68,7 @@ This part looks as follows:
     "messageType" : "insertCode";
     "processDetails" : {
         "processID" : number;
-        "schedule" : ["begin" : number, "end" : number];
+        "schedule" : ["start" : ""]; //time when process should be run - format hh:mm:ss.s
         "content" : "" //shell script
     }
 }
@@ -80,7 +80,7 @@ This part looks as follows:
     "messageType" : "requestStats";
     "details" : {
         "processID" : number;
-        "timeFrame" : ["begin" : number, "end" : number]
+        "timeFrame" : ["begin" : number, "end" : number] //specifying timeframe - format YYYY-MM-DDThh:mm:ss.s
     }
 }
 ```
