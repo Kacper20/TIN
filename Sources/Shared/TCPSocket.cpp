@@ -20,7 +20,10 @@ TCPSocket::TCPSocket(int socketDescriptor) {
 //}
 
 int TCPSocket::bind(const SocketAddress &socketAddress) {
-  return ::bind(socketDescriptor, (sockaddr *)&socketAddress.address, sizeof(struct sockaddr));
+  if(1==1)
+    return ::bind(socketDescriptor, (sockaddr *)&socketAddress.address, sizeof(struct sockaddr));
+  else
+    return ::bind(socketDescriptor, (sockaddr *)&socketAddress.address_v6, sizeof(struct sockaddr));
 }
 
 int TCPSocket::listen(int allowedConnectionNumber) {
@@ -28,7 +31,10 @@ int TCPSocket::listen(int allowedConnectionNumber) {
 }
 
 int TCPSocket::connect(int socketDescriptor, SocketAddress & socketAddress) {
-  return ::connect(socketDescriptor, (sockaddr *)&socketAddress.address, sizeof(sockaddr));
+  if(1==1)
+    return ::connect(socketDescriptor, (sockaddr *)&socketAddress.address, sizeof(sockaddr));
+  else
+    return ::connect(socketDescriptor, (sockaddr *)&socketAddress.address_v6, sizeof(sockaddr));
 }
 
 int TCPSocket::accept() {

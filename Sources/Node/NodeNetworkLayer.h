@@ -9,6 +9,7 @@
 #include "../Shared/TCPSocket.h"
 #include "../Shared/MessageNetworkManager.h"
 #include <iostream>
+#include <functional>
 
 
 #ifndef TIN_NODENETWORKLAYER_H

@@ -9,6 +9,7 @@
 #include <queue>
 #include <condition_variable>
 #include <mutex>
+#include <memory>
 /*
  * Class that takes care of dispatching methods ie. recognizes them, and performs all of the logic.
  */
