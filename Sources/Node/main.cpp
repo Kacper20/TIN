@@ -6,15 +6,6 @@
 #include <csignal>
 using namespace std;
 
-void signalChildTerminate(int signum) {
-  pid_t childPid;
-  std::cout << "Signal CHLD procedure\n";
-  int status;
-  while ((childPid = waitpid(-1, &status, WNOHANG)) > 0) {
-    std::cout << "Child ended!!";
-  }
-}
-
 struct ServerReceivingTask {
   NodeServer server;
   ServerReceivingTask(NodeServer server): server(server) {}
@@ -41,13 +32,13 @@ struct ProcessRunningTask {
 
 struct ProcessMonitoringTask {
   ProcessHandler& processHandler;
-  ProcessMonitoringTask
+  ProcessMonitoringTask(ProcessHandler &handler) : processHandler(handler) {}
+  void operator() () {
+    processHandler.monitorProcessesEndings();
+  }
 };
 
 int main() {
-
-  std::signal(SIGCHLD, signalChildTerminate);
-
 
   ProcessHandler handler;
   CommandDispatcher dispatcher(handler);
@@ -58,6 +49,9 @@ int main() {
     dispatcher.processCommand(commandToDispatch);
   });
 
+  ProcessMonitoringTask processMonitoringTask(handler);
+  std::thread processMonitoringThread(processMonitoringTask);
+
   ProcessRunningTask processRunningTask(handler);
   std::thread processRunningThread(processRunningTask);
 
@@ -66,6 +60,8 @@ int main() {
 
   ServerReceivingTask serverTask(server);
   std::thread serverThread(serverTask);
+
+  processMonitoringThread.join();
   processRunningThread.join();
   serverThread.join();
   dispatcherThread.join();

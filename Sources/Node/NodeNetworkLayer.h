@@ -27,6 +27,7 @@ class NodeNetworkLayer {
   ~NodeNetworkLayer();
   void listenOnServerConnection();
   void startReceivingMessages(std::function<void(std::string)> messageReceivedCompletion);
+
 };
 
 

@@ -13,6 +13,7 @@ void CommandDispatcher::startDispatching() {
 
 void CommandDispatcher::processCommandsInfinitely()  {
 
+  while(1) {
     std::cout << "command WILL be taken from queue\n";
     std::shared_ptr<Command> command = queue.pop();
 
@@ -23,6 +24,7 @@ void CommandDispatcher::processCommandsInfinitely()  {
       std::shared_ptr<AddProcessCommand> commandPtr(processCommand);
       handler.runProcess(commandPtr);
     }
+  }
 }
 
 void CommandDispatcher::processCommand(std::shared_ptr<Command> command) {

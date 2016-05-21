@@ -19,6 +19,8 @@
 class ProcessHandler {
 
  private:
+  std::condition_variable conditionVariable;
+  std::mutex startedProcessMutex;
   const std::string processesLocation = "/Users/kacperh/mod1";
   void writeProcessToPersistenceStorage(std::string processContent);
   void runProcessWithCommand(std::shared_ptr<AddProcessCommand> command);
@@ -31,6 +33,7 @@ class ProcessHandler {
 
   void runProcess(std::shared_ptr<AddProcessCommand> process);
   void startMonitoringForProcessesToRun();
+  void monitorProcessesEndings();
 //TODO: Later, we'll be writing process with its harmonogram to the file(json)
 };
 

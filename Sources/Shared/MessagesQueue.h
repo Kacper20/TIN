@@ -35,7 +35,7 @@ class MessagesQueue {
 
   std::shared_ptr<T> pop() {
     std::unique_lock<std::mutex> lock(mutex);
-    conditionVariable.wait(lock, [this]() { return !(this->queue.empty()); });
+    conditionVariable.wait(lock);
     std::shared_ptr<T> receivedObject = queue.front();
     queue.pop();
     return receivedObject;

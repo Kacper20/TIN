@@ -41,6 +41,7 @@ void ProcessHandler::writeProcessToPersistenceStorage(std::string processContent
 void ProcessHandler::runProcessWithCommand(std::shared_ptr<AddProcessCommand> command) {
   pid_t newProcessId;
   int childProcessStatus;
+  std::cout << "RUN PROCESS!\n";
   newProcessId = fork();
   if (newProcessId < 0) {
     exit(-1);
@@ -55,6 +56,25 @@ void ProcessHandler::runProcessWithCommand(std::shared_ptr<AddProcessCommand> co
     dup2(stdErrFd, 2);
     execvp(processFilePath.c_str(), params);
   } else {
+    std::unique_lock<std::mutex> lock(startedProcessMutex);
     runningProcessesQueue.push(std::make_tuple(command, newProcessId));
+    conditionVariable.notify_one();
+  }
+}
+
+void ProcessHandler::monitorProcessesEndings() {
+  int status;
+  pid_t childPid;
+
+  //TODO: Implement counting semaphore... Here we have rare race condition.
+  while(1) {
+    std::unique_lock<std::mutex> lock(startedProcessMutex);
+    conditionVariable.wait(lock);
+    while ((childPid = waitpid(-1, &status, 0)) > 0) {
+      std::cout << "Process ended" << childPid << std::endl;
+    }
+    if (childPid < 0 ) {
+      perror("Waitpid error");
+    }
   }
 }
