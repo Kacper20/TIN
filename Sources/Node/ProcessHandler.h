@@ -14,14 +14,6 @@
 
 //Class that handles all of the interaction with processes that are computing data.
 
-typedef std::tuple<std::shared_ptr<StartProcessCommand>, int> CommandWithPid;
-
-struct CommandWithPidCompare {
-  bool operator() (const CommandWithPid& lhs, const CommandWithPid& rhs) const
-  {
-    return std::get<1>(lhs) < std::get<1>(rhs);
-  }
-};
 
 //Instance that is
 class ProcessHandler {
@@ -32,7 +24,7 @@ class ProcessHandler {
   void writeProcessToPersistentStorage(Json::Value commandJson, const std::string& processContent,
                                        const std::string& identifier);
   void runProcessWithCommand(std::shared_ptr<StartProcessCommand> command, const std::string& basePath);
-  std::set<CommandWithPid, CommandWithPidCompare> runningProcesses;
+  std::map<int, std::shared_ptr<StartProcessCommand>> runningProcesses;
   MessagesQueue<StartProcessCommand> processesToRunQueue;
 
  public:
