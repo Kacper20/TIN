@@ -3,6 +3,7 @@
 //
 #include "ProcessHandler.h"
 #include "../Shared/FileManager.h"
+#include "PathConstants.h"
 
 #include <fcntl.h>
 #include <iostream>
@@ -11,33 +12,43 @@
 #include <csignal>
 #include <sys/wait.h>
 
-void ProcessHandler::runProcess(std::shared_ptr<AddProcessCommand> process) {
+void ProcessHandler::runProcess(std::shared_ptr<StartProcessCommand> process) {
   processesToRunQueue.push(process);
 }
 
 void ProcessHandler::startMonitoringForProcessesToRun() {
   while (1) {
-    std::shared_ptr<AddProcessCommand> command = processesToRunQueue.pop();
-    writeProcessToPersistentStorage(command->processContent);
+    std::shared_ptr<StartProcessCommand> command = processesToRunQueue.pop();
+    writeProcessToPersistentStorage(command->generateJSON(), command->processContent, command->processId);
     runProcessWithCommand(command);
   }
 }
 
-void ProcessHandler::writeProcessToPersistentStorage(std::string processContent) {
+std::string directoryForProcessWithId(const std::string& id) {
+  return PROCESSES_BASE_DIRECTORY + "/" + id;
+}
+
+void ProcessHandler::writeProcessToPersistentStorage(Json::Value commandJson, const std::string& processContent,
+                                                     const std::string& identifier) {
   //First, ensure that processes have its
-  int result = FileManager::createDirectoryAtPath(processesLocation);
-  if (result == -1) {
-    perror("Cannot create dir");
+  std::string directoryForProcess = directoryForProcessWithId(identifier);
+  int result = FileManager::createDirectoryAtPath(directoryForProcess);
+  if (result < 0) {
+    perror("Cannot create directory");
   }
-  std::string processPath =  processesLocation + "/" + "1";
-  std::ofstream file(processPath);
-  file << processContent;
-  file.close();
-  chmod(processPath.c_str(), S_IRWXU);
+  std::string processContentPath = FileManager::buildPath(directoryForProcess, PathConstants::RunnableScript);
+  std::string jsonContentPath = FileManager::buildPath(directoryForProcess, PathConstants::CommandJSON);
+
+  Json::FastWriter fastWriter;
+  std::string jsonInString = fastWriter.write(commandJson);
+
+  FileManager::writeToFile(processContentPath, processContent);
+  FileManager::writeToFile(jsonContentPath, jsonInString);
+  chmod(processContentPath.c_str(), S_IRWXU);
 }
 
 //TODO: We need to queue this methods calls and provide not mocked locations
-void ProcessHandler::runProcessWithCommand(std::shared_ptr<AddProcessCommand> command) {
+void ProcessHandler::runProcessWithCommand(std::shared_ptr<StartProcessCommand> command, const std::string& basePath) {
   pid_t newProcessId;
   int childProcessStatus;
   std::cout << "RUN PROCESS!\n";
@@ -46,9 +57,9 @@ void ProcessHandler::runProcessWithCommand(std::shared_ptr<AddProcessCommand> co
     exit(-1);
   } else if (newProcessId == 0) {
     char *params[4]  = {0};
-    std::string outPath = processesLocation + "/" + "out.txt";
-    std::string errPath = processesLocation + "/" + "err.txt";
-    std::string processFilePath = processesLocation + "/" + "1";
+    std::string outPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardOutput);
+    std::string errPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardError);
+    std::string processFilePath = FileManager::buildPath(basePath, command->processId);
     int stdOutFd = open(outPath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     int stdErrFd = open(errPath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     dup2(stdOutFd, 1);
@@ -70,11 +81,15 @@ void ProcessHandler::monitorProcessesEndings() {
     std::unique_lock<std::mutex> lock(startedProcessMutex);
     conditionVariable.wait(lock);
     while ((childPid = waitpid(-1, &status, 0)) > 0) {
-
       std::cout << "Process ended" << childPid << std::endl;
+
     }
     if (childPid < 0 ) {
       perror("Waitpid error");
     }
   }
+}
+
+ProcessHandler::ProcessHandler() {
+  FileManager::createDirectoryAtPath(processesLocation);
 }

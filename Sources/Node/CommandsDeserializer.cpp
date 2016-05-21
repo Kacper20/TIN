@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "CommandsDeserializer.h"
-#include "../Shared/Commands/AddProcessCommand.h"
+#include "../Shared/Commands/StartProcessCommand.h"
 
 
 std::shared_ptr<Command> CommandsDeserializer::parseToCommand(std::string json) {
@@ -20,7 +20,7 @@ std::shared_ptr<Command> CommandsDeserializer::parseToCommand(std::string json) 
   }
   const std::string type = root[typeSpecificator].asString();
   if (type == descriptionForCommandType(CommandType::START_NEW_PROCESS)) {
-    std::shared_ptr<Command> deserializedCommand(new AddProcessCommand(root));
+    std::shared_ptr<Command> deserializedCommand(new StartProcessCommand(root));
     return deserializedCommand;
   }
   return nullptr;

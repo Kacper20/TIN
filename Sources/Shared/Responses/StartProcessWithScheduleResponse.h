@@ -1,0 +1,14 @@
+//
+// Created by Kacper Harasim on 21.05.2016.
+//
+
+#ifndef TIN_STARTPROCESSWITHSCHEDULERESPONSE_H
+#define TIN_STARTPROCESSWITHSCHEDULERESPONSE_H
+
+
+class StartProcessWithScheduleResponse {
+
+};
+
+
+#endif //TIN_STARTPROCESSWITHSCHEDULERESPONSE_H
