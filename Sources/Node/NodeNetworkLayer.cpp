@@ -51,4 +51,8 @@ void NodeNetworkLayer::startReceivingMessages(std::function<void(std::string)> m
   }
 }
 
+int NodeNetworkLayer::sendMessage(const std::string message) const {
+  return networkManager.sendMessage(message);
+}
+
 

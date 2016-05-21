@@ -10,12 +10,11 @@
 class AddProcessCommand: public Command {
 
  private:
-  std::string processContent;
+
  public:
+  std::string processContent;
   AddProcessCommand (Json::Value json);
   AddProcessCommand (std::string processContent);
   Json::Value generateJSON();
 };
-
-
 #endif //TIN_ADDPROCESSCOMMAND_H

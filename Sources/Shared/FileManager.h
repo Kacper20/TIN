@@ -5,9 +5,13 @@
 #ifndef TIN_FILEMANAGER_H
 #define TIN_FILEMANAGER_H
 
+#include <sys/stat.h>
+#include <string>
 
 class FileManager {
 
+ public:
+  static int createDirectoryAtPath(std::string path);
 };
 
 

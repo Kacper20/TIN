@@ -9,93 +9,138 @@ This part looks as follows:
 }
 ```
 
+### Message boundaries
+Every message is preceded by number of bytes. This is needed by receiver of the message in order to properly read it.
+
+
 ### Node - Server Communication
 
-##### Sending process to node:
+#### Sending process to node with schedule(multiple run):
+
+
+##### Request
 ```
 {
-	“messageType” : “startNewProcess”;
+	“commandType” : “startNewProcessWithSchedule”;
 	“processDetails” : {
-	    "processID" : number;
-		“content” : ""; // shell script
-		"schedule" : ["start" : ""] //time when process should be run - format is hh:mm:ss.s
+	  "processIdentifier" : ""
+		“content” : "echo"
+		"schedules" : [3600, 4800]
+	}
+}
+```
+*schedules* - array of ints -  timestamps from 00:00 hour in seconds
+*content* - content of a process to run
+
+##### Response
+```
+{
+	“ResponseType” : “scheduledProcessEnded”;
+	“processDetails” : {
+	  processIdentifier" : ""
+		"date" : "20-06-1994"
+		"timestamp" : 3600
 	}
 }
 ```
 
-##### Requesting statistics from specific run on node:
-Requesting process statistic from runs is specified timeframe
+This response is send to the server every time when scheduled run of a process ends.
+After receiving this, server could ask about specific info about this run by making another request.
+
+*process Identifier* - string, UUID, magic number given by server to properly recognize process. Node resends it in response
+*date* - specifies date in which process was run. It's in format dd-mm-
+*timestamp* - timestamp from 00:00 in a given day.
+
+
+Explanation:
+When server specifies that process should run at given timestamps, it'll be run every day from day of the request at given time. Later, server could ask for given process run. When process ends, only short information about ending is send(see Sending process to node with schedule response).
+
+
+
+#### Sending process to node for one time run
+
+Method used when server wants to run method just one time. In response all details about the run are included.
+##### Request
 ```
 {
-    "messageType" : "requestStatistics";
-    "specificData" : {
-        "processID" : number;
-        "timeFrame" : ["begin" : "", "end" : ""]  //specifying time frame - format YYYY-MM-DDThh:mm:ss.s
-    }
+	“commandType” : “startNewProcess”;
+	“processDetails” : {
+	    "processIdentifier" : number; //
+		“content” : "echo "Hallo World""; // shell script
+	}
 }
 ```
 
-##### Send requested data to server:
-Respond to server request
+##### Response
 ```
 {
-    "messageType" : "sendStatistics";
-    "specyficData" : ["timeFrame" : number, "runData" : ""]
+	“responseType” : “startNewProcess”;
+	“processDetails” : {
+	  processIdentifier" : ""
+		"standardError" : ""
+		"standardOutput" : ""
+	}
 }
 ```
 
-##### Request deleting process on node:
+*standardError* - std error of a process
+*standardOutput* - std output of a process
+
+
+
+
+#### Requestic specific run data
+
+Method used when server wants to check details about scheduled run of a process.
+##### Request
 ```
 {
-    "messageType" : "deleteProcess";
-    "processID" : number
+	“commandType” : “getRunData”;
+	“processDetails” : {
+	  "processIdentifier" : number; //
+		"date" : "20-06-1994"
+		"timestamp" : 3600
+	}
 }
 ```
 
-##### Delete process on node:
+##### Response
 ```
 {
-    "messageType" : "deleteProcess";
-    "processID" : number;
+	“responseType” : “runData”;
+	“processDetails” : {
+	  processIdentifier" : ""
+		"date" : "20-06-1994"
+		"timestamp" : 3600
+		"standardError" : ""
+		"standardOutput" : ""
+	}
 }
 ```
 
-### Node - Admin Communication
-
-##### Insert process Code:
+#### Delete process
+Deletes process from node, together with all of its scheduled runs(if there are any)
+##### Request
 ```
 {
-    "messageType" : "insertCode";
-    "processDetails" : {
-        "processID" : number;
-        "schedule" : ["start" : ""]; //time when process should be run - format hh:mm:ss.s
-        "content" : "" //shell script
-    }
+	“commandType” : "deleteProcess";
+	“processDetails” : {
+	  "processIdentifier" : number; //
+	}
 }
 ```
 
-##### Request statistics from process:
+##### Response
 ```
 {
-    "messageType" : "requestStats";
-    "details" : {
-        "processID" : number;
-        "timeFrame" : ["begin" : number, "end" : number] //specifying timeframe - format YYYY-MM-DDThh:mm:ss.s
-    }
+	“commandType” : “deleteProcess”;
+	"status" : 1
+	"message" :
+	“processDetails” : {
+		"processIdentifier" : number; //
+	}
 }
 ```
 
-##### Request system statistics:
-```
-{
-    "messageType" : "systemStatistics"
-}
-```
-
-##### Delete process:
-```
-{
-    "messageType" : "deleteProcess";
-    "processID" : number
-}
-```
+*status*  - 1 if OK, 0 if error occured. If 0 was returned - specific message is included.
+*message* - error description

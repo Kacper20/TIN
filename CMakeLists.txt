@@ -8,18 +8,21 @@ set(SHARED_FILES Sources/Libraries/jsoncpp.cpp Sources/Libraries/json/json.h Sou
         Sources/Shared/SocketAddress.h Sources/Shared/OSXSpecificHeaders.h Sources/Shared/Commands/Command.cpp
         Sources/Shared/Commands/Command.h Sources/Shared/Commands/AddProcessCommand.cpp
         Sources/Shared/Commands/AddProcessCommand.h Sources/Shared/JSONConstants.h
-        Sources/Shared/MessageNetworkManager.cpp Sources/Shared/MessageNetworkManager.h)
+        Sources/Shared/MessageNetworkManager.cpp Sources/Shared/MessageNetworkManager.h
+        Sources/Shared/MessagesQueue.h
+        Sources/Shared/FileManager.h Sources/Shared/FileManager.cpp
+        Sources/Shared/Responses/Response.cpp Sources/Shared/Responses/Response.h)
 
 set(NODE_SOURCE ${SHARED_FILES} Sources/Node/main.cpp  Sources/Node/WorkerNode.cpp Sources/Node/WorkerNode.h
-        Sources/Node/NodeNetworkLayer.cpp Sources/Node/NodeNetworkLayer.h Sources/Node/ProcessRunner.cpp
-        Sources/Node/ProcessRunner.h Sources/Node/CommandsDeserializer.cpp Sources/Node/CommandsDeserializer.h
+        Sources/Node/NodeNetworkLayer.cpp Sources/Node/NodeNetworkLayer.h Sources/Node/ProcessHandler.cpp
+        Sources/Node/ProcessHandler.h Sources/Node/CommandsDeserializer.cpp Sources/Node/CommandsDeserializer.h
         Sources/Node/NodeServer.cpp Sources/Node/NodeServer.h Sources/Node/CommandDispatcher.h
         Sources/Node/CommandDispatcher.cpp)
 
 set(SERVER_SOURCE ${SHARED_FILES} Sources/Server/main.cpp Sources/Server/ServerNetworkLayer.h
         Sources/Server/ServerNetworkLayer.cpp)
 
-set(ADMIN_SOURCE ${SHARED_FILES} Sources/Administrator/main.cpp)
+set(ADMIN_SOURCE ${SHARED_FILES} Sources/Administrator/main.cpp )
 
 add_executable(Node ${NODE_SOURCE})
 

@@ -5,7 +5,7 @@
 #include <iostream>
 #include "AddProcessCommand.h"
 
-AddProcessCommand::AddProcessCommand(Json::Value json) : Command(CommandType::NEW_PROCESS) {
+AddProcessCommand::AddProcessCommand(Json::Value json) : Command(CommandType::START_NEW_PROCESS) {
   processContent = json[JSONConstants::ProcessDetails][JSONConstants::ProcessContent].asString();
 }
 
@@ -17,7 +17,7 @@ Json::Value AddProcessCommand::generateJSON() {
   return root;
 }
 
-AddProcessCommand::AddProcessCommand(std::string processContent) : Command(CommandType::NEW_PROCESS) {
+AddProcessCommand::AddProcessCommand(std::string processContent) : Command(CommandType::START_NEW_PROCESS) {
   this->processContent = processContent;
 }
 
