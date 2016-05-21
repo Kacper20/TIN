@@ -9,15 +9,17 @@
 
 class InputHandler
 {
+private:
+  void printHelp();
+  int checkAddress(const std::string& address_with_port);
+  void handleConnect(const std::string& full_command);
+  void handleDisconnect();
+  void sendProcess(const std::string& full_command);
+  void launchProcess(const std::string& full_command);
 
 public:
-    void run();
-    void printHelp();
-    int checkAddress(std::string address_with_port);
-    void handleConnect(std::string full_command);
-    void handleDisconnect();
-    void sendProcess(std::string full_command);
-    void launchProcess(std::string full_command);
+  void run();
 };
 
 #endif //TIN_INPUTHANDLER_H
+
