@@ -12,20 +12,24 @@
 #include <csignal>
 #include <sys/wait.h>
 
+#define PROCESSES_BASE_DIRECTORY "/Users/kacperh/Developer/TIN_TEMP"
+
+
+
 void ProcessHandler::runProcess(std::shared_ptr<StartProcessCommand> process) {
   processesToRunQueue.push(process);
+}
+
+std::string directoryForProcessWithId(const std::string& id) {
+  return std::string(PROCESSES_BASE_DIRECTORY) + "/" + id;
 }
 
 void ProcessHandler::startMonitoringForProcessesToRun() {
   while (1) {
     std::shared_ptr<StartProcessCommand> command = processesToRunQueue.pop();
     writeProcessToPersistentStorage(command->generateJSON(), command->processContent, command->processId);
-    runProcessWithCommand(command);
+    runProcessWithCommand(command, directoryForProcessWithId(command->processId));
   }
-}
-
-std::string directoryForProcessWithId(const std::string& id) {
-  return PROCESSES_BASE_DIRECTORY + "/" + id;
 }
 
 void ProcessHandler::writeProcessToPersistentStorage(Json::Value commandJson, const std::string& processContent,
@@ -67,7 +71,7 @@ void ProcessHandler::runProcessWithCommand(std::shared_ptr<StartProcessCommand> 
     execvp(processFilePath.c_str(), params);
   } else {
     std::unique_lock<std::mutex> lock(startedProcessMutex);
-    runningProcessesQueue.push(std::make_tuple(command, newProcessId));
+    runningProcesses.insert(std::make_tuple(command, newProcessId));
     conditionVariable.notify_one();
   }
 }
@@ -91,5 +95,5 @@ void ProcessHandler::monitorProcessesEndings() {
 }
 
 ProcessHandler::ProcessHandler() {
-  FileManager::createDirectoryAtPath(processesLocation);
+  FileManager::createDirectoryAtPath(PROCESSES_BASE_DIRECTORY);
 }
