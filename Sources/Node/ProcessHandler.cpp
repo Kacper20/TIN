@@ -1,16 +1,15 @@
 //
 // Created by Kacper Harasim on 09.05.2016.
 //
+#include "ProcessHandler.h"
+#include "../Shared/FileManager.h"
 
-#include <cstdlib>
 #include <fcntl.h>
 #include <iostream>
 #include <fstream>
-#include "ProcessHandler.h"
-#include "../Shared/FileManager.h"
+#include <thread>
 #include <csignal>
-
-
+#include <sys/wait.h>
 
 void ProcessHandler::runProcess(std::shared_ptr<AddProcessCommand> process) {
   processesToRunQueue.push(process);
@@ -19,7 +18,7 @@ void ProcessHandler::runProcess(std::shared_ptr<AddProcessCommand> process) {
 void ProcessHandler::startMonitoringForProcessesToRun() {
   while (1) {
     std::shared_ptr<AddProcessCommand> command = processesToRunQueue.pop();
-    writeProcessToPersistenceStorage(command->processContent);
+    writeProcessToPersistentStorage(command->processContent);
     runProcessWithCommand(command);
   }
 }
