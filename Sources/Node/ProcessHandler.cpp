@@ -58,10 +58,3 @@ void ProcessHandler::runProcessWithCommand(std::shared_ptr<AddProcessCommand> co
     runningProcessesQueue.push(std::make_tuple(command, newProcessId));
   }
 }
-
-
-
-ProcessHandler::ProcessHandler() {
-  std::cout << "Function registered\n";
-  //We need to register to the signal function, that fire every time when child process status changes
-}

@@ -28,7 +28,6 @@ class ProcessHandler {
  public:
 
 //TODO: Think about transforming AddProcessCommand -> Process to run structure.
-  ProcessHandler();
 
   void runProcess(std::shared_ptr<AddProcessCommand> process);
   void startMonitoringForProcessesToRun();

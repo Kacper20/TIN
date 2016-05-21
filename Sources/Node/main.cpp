@@ -39,10 +39,10 @@ struct ProcessRunningTask {
   }
 };
 
-//struct ProcessMonitoringTask {
-//  ProcessHandler& processHandler;
-//  ProcessMonitoringTask
-//};
+struct ProcessMonitoringTask {
+  ProcessHandler& processHandler;
+  ProcessMonitoringTask
+};
 
 int main() {
 
