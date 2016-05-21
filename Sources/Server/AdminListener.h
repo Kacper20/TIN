@@ -13,15 +13,12 @@
 
 class AdminListener {
   MessagesQueue<std::string>& q;
-
-  // This is a reference to a pointer. When we call listen() and then receive a new socket descriptor,
-  // we want it to point to that descriptor. Another thread uses the same TCPSocket, so we want the change to affest it as well
   TCPSocket*& adminSocket;
 
  public:
-  AdminListener(TCPSocket*& s, MessagesQueue<std::string>& qq) : q(qq), adminSocket(s) {}
+  AdminListener(TCPSocket*& ss, MessagesQueue<std::string>& qq) : q(qq), adminSocket(ss) {}
   void operator()();
-  void waitForAdminToConnect();
+  void connectToAdmin();
 };
 
 #endif // TIN_ADMINLISTENER_H
