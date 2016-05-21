@@ -4,6 +4,7 @@
 #include "ProcessHandler.h"
 #include "../Shared/FileManager.h"
 #include "PathConstants.h"
+#include "../Shared/Responses/StartProcessResponse.h"
 
 #include <fcntl.h>
 #include <iostream>
@@ -61,9 +62,9 @@ void ProcessHandler::runProcessWithCommand(std::shared_ptr<StartProcessCommand> 
     exit(-1);
   } else if (newProcessId == 0) {
     char *params[4]  = {0};
-    std::string outPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardOutput);
-    std::string errPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardError);
-    std::string processFilePath = FileManager::buildPath(basePath, command->processId);
+    auto outPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardOutput);
+    auto errPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardError);
+    auto processFilePath = FileManager::buildPath(basePath, command->processId);
     int stdOutFd = open(outPath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     int stdErrFd = open(errPath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     dup2(stdOutFd, 1);
@@ -71,12 +72,13 @@ void ProcessHandler::runProcessWithCommand(std::shared_ptr<StartProcessCommand> 
     execvp(processFilePath.c_str(), params);
   } else {
     std::unique_lock<std::mutex> lock(startedProcessMutex);
-    runningProcesses.insert(std::make_tuple(command, newProcessId));
+    auto pair = std::pair<int, std::shared_ptr<StartProcessCommand> >(newProcessId, command);
+    runningProcesses.insert(pair);
     conditionVariable.notify_one();
   }
 }
 
-void ProcessHandler::monitorProcessesEndings() {
+void ProcessHandler::monitorProcessesEndings(std::function) {
   int status;
   pid_t childPid;
 
@@ -86,7 +88,18 @@ void ProcessHandler::monitorProcessesEndings() {
     conditionVariable.wait(lock);
     while ((childPid = waitpid(-1, &status, 0)) > 0) {
       std::cout << "Process ended" << childPid << std::endl;
-
+      auto processInfo = runningProcesses.find(int(childPid));
+      if (processInfo == runningProcesses.end()) {
+        std::cout << "Error has occured - element not found in map!";
+        exit(-1);
+      }
+      auto command = processInfo->second;
+      auto basePath = directoryForProcessWithId(command->processId);
+      auto stdError = FileManager::readFromFile(FileManager::buildPath(basePath,
+                                                                            PathConstants::ProcessStandardError));
+      auto stdOutput = FileManager::readFromFile(FileManager::buildPath(basePath,
+                                                                     PathConstants::ProcessStandardOutput));
+      auto response = std::make_shared<StartProcessResponse>(command->processId, stdError, stdOutput);
     }
     if (childPid < 0 ) {
       perror("Waitpid error");
