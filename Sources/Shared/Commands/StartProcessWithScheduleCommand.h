@@ -1,0 +1,14 @@
+//
+// Created by Kacper Harasim on 21.05.2016.
+//
+
+#ifndef TIN_STARTPROCESSWITHSCHEDULECOMMAND_H
+#define TIN_STARTPROCESSWITHSCHEDULECOMMAND_H
+
+
+class StartProcessWithScheduleCommand {
+
+};
+
+
+#endif //TIN_STARTPROCESSWITHSCHEDULECOMMAND_H
