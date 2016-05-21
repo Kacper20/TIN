@@ -7,8 +7,8 @@
 using namespace std;
 
 struct ServerReceivingTask {
-  NodeServer server;
-  ServerReceivingTask(NodeServer server): server(server) {}
+  NodeServer& server;
+  ServerReceivingTask(NodeServer& server): server(server) {}
   void operator() () {
     server.startReceiving();
   }
@@ -38,16 +38,26 @@ struct ProcessMonitoringTask {
   }
 };
 
+struct ServerSendingTask {
+  NodeServer &server;
+  ServerSendingTask(NodeServer &server): server(server) {}
+  void operator() () {
+    server.startMonitorForSendings();
+  }
+};
+
 int main() {
 
   ProcessHandler handler;
   CommandDispatcher dispatcher(handler);
 
-  NodeServer server = NodeServer([&dispatcher](std::shared_ptr<Command> commandToDispatch) {
+  std::shared_ptr<NodeServer> server = std::make_shared<NodeServer>([&dispatcher](std::shared_ptr<Command> commandToDispatch) {
     //WARN: It's called from another thread -
-    std::cout << "Ready to dispatch" << std::endl;
     dispatcher.processCommand(commandToDispatch);
   });
+
+  ServerSendingTask serverSendingTask(*server);
+  std::thread serverSendingThread(serverSendingTask);
 
   ProcessMonitoringTask processMonitoringTask(handler);
   std::thread processMonitoringThread(processMonitoringTask);
@@ -58,9 +68,10 @@ int main() {
   CommandsDispatchingTask dispatcherTask(dispatcher);
   std::thread dispatcherThread(dispatcherTask);
 
-  ServerReceivingTask serverTask(server);
+  ServerReceivingTask serverTask(*server);
   std::thread serverThread(serverTask);
 
+  serverSendingThread.join();
   processMonitoringThread.join();
   processRunningThread.join();
   serverThread.join();

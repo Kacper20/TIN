@@ -19,7 +19,7 @@ std::shared_ptr<Command> CommandsDeserializer::parseToCommand(std::string json) 
     return nullptr;
   }
   const std::string type = root[typeSpecificator].asString();
-  if (type == descriptionForCommandType(CommandType::NEW_PROCESS)) {
+  if (type == descriptionForCommandType(CommandType::START_NEW_PROCESS)) {
     std::shared_ptr<Command> deserializedCommand(new AddProcessCommand(root));
     return deserializedCommand;
   }

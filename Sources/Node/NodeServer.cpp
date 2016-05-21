@@ -8,7 +8,6 @@
 #include "CommandsDeserializer.h"
 
 void NodeServer::startReceiving() {
-  NodeNetworkLayer layer = NodeNetworkLayer();
   layer.listenOnServerConnection();
   layer.startReceivingMessages([this](std::string newMessage){
     std::cout << "New message received" << newMessage << std::endl;
@@ -23,4 +22,14 @@ void NodeServer::startReceiving() {
   });
 
   std::cout << "Ending work" << std::endl;
+}
+
+
+void NodeServer::startMonitorForSendings() {
+  while(1) {
+    std::shared_ptr<Response> responseToSend = messagesToSendQueue.pop();
+    Json::FastWriter fastWriter;
+    std::string message = fastWriter.write(responseToSend->generateJSON());
+    layer.sendMessage(message);
+  }
 }

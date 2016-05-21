@@ -6,7 +6,9 @@
 #define TIN_JSONCONSTANTS_H
 
 namespace JSONConstants {
-const char* const MessageType = "messageType";
+
+const char* const CommandType = "commandType";
+const char* const ResponseType = "responseType";
 const char* const ProcessContent = "content";
 const char* const ProcessDetails = "processDetails";
 }

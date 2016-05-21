@@ -10,7 +10,8 @@ set(SHARED_FILES Sources/Libraries/jsoncpp.cpp Sources/Libraries/json/json.h Sou
         Sources/Shared/Commands/AddProcessCommand.h Sources/Shared/JSONConstants.h
         Sources/Shared/MessageNetworkManager.cpp Sources/Shared/MessageNetworkManager.h
         Sources/Shared/MessagesQueue.h
-        Sources/Shared/FileManager.h Sources/Shared/FileManager.cpp)
+        Sources/Shared/FileManager.h Sources/Shared/FileManager.cpp
+        Sources/Shared/Responses/Response.cpp Sources/Shared/Responses/Response.h)
 
 set(NODE_SOURCE ${SHARED_FILES} Sources/Node/main.cpp  Sources/Node/WorkerNode.cpp Sources/Node/WorkerNode.h
         Sources/Node/NodeNetworkLayer.cpp Sources/Node/NodeNetworkLayer.h Sources/Node/ProcessHandler.cpp

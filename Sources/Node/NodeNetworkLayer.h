@@ -21,12 +21,15 @@ class NodeNetworkLayer {
 
  private:
   TCPSocket listeningSocket = TCPSocket();
+  MessageNetworkManager networkManager;
   TCPSocket* clientConnectedSocket;
  public:
 
+  NodeNetworkLayer(): networkManager(MessageNetworkManager(listeningSocket)) {}
   ~NodeNetworkLayer();
   void listenOnServerConnection();
   void startReceivingMessages(std::function<void(std::string)> messageReceivedCompletion);
+  int sendMessage(const std::string message) const;
 
 };
 

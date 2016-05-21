@@ -7,6 +7,6 @@
 
 Json::Value Command::generateJSON() {
   Json::Value root;
-  root[JSONConstants::MessageType] = descriptionForCommandType(commandType);
+  root[JSONConstants::CommandType] = descriptionForCommandType(commandType);
   return root;
 }
