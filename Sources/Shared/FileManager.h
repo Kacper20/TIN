@@ -6,6 +6,7 @@
 #define TIN_FILEMANAGER_H
 
 #include <sys/stat.h>
+#include <string>
 
 class FileManager {
 

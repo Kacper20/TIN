@@ -2,25 +2,30 @@
 // Created by Kacper Harasim on 15.05.2016.
 //
 
+#include <iostream>
 #include "CommandDispatcher.h"
+#include "../Shared/Commands/AddProcessCommand.h"
 
-//TODO: Extract queue to another object - synchronized queue. This way it'll be easy to use ;)
-void CommandDispatcher::addCommandToQueue(std::shared_ptr<Command> commandToExecute) {
-  std::unique_lock<std::mutex> lock(mutex);
-  commandsQueue.push(*commandToExecute);
-  conditionVariable.notify_one();
+
+void CommandDispatcher::startDispatching() {
+  processCommandsInfinitely();
 }
 
-void CommandDispatcher::startLookingForTasks() {
-  processCommandFromQueue();
-  return;
+void CommandDispatcher::processCommandsInfinitely()  {
+
+    std::cout << "command WILL be taken from queue\n";
+    std::shared_ptr<Command> command = queue.pop();
+
+    std::cout << "command taken from queue\n";
+    std::shared_ptr<AddProcessCommand> processCommand = std::static_pointer_cast<AddProcessCommand>(command);
+    if (processCommand != nullptr) {
+      std::cout << "Received add process command\n";
+      std::shared_ptr<AddProcessCommand> commandPtr(processCommand);
+      handler.runProcess(commandPtr);
+    }
 }
 
-void CommandDispatcher::processCommandFromQueue() {
-  std::unique_lock<std::mutex> lock(mutex);
-  conditionVariable.wait(lock, [this]() { return !(this->commandsQueue.empty()); });
-  Command received =  commandsQueue.front();
-  commandsQueue.pop();
-  //TODO: Do action with command
-  processCommandFromQueue();
+void CommandDispatcher::processCommand(std::shared_ptr<Command> command) {
+  std::cout << "Command pushed to the queue\n";
+  queue.push(command);
 }

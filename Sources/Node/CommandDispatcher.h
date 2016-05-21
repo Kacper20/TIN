@@ -6,9 +6,11 @@
 #define TIN_COMMANDDISPATCHER_H
 
 #include "../Shared/Commands/Command.h"
+#include "../Shared/MessagesQueue.h"
 #include <queue>
 #include <condition_variable>
 #include <mutex>
+#include "ProcessHandler.h"
 /*
  * Class that takes care of dispatching methods ie. recognizes them, and performs all of the logic.
  */
@@ -17,14 +19,15 @@
 class CommandDispatcher {
 
  private:
-  std::queue<Command> commandsQueue;
-  std::condition_variable conditionVariable;
-  std::mutex mutex;
-  void processCommandFromQueue();
+  MessagesQueue<Command> queue;
+  void processCommandsInfinitely();
+  ProcessHandler& handler;
  public:
 
-  void addCommandToQueue(std::shared_ptr<Command> commandToExecute);
-  void startLookingForTasks();
+  CommandDispatcher(ProcessHandler& handler): handler(handler) {}
+  void processCommand(std::shared_ptr<Command>);
+  void startDispatching();
+
 };
 
 

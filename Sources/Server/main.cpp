@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 
   //TODO: This will go to another object. We need to have threads & in main loop that will take commands from user.
   Json::FastWriter fastWriter;
-  std::string processContent =  "#!/bin/bash\necho \"Hello World\"\nToday is $(date)\n";
+  std::string processContent =  "#!/bin/bash\necho \"Hello World\"\necho $(date)\n";
   AddProcessCommand command = AddProcessCommand(processContent);
   std::string output = fastWriter.write(command.generateJSON());
 

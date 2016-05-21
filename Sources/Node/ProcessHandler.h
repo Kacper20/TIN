@@ -8,22 +8,31 @@
 
 #include <string>
 #include <unistd.h>
+#include "../Shared/MessagesQueue.h"
+#include "../Shared/Commands/AddProcessCommand.h"
 
 //Class that handles all of the interaction with processes that are computing data.
+
+
 
 //Instance that is
 class ProcessHandler {
 
-
  private:
-  const std::string processesLocation = "temp";
+  const std::string processesLocation = "/Users/kacperh/mod1";
+  void writeProcessToPersistenceStorage(std::string processContent);
+  void runProcessWithCommand(std::shared_ptr<AddProcessCommand> command);
+  std::queue<std::tuple<std::shared_ptr<AddProcessCommand>, int> > runningProcessesQueue;
+  MessagesQueue<AddProcessCommand> processesToRunQueue;
 
  public:
 
+//TODO: Think about transforming AddProcessCommand -> Process to run structure.
   ProcessHandler();
+
+  void runProcess(std::shared_ptr<AddProcessCommand> process);
+  void startMonitoringForProcessesToRun();
 //TODO: Later, we'll be writing process with its harmonogram to the file(json)
-  void writeProcessToPersistenceStorage(std::string processContent);
-  void runProcessWithIdentifier(std::string processIdentifier);
 };
 
 
