@@ -24,7 +24,7 @@ void ProcessHandler::startMonitoringForProcessesToRun() {
   }
 }
 
-void ProcessHandler::writeProcessToPersistenceStorage(std::string processContent) {
+void ProcessHandler::writeProcessToPersistentStorage(std::string processContent) {
   //First, ensure that processes have its
   int result = FileManager::createDirectoryAtPath(processesLocation);
   if (result == -1) {
@@ -71,6 +71,7 @@ void ProcessHandler::monitorProcessesEndings() {
     std::unique_lock<std::mutex> lock(startedProcessMutex);
     conditionVariable.wait(lock);
     while ((childPid = waitpid(-1, &status, 0)) > 0) {
+
       std::cout << "Process ended" << childPid << std::endl;
     }
     if (childPid < 0 ) {

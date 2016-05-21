@@ -22,7 +22,7 @@ class ProcessHandler {
   std::condition_variable conditionVariable;
   std::mutex startedProcessMutex;
   const std::string processesLocation = "/Users/kacperh/mod1";
-  void writeProcessToPersistenceStorage(std::string processContent);
+  void writeProcessToPersistentStorage(std::string processContent);
   void runProcessWithCommand(std::shared_ptr<AddProcessCommand> command);
   std::queue<std::tuple<std::shared_ptr<AddProcessCommand>, int> > runningProcessesQueue;
   MessagesQueue<AddProcessCommand> processesToRunQueue;
