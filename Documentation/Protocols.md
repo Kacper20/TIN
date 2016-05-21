@@ -9,6 +9,9 @@ This part looks as follows:
 }
 ```
 
+### Message boundaries
+Every message is preceded by number of bytes. This is needed by receiver of the message in order to properly read it.
+
 ### Node - Server Communication
 
 ##### Sending process to node:
@@ -17,7 +20,7 @@ This part looks as follows:
 	“messageType” : “startNewProcess”;
 	“processDetails” : {
 	    "processID" : number;
-		“content” : ""; // shell script
+		“content” : "echo "Hallo World""; // shell script
 		"schedule" : ["start" : ""] //time when process should be run - format is hh:mm:ss.s
 	}
 }
