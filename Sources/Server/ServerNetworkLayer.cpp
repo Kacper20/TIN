@@ -14,17 +14,17 @@
 //  networkManager = MessageNetworkManager(s);
 //}
 
-int ServerNetworkLayer::connectToNode(const std::string addressWithPort) {
-    SocketAddress nodeAddress(addressWithPort);
-    // No local port binding needed, just connect(...)
-    if(nodeConnectionSocket.connect(nodeConnectionSocket.internalDescriptor(), nodeAddress) == -1) {
-      perror("Failed to connect target address");
-        return -1;
-    }
-    return 0;
+int ServerNetworkLayer::connectToNodes(const std::string addressWithPort) {
+  SocketAddress nodeAddress(addressWithPort);
+  // No local port binding needed, just connect(...)
+  if (nodeConnectionSocket.connect(nodeConnectionSocket.internalDescriptor(), nodeAddress) == -1) {
+    perror("Failed to connect target address");
+    return -1;
+  }
+  return 0;
 }
 
 int ServerNetworkLayer::sendMessage(const std::string message) const {
-    std::cout << "Sending message: " <<  message << std::endl;
-    return networkManager.sendMessage(message);
+  std::cout << "Sending message: " << message << std::endl;
+  return networkManager.sendMessage(message);
 }

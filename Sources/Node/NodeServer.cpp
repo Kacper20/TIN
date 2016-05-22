@@ -30,6 +30,7 @@ void NodeServer::startMonitorForSendings() {
     std::shared_ptr<Response> responseToSend = messagesToSendQueue.pop();
     Json::FastWriter fastWriter;
     std::string message = fastWriter.write(responseToSend->generateJSON());
+    std::cout << message << std::endl;
     layer.sendMessage(message);
   }
 }
