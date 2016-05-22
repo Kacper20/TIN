@@ -3,3 +3,7 @@
 //
 
 #include "Server.h"
+
+void Server::connectToNodes() {
+  //TODO
+}

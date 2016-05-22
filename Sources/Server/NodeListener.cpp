@@ -6,8 +6,6 @@
 #include "../Shared/MessageNetworkManager.h"
 
 #include <memory>
-#include <iostream>
-#include <thread>
 
 void NodeListener::operator()() {
   // TODO: Make this a loop that checks all Node sockets for messages using non-blocking read()
@@ -21,21 +19,13 @@ void NodeListener::operator()() {
   MessageNetworkManager manager(nodeSocket);
   std::string buffer;
   while(true) {
-
-    std::cout << "NodeListener!\n";
-    std::chrono::duration<int> s(2);
-    std::this_thread::sleep_for(s);
-
-    ssize_t messageSize = manager.receiveMessage(buffer, true);
+    ssize_t messageSize = manager.receiveMessage(buffer);
     if(messageSize < 0) {
       // TODO: error checking
       continue;
     }
-    if(messageSize != 0) {
-      std::cout << "NodeListener, message received : " << buffer << std::endl;
-      // Put the message into the queue
-      std::shared_ptr<std::string> message(new std::string(buffer));
-      q.push(message);
-    }
+    // Put the message into the queue
+    std::shared_ptr<std::string> message(new std::string(buffer));
+    q.push(message);
   }
 }
