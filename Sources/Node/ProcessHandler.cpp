@@ -78,7 +78,7 @@ void ProcessHandler::runProcessWithCommand(std::shared_ptr<StartProcessCommand> 
   }
 }
 
-void ProcessHandler::monitorProcessesEndings(std::function) {
+void ProcessHandler::monitorProcessesEndings(ResponseCompletion responseCompletion) {
   int status;
   pid_t childPid;
 
@@ -100,6 +100,8 @@ void ProcessHandler::monitorProcessesEndings(std::function) {
       auto stdOutput = FileManager::readFromFile(FileManager::buildPath(basePath,
                                                                      PathConstants::ProcessStandardOutput));
       auto response = std::make_shared<StartProcessResponse>(command->processId, stdError, stdOutput);
+
+      responseCompletion(response);
     }
     if (childPid < 0 ) {
       perror("Waitpid error");

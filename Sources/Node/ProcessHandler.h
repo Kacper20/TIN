@@ -11,9 +11,11 @@
 #include <set>
 #include "../Shared/MessagesQueue.h"
 #include "../Shared/Commands/StartProcessCommand.h"
+#include "../Shared/Responses/Response.h"
 
 //Class that handles all of the interaction with processes that are computing data.
 
+typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
 
 //Instance that is
 class ProcessHandler {
@@ -33,7 +35,7 @@ class ProcessHandler {
   ProcessHandler();
   void runProcess(std::shared_ptr<StartProcessCommand> process);
   void startMonitoringForProcessesToRun();
-  void monitorProcessesEndings();
+  void monitorProcessesEndings(ResponseCompletion responseCompletion);
 //TODO: Later, we'll be writing process with its harmonogram to the file(json)
 };
 
