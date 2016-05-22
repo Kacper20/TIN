@@ -11,7 +11,10 @@ set(SHARED_FILES Sources/Libraries/jsoncpp.cpp Sources/Libraries/json/json.h Sou
         Sources/Shared/MessageNetworkManager.cpp Sources/Shared/MessageNetworkManager.h
         Sources/Shared/MessagesQueue.h
         Sources/Shared/FileManager.h Sources/Shared/FileManager.cpp
-        Sources/Shared/Responses/Response.cpp Sources/Shared/Responses/Response.h Sources/Shared/Responses/StartProcessResponse.cpp Sources/Shared/Responses/StartProcessResponse.h Sources/Shared/Commands/StartProcessWithScheduleCommand.cpp Sources/Shared/Commands/StartProcessWithScheduleCommand.h)
+        Sources/Shared/Responses/Response.cpp Sources/Shared/Responses/Response.h
+        Sources/Shared/Responses/StartProcessResponse.cpp Sources/Shared/Responses/StartProcessResponse.h
+        Sources/Shared/Commands/StartProcessWithScheduleCommand.cpp Sources/Shared/Commands/StartProcessWithScheduleCommand.h
+        Sources/Shared/Schedule/Schedule.cpp Sources/Shared/Schedule/Schedule.h)
 
 set(NODE_SOURCE ${SHARED_FILES} Sources/Node/main.cpp  Sources/Node/WorkerNode.cpp Sources/Node/WorkerNode.h
         Sources/Node/NodeNetworkLayer.cpp Sources/Node/NodeNetworkLayer.h Sources/Node/ProcessHandler.cpp
