@@ -109,6 +109,10 @@ void ProcessHandler::monitorProcessesEndings(ResponseCompletion responseCompleti
   }
 }
 
+void ProcessHandler::startScheduling() {
+
+}
+
 ProcessHandler::ProcessHandler() {
   FileManager::createDirectoryAtPath(PROCESSES_BASE_DIRECTORY);
 }

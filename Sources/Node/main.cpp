@@ -33,11 +33,11 @@ struct ProcessRunningTask {
   }
 };
 
-struct ProcessMonitoringTask {
+struct MonitoringProcessEndingTask {
   ProcessHandler& processHandler;
   NodeServer& server;
 
-  ProcessMonitoringTask(ProcessHandler &handler, NodeServer& server) : processHandler(handler),
+  MonitoringProcessEndingTask(ProcessHandler &handler, NodeServer& server) : processHandler(handler),
                                                                                       server(server)  {}
   void operator() () {
     processHandler.monitorProcessesEndings([this](std::shared_ptr<Response> response) {
@@ -46,14 +46,19 @@ struct ProcessMonitoringTask {
   }
 };
 
-
-
 struct ServerSendingTask {
   NodeServer &server;
   ServerSendingTask(NodeServer &server): server(server) {}
   void operator() () {
     server.startMonitorForSendings();
   }
+};
+
+struct SchedulerTask {
+  ProcessHandler& processHandler;
+
+  SchedulerTask(ProcessHandler &handler) : processHandler(handler) {}
+
 };
 
 int main() {
@@ -66,11 +71,14 @@ int main() {
     dispatcher.processCommand(commandToDispatch);
   });
 
+
+  SchedulerTask schedulerTask(handler);
+  std::thread schedulerThread(schedulerTask);
+
   ServerSendingTask serverSendingTask(*server);
   std::thread serverSendingThread(serverSendingTask);
 
-
-  ProcessMonitoringTask processMonitoringTask(handler, *server);
+  MonitoringProcessEndingTask processMonitoringTask(handler, *server);
   std::thread processMonitoringThread(processMonitoringTask);
 
   ProcessRunningTask processRunningTask(handler);
@@ -82,6 +90,7 @@ int main() {
   ServerReceivingTask serverTask(*server);
   std::thread serverThread(serverTask);
 
+  schedulerThread.join();
   serverSendingThread.join();
   processMonitoringThread.join();
   processRunningThread.join();
