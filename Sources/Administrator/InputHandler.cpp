@@ -78,7 +78,7 @@ void InputHandler::handleConnect(const string& full_command)
   int result = checkAddress(address_with_port);
 
   if(result == 0) {
-        //TODO - start connection to server here
+    admin.connectToServer(address_with_port);
   }
   else
   {
@@ -89,7 +89,7 @@ void InputHandler::handleConnect(const string& full_command)
 
 void InputHandler::handleDisconnect()
 {
-
+  admin.disconnectFromServer();
 }
 
 void InputHandler::sendProcess(const string& full_command)
@@ -102,9 +102,9 @@ void InputHandler::sendProcess(const string& full_command)
 
   string process_name = full_command.substr(full_command.find_first_of(" ")+1);
 
-    //TODO check if there is correct nr of arguments + check if file exists
+  //TODO check if there is correct nr of arguments + check if file exists
 
-    //TODO send process_name to server to save
+  //TODO send process_name to server to save
 
 }
 
@@ -118,5 +118,5 @@ void InputHandler::launchProcess(const string& full_command)
 
   string process_name = full_command.substr(full_command.find_first_of(" ")+1);
 
-    //TODO send process_name to server to launch
+  //TODO send process_name to server to launch
 }

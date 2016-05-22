@@ -6,19 +6,22 @@
 #define TIN_INPUTHANDLER_H
 
 #include <string>
+#include "AdministratorNetworkLayer.h"
 
 class InputHandler
 {
 private:
-  void printHelp();
-  int checkAddress(const std::string& address_with_port);
-  void handleConnect(const std::string& full_command);
-  void handleDisconnect();
-  void sendProcess(const std::string& full_command);
-  void launchProcess(const std::string& full_command);
+    AdminNetworkLayer admin;
+    void printHelp();
+    int checkAddress(const std::string& address_with_port);
+    void handleConnect(const std::string& full_command);
+    void handleDisconnect();
+    void sendProcess(const std::string& full_command);
+    void launchProcess(const std::string& full_command);
 
 public:
-  void run();
+    InputHandler(AdminNetworkLayer admin): admin(admin) {}
+    void run();
 };
 
 #endif //TIN_INPUTHANDLER_H
