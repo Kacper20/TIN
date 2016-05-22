@@ -3,8 +3,11 @@
 #include "CommandsDeserializer.h"
 #include "CommandDispatcher.h"
 #include "NodeServer.h"
+#import "../Shared/Responses/Response.h"
 #include <csignal>
 using namespace std;
+
+typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
 
 struct ServerReceivingTask {
   NodeServer& server;
@@ -32,11 +35,18 @@ struct ProcessRunningTask {
 
 struct ProcessMonitoringTask {
   ProcessHandler& processHandler;
-  ProcessMonitoringTask(ProcessHandler &handler) : processHandler(handler) {}
+  NodeServer& server;
+
+  ProcessMonitoringTask(ProcessHandler &handler, NodeServer& server) : processHandler(handler),
+                                                                                      server(server)  {}
   void operator() () {
-    processHandler.monitorProcessesEndings();
+    processHandler.monitorProcessesEndings([this](std::shared_ptr<Response> response) {
+      this->server.sendResponse(response);
+    });
   }
 };
+
+
 
 struct ServerSendingTask {
   NodeServer &server;
@@ -59,7 +69,8 @@ int main() {
   ServerSendingTask serverSendingTask(*server);
   std::thread serverSendingThread(serverSendingTask);
 
-  ProcessMonitoringTask processMonitoringTask(handler);
+
+  ProcessMonitoringTask processMonitoringTask(handler, *server);
   std::thread processMonitoringThread(processMonitoringTask);
 
   ProcessRunningTask processRunningTask(handler);

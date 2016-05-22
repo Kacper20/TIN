@@ -9,13 +9,15 @@
 #include "../JSONConstants.h"
 
 enum class CommandType {
-  START_NEW_PROCESS
+  START_NEW_PROCESS, START_NEW_PROCESS_WITH_SCHEDULE
 };
 
 static std::string descriptionForCommandType(CommandType type) {
   switch (type) {
     case CommandType::START_NEW_PROCESS:
       return "startNewProcess";
+    case CommandType ::START_NEW_PROCESS_WITH_SCHEDULE:
+      return "startNewProcessWithSchedule";
     }
 }
 

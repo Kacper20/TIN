@@ -11,17 +11,11 @@
 #include <set>
 #include "../Shared/MessagesQueue.h"
 #include "../Shared/Commands/StartProcessCommand.h"
+#include "../Shared/Responses/Response.h"
 
 //Class that handles all of the interaction with processes that are computing data.
 
-typedef std::tuple<std::shared_ptr<StartProcessCommand>, int> CommandWithPid;
-
-struct CommandWithPidCompare {
-  bool operator() (const CommandWithPid& lhs, const CommandWithPid& rhs) const
-  {
-    return std::get<1>(lhs) < std::get<1>(rhs);
-  }
-};
+typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
 
 //Instance that is
 class ProcessHandler {
@@ -32,7 +26,7 @@ class ProcessHandler {
   void writeProcessToPersistentStorage(Json::Value commandJson, const std::string& processContent,
                                        const std::string& identifier);
   void runProcessWithCommand(std::shared_ptr<StartProcessCommand> command, const std::string& basePath);
-  std::set<CommandWithPid, CommandWithPidCompare> runningProcesses;
+  std::map<int, std::shared_ptr<StartProcessCommand>> runningProcesses;
   MessagesQueue<StartProcessCommand> processesToRunQueue;
 
  public:
@@ -41,7 +35,7 @@ class ProcessHandler {
   ProcessHandler();
   void runProcess(std::shared_ptr<StartProcessCommand> process);
   void startMonitoringForProcessesToRun();
-  void monitorProcessesEndings();
+  void monitorProcessesEndings(ResponseCompletion responseCompletion);
 //TODO: Later, we'll be writing process with its harmonogram to the file(json)
 };
 

@@ -6,7 +6,22 @@
 #define TIN_STARTPROCESSWITHSCHEDULECOMMAND_H
 
 
-class StartProcessWithScheduleCommand {
+#include "Command.h"
+#include "../Schedule/Schedule.h"
+
+class StartProcessWithScheduleCommand : public Command {
+
+ private:
+
+ public:
+  std::string processContent;
+  std::string processId;
+  Schedule schedule;
+
+  StartProcessWithScheduleCommand (Json::Value json);
+  StartProcessWithScheduleCommand (std::string processId, std::string processContent, Schedule schedule): Command(CommandType::START_NEW_PROCESS),
+  processId(processId), processContent(processContent), schedule(schedule) {}
+  Json::Value generateJSON();
 
 };
 

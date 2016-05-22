@@ -15,6 +15,13 @@ void FileManager::writeToFile(const std::string &path, const std::string &conten
   file.close();
 }
 
+std::string FileManager::readFromFile(const std::string &path) {
+  std::ifstream ifs(path);
+  std::string content( (std::istreambuf_iterator<char>(ifs) ),
+                       (std::istreambuf_iterator<char>()    ) );
+  return content;
+}
+
 std::string FileManager::buildPath(const std::string &base, const std::string &subpath) {
   return base + "/" + subpath;
 }
