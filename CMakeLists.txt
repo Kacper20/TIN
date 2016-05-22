@@ -26,7 +26,7 @@ set(SERVER_SOURCE ${SHARED_FILES} Sources/Server/main.cpp Sources/Server/ServerN
         Sources/Server/ServerNetworkLayer.cpp Sources/Server/Server.h Sources/Server/AdminListener.h
         Sources/Server/NodeSender.h Sources/Server/NodeListener.h Sources/Server/AdminSender.h Sources/Server/Server.cpp Sources/Server/AdminListener.cpp Sources/Server/NodeSender.cpp Sources/Server/NodeListener.cpp Sources/Server/AdminSender.cpp)
 
-set(ADMIN_SOURCE ${SHARED_FILES} Sources/Administrator/main.cpp )
+set(ADMIN_SOURCE ${SHARED_FILES} Sources/Administrator/main.cpp  Sources/Administrator/InputHandler.cpp Sources/Administrator/InputHandler.h Sources/Administrator/AdministratorNetworkLayer.cpp Sources/Administrator/AdministratorNetworkLayer.h)
 
 add_executable(Node ${NODE_SOURCE})
 
