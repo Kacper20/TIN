@@ -7,7 +7,7 @@
 
 #include <condition_variable>
 #include <queue>
-
+#include <iostream>
 
 
 template <typename T>
@@ -22,6 +22,9 @@ class MessagesQueue {
   std::condition_variable conditionVariable;
   std::mutex mutex;
 
+  int safeSize() {
+    return queue.size();
+  }
 
  public:
   /*
@@ -35,10 +38,17 @@ class MessagesQueue {
 
   std::shared_ptr<T> pop() {
     std::unique_lock<std::mutex> lock(mutex);
-    conditionVariable.wait(lock);
+    if(safeSize() == 0) {
+      std::cout << "queue is empty!" << std::endl;
+      conditionVariable.wait(lock);
+    }
     std::shared_ptr<T> receivedObject = queue.front();
     queue.pop();
     return receivedObject;
+  }
+
+  unsigned long size() {
+    return queue.size();
   }
 };
 
