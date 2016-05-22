@@ -4,7 +4,7 @@
 
 #include "StartProcessWithScheduleCommand.h"
 
-
+#include <algorithm>
 
 StartProcessWithScheduleCommand::StartProcessWithScheduleCommand(Json::Value json):
     Command(CommandType::START_NEW_PROCESS_WITH_SCHEDULE) {

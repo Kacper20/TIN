@@ -1,7 +1,7 @@
 //
 // Created by Rafał Rzeuski on 09.05.16.
 //
-#include "../Shared/Commands/AddProcessCommand.h"
+#include "../Shared/Commands/StartProcessCommand.h"
 #include "ServerNetworkLayer.h"
 #include "Server.h"
 

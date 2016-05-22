@@ -3,7 +3,7 @@
 //
 
 #include "Server.h"
-#include "../Shared/Commands/AddProcessCommand.h"
+#include "../Shared/Commands/StartProcessCommand.h"
 
 #include <memory>
 #include <thread>
@@ -15,7 +15,7 @@ Server::Server() : adminSocket(nullptr), aListener(adminSocket, adminNodeQ), nSe
   // For testing purposes
   Json::FastWriter fastWriter;
   std::string processContent = "#!/bin/bash\necho \"Hello World\"\necho $(date)\n";
-  AddProcessCommand command = AddProcessCommand(processContent);
+  StartProcessCommand command = StartProcessCommand(processContent);
   std::string output = fastWriter.write(command.generateJSON());
   adminNodeQ.push(std::shared_ptr<std::string>(new std::string(output)));
 }
