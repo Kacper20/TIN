@@ -9,7 +9,6 @@
 
 std::shared_ptr<Command> CommandsDeserializer::parseToCommand(std::string json) {
 
-  std::string typeSpecificator = "messageType";
   Json::Reader reader;
   Json::Value root;
   bool parsingSucceeded = reader.parse(json.c_str(), root);
@@ -18,7 +17,7 @@ std::shared_ptr<Command> CommandsDeserializer::parseToCommand(std::string json) 
     std::cout << "Could not parse json" << std::endl;
     return nullptr;
   }
-  const std::string type = root[typeSpecificator].asString();
+  const std::string type = root[JSONConstants::CommandType].asString();
   if (type == descriptionForCommandType(CommandType::START_NEW_PROCESS)) {
     std::shared_ptr<Command> deserializedCommand(new StartProcessCommand(root));
     return deserializedCommand;
