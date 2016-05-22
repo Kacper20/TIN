@@ -28,15 +28,16 @@ class Server {
   NodeListener nListener;
   AdminSender aSender;
 
-  // TODO: Node_S_, a container of sockets
+  // TODO: A container of sockets so we can have multiple nodes in the system
+  std::vector<TCPSocket> nodeSockets;
   // TODO: (Not sure about this yet, need to discuss with the team) add a way to remember state, as in: which socket each process was sent to
   TCPSocket nodeSocket;
   TCPSocket* adminSocket;
 
  public:
-  Server() : adminSocket(nullptr), aListener(adminSocket, adminNodeQ), nSender(nodeSocket, adminNodeQ),
-             nListener(nodeSocket, nodeAdminQ), aSender(adminSocket, nodeAdminQ) {}
+  Server();
   void connectToNodes();
+  void run();
 };
 
 #endif // TIN_SERVER_H
