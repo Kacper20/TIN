@@ -20,7 +20,7 @@ void AdminListener::operator()() {
       continue;
     }
     // Put the message into outgoing queue
-    std::shared_ptr<std::string> message = new std::string(buffer);
+    std::shared_ptr<std::string> message(new std::string(buffer));
     q.push(message);
   }
 }
