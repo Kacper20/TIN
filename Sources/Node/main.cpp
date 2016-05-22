@@ -6,6 +6,8 @@
 #include <csignal>
 using namespace std;
 
+typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
+
 struct ServerReceivingTask {
   NodeServer& server;
   ServerReceivingTask(NodeServer& server): server(server) {}
@@ -32,11 +34,16 @@ struct ProcessRunningTask {
 
 struct ProcessMonitoringTask {
   ProcessHandler& processHandler;
-  ProcessMonitoringTask(ProcessHandler &handler) : processHandler(handler) {}
+  ResponseCompletion& completionFunc;
+
+  ProcessMonitoringTask(ProcessHandler &handler, ResponseCompletion& completionFunc) : processHandler(handler),
+                                                                                      completionFunc(completionFunc)  {}
   void operator() () {
-    processHandler.monitorProcessesEndings();
+    processHandler.monitorProcessesEndings(completionFunc);
   }
 };
+
+
 
 struct ServerSendingTask {
   NodeServer &server;
@@ -59,7 +66,9 @@ int main() {
   ServerSendingTask serverSendingTask(*server);
   std::thread serverSendingThread(serverSendingTask);
 
-  ProcessMonitoringTask processMonitoringTask(handler);
+  auto responseHandlingFunc = [&server](std::shared_ptr<Response> response) { server->sendResponse(response); };
+
+  ProcessMonitoringTask processMonitoringTask(handler, responseHandlingFunc);
   std::thread processMonitoringThread(processMonitoringTask);
 
   ProcessRunningTask processRunningTask(handler);
