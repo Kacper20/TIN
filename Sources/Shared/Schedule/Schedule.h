@@ -1,6 +1,6 @@
 #include <vector>
 #include "../../Libraries/json/json.h"
-ehe//
+//
 // Created by Kacper Harasim on 22.05.2016.
 //
 
@@ -14,9 +14,14 @@ class Schedule {
   std::vector<int> timestamps;
 
  public:
+  Schedule() {}
   Schedule(std::vector<int> timestamps) : timestamps(timestamps) {}
   Json::Value generateJson() {
-    
+    Json::Value array;
+    for (auto const &timestamp : array) {
+      array.append(timestamp);
+    }
+    return array;
   }
 };
 

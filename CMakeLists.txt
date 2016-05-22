@@ -20,7 +20,7 @@ set(NODE_SOURCE ${SHARED_FILES} Sources/Node/main.cpp  Sources/Node/WorkerNode.c
         Sources/Node/NodeNetworkLayer.cpp Sources/Node/NodeNetworkLayer.h Sources/Node/ProcessHandler.cpp
         Sources/Node/ProcessHandler.h Sources/Node/CommandsDeserializer.cpp Sources/Node/CommandsDeserializer.h
         Sources/Node/NodeServer.cpp Sources/Node/NodeServer.h Sources/Node/CommandDispatcher.h
-        Sources/Node/CommandDispatcher.cpp Sources/Shared/Responses/StartProcessWithScheduleResponse.cpp Sources/Shared/Responses/StartProcessWithScheduleResponse.h Sources/Node/PathConstants.h)
+        Sources/Node/CommandDispatcher.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.h Sources/Node/PathConstants.h)
 
 set(SERVER_SOURCE ${SHARED_FILES} Sources/Server/main.cpp Sources/Server/ServerNetworkLayer.h
         Sources/Server/ServerNetworkLayer.cpp)

@@ -10,7 +10,7 @@
 using namespace std;
 class StartProcessResponse: public Response {
 
- private:
+ public:
   string processId;
   string standardError;
   string standardOutput;

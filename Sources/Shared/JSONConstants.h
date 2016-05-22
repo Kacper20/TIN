@@ -13,6 +13,9 @@ namespace JSONConstants {
   const std::string ProcessIdentifier = "processIdentifier";
   const std::string StandardError = "standardError";
   const std::string StandardOutput = "standardOutput";
+  const std::string SchedulesIdentifier = "schedules";
+  const std::string Date = "date";
+  const std::string Timestamp = "date";
 }
 
 #endif //TIN_JSONCONSTANTS_H
