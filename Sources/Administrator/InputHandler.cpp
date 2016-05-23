@@ -5,6 +5,7 @@
 #include "InputHandler.h"
 #include <iostream>
 #include <cstring>
+#include <fstream>
 using namespace std;
 
 void InputHandler::run()
@@ -101,8 +102,21 @@ void InputHandler::sendProcess(const string& full_command)
   }
 
   string process_name = full_command.substr(full_command.find_first_of(" ")+1);
-
-  //TODO check if there is correct nr of arguments + check if file exists
+  if( process_name.find_first_of(" ") == string::npos)
+  {
+      cout << "Invalid number of arguments. The correct call is: send_process <name> <path to file>. \n";
+      cout << "Please try again. \n";
+      return;
+  }
+  string process_path = process_name.substr(process_name.find_first_of(" ")+1);
+  process_name = process_name.substr(0, process_name.length() - process_path.length()-1);
+  cout << process_name << "\t" << process_path << "\n";
+  fstream process_file(process_path, ios::in);
+  if(!process_file.is_open())
+  {
+      cout << "File does not exist.  \nPlease try again. \n";
+      return;
+  }
 
   //TODO send process_name to server to save
 
