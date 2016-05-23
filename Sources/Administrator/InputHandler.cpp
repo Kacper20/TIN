@@ -3,6 +3,7 @@
 //
 
 #include "InputHandler.h"
+#include "../Shared/Commands/StartProcessCommand.h"
 #include <iostream>
 #include <cstring>
 #include <fstream>
@@ -118,7 +119,18 @@ void InputHandler::sendProcess(const string& full_command)
       return;
   }
 
-  //TODO send process_name to server to save
+  //loading process code
+  string process_code;
+  process_file.seekg(0, std::ios::end);
+  process_code.reserve(process_file.tellg());
+  process_file.seekg(0, std::ios::beg);
+  process_code.assign((std::istreambuf_iterator<char>(process_file)), std::istreambuf_iterator<char>());
+  process_file.close();
+
+  StartProcessCommand command = StartProcessCommand(process_name, process_code);
+  Json::FastWriter fastWriter;
+  std::string message = fastWriter.write(command.generateJSON());
+  admin.sendMessage(message);
 
 }
 
