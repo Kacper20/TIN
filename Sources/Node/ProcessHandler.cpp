@@ -16,6 +16,20 @@
 #define PROCESSES_BASE_DIRECTORY "/Users/kacperh/Developer/TIN_TEMP"
 
 
+struct ProcessMonitoringTask {
+  ProcessHandler& processHandler;
+  int pidToWait;
+  ResponseCompletion &completion;
+  std::shared_ptr<Command> command;
+  ProcessMonitoringTask(ProcessHandler &handler, int pidToWait, std::shared_ptr<Command> command,  ResponseCompletion& completion) : processHandler(handler),
+                                                                                                                                     pidToWait(pidToWait),
+                                                                                                                                     completion(completion), command(command) {}
+  void operator() () {
+    processHandler.monitorProcessesEndings(command, pidToWait, completion);
+  }
+};
+
+
 
 void ProcessHandler::runProcess(std::shared_ptr<StartProcessCommand> process) {
   processesToRunQueue.push(process);
@@ -69,43 +83,40 @@ void ProcessHandler::runProcessWithCommand(std::shared_ptr<StartProcessCommand> 
     int stdErrFd = open(errPath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     dup2(stdOutFd, 1);
     dup2(stdErrFd, 2);
+
     execvp(processFilePath.c_str(), params);
   } else {
-    std::unique_lock<std::mutex> lock(startedProcessMutex);
-    auto pair = std::pair<int, std::shared_ptr<StartProcessCommand> >(newProcessId, command);
-    runningProcesses.insert(pair);
-    conditionVariable.notify_one();
+//    ProcessMonitoringTask monitoringTask = ProcessMonitoringTask(*this, newProcessId, command, responseCompletion);
+//    std::thread monitoringThread(monitoringTask);
+//    monitoringThread.detach();
   }
 }
 
-void ProcessHandler::monitorProcessesEndings(ResponseCompletion responseCompletion) {
+
+
+void ProcessHandler::monitorProcessesEndings(std::shared_ptr<Command>, int pidToWait, ResponseCompletion responseCompletion) {
   int status;
   pid_t childPid;
 
-  //TODO: Implement counting semaphore... Here we have rare race condition.
-  while(1) {
-    std::unique_lock<std::mutex> lock(startedProcessMutex);
-    conditionVariable.wait(lock);
-    while ((childPid = waitpid(-1, &status, 0)) > 0) {
-      std::cout << "Process ended" << childPid << std::endl;
-      auto processInfo = runningProcesses.find(int(childPid));
-      if (processInfo == runningProcesses.end()) {
-        std::cout << "Error has occured - element not found in map!";
-        exit(-1);
-      }
-      auto command = processInfo->second;
-      auto basePath = directoryForProcessWithId(command->processId);
-      auto stdError = FileManager::readFromFile(FileManager::buildPath(basePath,
-                                                                            PathConstants::ProcessStandardError));
-      auto stdOutput = FileManager::readFromFile(FileManager::buildPath(basePath,
-                                                                     PathConstants::ProcessStandardOutput));
-      auto response = std::make_shared<StartProcessResponse>(command->processId, stdError, stdOutput);
+  childPid = waitpid(pidToWait, &status, 0);
 
-      responseCompletion(response);
-    }
-    if (childPid < 0 ) {
-      perror("Waitpid error");
-    }
+  std::cout << "Process ended" << childPid << std::endl;
+  auto processInfo = runningProcesses.find(int(childPid));
+  if (processInfo == runningProcesses.end()) {
+    std::cout << "Error has occured - element not found in map!";
+    exit(-1);
+  }
+  auto command = processInfo->second;
+  auto basePath = directoryForProcessWithId(command->processId);
+  auto stdError = FileManager::readFromFile(FileManager::buildPath(basePath,
+                                                                   PathConstants::ProcessStandardError));
+  auto stdOutput = FileManager::readFromFile(FileManager::buildPath(basePath,
+                                                                       PathConstants::ProcessStandardOutput));
+  auto response = std::make_shared<StartProcessResponse>(command->processId, stdError, stdOutput);
+  responseCompletion(response);
+
+  if (childPid < 0 ) {
+    perror("Waitpid error");
   }
 }
 

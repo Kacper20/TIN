@@ -33,9 +33,10 @@ class ProcessHandler {
 
 //TODO: Think about transforming StartProcessCommand -> Process to run structure.
   ProcessHandler();
+  ResponseCompletion responseCompletion;
   void runProcess(std::shared_ptr<StartProcessCommand> process);
   void startMonitoringForProcessesToRun();
-  void monitorProcessesEndings(ResponseCompletion responseCompletion);
+  void monitorProcessesEndings(std::shared_ptr<Command>, int pidToWait, ResponseCompletion responseCompletion);
 //TODO: Later, we'll be writing process with its harmonogram to the file(json)
 };
 

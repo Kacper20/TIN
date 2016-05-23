@@ -4,7 +4,6 @@
 #include "CommandDispatcher.h"
 #include "NodeServer.h"
 #import "../Shared/Responses/Response.h"
-#include <csignal>
 using namespace std;
 
 typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
@@ -33,21 +32,6 @@ struct ProcessRunningTask {
   }
 };
 
-struct ProcessMonitoringTask {
-  ProcessHandler& processHandler;
-  NodeServer& server;
-
-  ProcessMonitoringTask(ProcessHandler &handler, NodeServer& server) : processHandler(handler),
-                                                                                      server(server)  {}
-  void operator() () {
-    processHandler.monitorProcessesEndings([this](std::shared_ptr<Response> response) {
-      this->server.sendResponse(response);
-    });
-  }
-};
-
-
-
 struct ServerSendingTask {
   NodeServer &server;
   ServerSendingTask(NodeServer &server): server(server) {}
@@ -66,12 +50,13 @@ int main() {
     dispatcher.processCommand(commandToDispatch);
   });
 
+  handler.responseCompletion = [&server](std::shared_ptr<Response> response) {
+    server->sendResponse(response);
+  };
+
   ServerSendingTask serverSendingTask(*server);
   std::thread serverSendingThread(serverSendingTask);
 
-
-  ProcessMonitoringTask processMonitoringTask(handler, *server);
-  std::thread processMonitoringThread(processMonitoringTask);
 
   ProcessRunningTask processRunningTask(handler);
   std::thread processRunningThread(processRunningTask);
@@ -83,7 +68,6 @@ int main() {
   std::thread serverThread(serverTask);
 
   serverSendingThread.join();
-  processMonitoringThread.join();
   processRunningThread.join();
   serverThread.join();
   dispatcherThread.join();

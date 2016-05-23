@@ -24,9 +24,5 @@ int main(int argc, char* argv[]) {
     std::cout << "Failed to send script" << std::endl;
     return -2;
   }
-  if(networkLayer.sendMessage(output) < 0) {
-    std::cout << "Failed to send script" << std::endl;
-    return -2;
-  }
     return 0;
 }
