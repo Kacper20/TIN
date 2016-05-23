@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cstring>
 #include <fstream>
+
 using namespace std;
 
 void InputHandler::run()
@@ -118,6 +119,11 @@ void InputHandler::sendProcess(const string& full_command)
       cout << "File does not exist.  \nPlease try again. \n";
       return;
   }
+
+  //getting unique uuid for process name for server to use
+  boost::uuids::string_generator gen;
+  boost::uuids::uuid u = gen(process_name);
+  process_uuids.insert(std::pair(process_name, u));
 
   //loading process code
   string process_code;
