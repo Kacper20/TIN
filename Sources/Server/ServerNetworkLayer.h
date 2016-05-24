@@ -10,12 +10,13 @@
 
 class ServerNetworkLayer {
  private:
+  //TODO: Change this to some sort of container of sockets, so we can connect to multiple sockets at once
   TCPSocket nodeConnectionSocket;
   MessageNetworkManager networkManager;
 
  public:
-  ServerNetworkLayer() : nodeConnectionSocket(TCPSocket()), networkManager(nodeConnectionSocket) {}
-  int connectToNode(const std::string addressWithPort);
+  ServerNetworkLayer() : nodeConnectionSocket(), networkManager(nodeConnectionSocket) {}
+  int connectToNodes(const std::string addressWithPort);
   int sendMessage(const std::string message) const;
 };
 

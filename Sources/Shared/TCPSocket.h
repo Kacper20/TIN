@@ -31,7 +31,7 @@ class TCPSocket {
   ssize_t send(const void *data, size_t size, int flags) const ;
   ssize_t receive(void *data, size_t size, int flags) const ;
   int shutdownSocket(ShutdownOption option);
-  int internalDescriptor();
+  int internalDescriptor() const;
   void close();
 };
 
