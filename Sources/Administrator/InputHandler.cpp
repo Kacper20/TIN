@@ -5,8 +5,10 @@
 #include "InputHandler.h"
 #include "../Shared/Commands/StartProcessCommand.h"
 #include "../Shared/Commands/LaunchProcessCommand.h"
-#include <iostream>
 #include <fstream>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
+
 
 using namespace std;
 
@@ -15,6 +17,9 @@ void InputHandler::run()
   cout << "Waiting for a command:\n";
   string command;
   string name;
+
+  // get set of uuids from the file
+  process_uuids = getUuidsFromFile();
 
   do
   {
@@ -49,6 +54,8 @@ void InputHandler::run()
   } while ( name != "exit");
 
   cout << "Exiting Administrator process. Goodbye.\n";
+
+  writeUuidsToFile(process_uuids);
 }
 
 
@@ -120,10 +127,22 @@ void InputHandler::sendProcess(const string& full_command)
       return;
   }
 
-  //getting unique uuid for process name for server to use
-  boost::uuids::string_generator gen;
-  boost::uuids::uuid u = gen(process_name);
-  //process_uuids.insert(std::pair(process_name, u));
+  //getting unique uuid for process name for server to use - check if name is already in
+  std::map<std::string,boost::uuids::uuid>::iterator it;
+  it = process_uuids.find(process_name);
+  boost::uuids::uuid u_to_send;
+
+  if ( it == process_uuids.end() )
+  {
+    boost::uuids::string_generator gen;
+    boost::uuids::uuid u = gen(process_name);
+    process_uuids.insert(std::pair<std::string,boost::uuids::uuid>(process_name, u));
+    u_to_send = u;
+  }
+  else
+  {
+    u_to_send = it->second;
+  }
 
   //loading process code
   string process_code;
@@ -133,11 +152,61 @@ void InputHandler::sendProcess(const string& full_command)
   process_code.assign((std::istreambuf_iterator<char>(process_file)), std::istreambuf_iterator<char>());
   process_file.close();
 
-  StartProcessCommand command = StartProcessCommand(process_name, process_code);
+  StartProcessCommand command = StartProcessCommand(process_name, process_code); //TODO change so it will send u_to_send (type uuid)
   Json::FastWriter fastWriter;
   std::string message = fastWriter.write(command.generateJSON());
   admin.sendMessage(message);
 
+}
+
+std::map<std::string, boost::uuids::uuid> InputHandler::getUuidsFromFile()
+{
+  std::map<std::string, boost::uuids::uuid> temp;
+  string line, name;
+  boost::uuids::uuid u;
+  ifstream uuids_file ("uuids_file.txt"); //unsure where to get this file from :/
+
+  if (uuids_file.is_open())
+  {
+    while ( getline(uuids_file,line) )
+    {
+      int index = line.find_first_of(" ");
+      name = line.substr(0, index);
+      string uuid_string = line.substr(index+1);
+      u = boost::lexical_cast<boost::uuids::uuid>(uuid_string);
+    }
+    uuids_file.close();
+  }
+  else
+    cout << "Unable to open file";
+
+  return temp;
+}
+
+int InputHandler::writeUuidsToFile(std::map<std::string, boost::uuids::uuid> process_uuids)
+{
+  if (!process_uuids.empty())
+  {
+    std::map<std::string, boost::uuids::uuid>::iterator it;
+    ofstream uuids_file ("uuids_file.txt"); //not sure where to put this file
+
+    if (uuids_file.is_open())
+    {
+      for (it = process_uuids.begin(); it != process_uuids.end(); ++it)
+      {
+          uuids_file << it->first << " ";
+          uuids_file << to_string(it->second) << "\n";
+      }
+      uuids_file.close();
+    }
+    else
+    {
+      cout << "Unable to open file with uuids.\n";
+      return -1;
+    }
+  }
+
+  return 0;
 }
 
 void InputHandler::launchProcess(const string& full_command)

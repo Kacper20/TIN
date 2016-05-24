@@ -6,25 +6,27 @@
 #define TIN_INPUTHANDLER_H
 
 #include <string>
-//#include <unordered_set>
 #include "AdministratorNetworkLayer.h"
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
+#include <map>
 
 class InputHandler
 {
 private:
     AdminNetworkLayer admin;
-    //std::unordered_set<std::pair<std::string, boost::uuids::uuid>> process_uuids;
+    std::map<std::string, boost::uuids::uuid> process_uuids;
     void printHelp();
     int checkAddress(const std::string& address_with_port);
     void handleConnect(const std::string& full_command);
     void handleDisconnect();
     void sendProcess(const std::string& full_command);
     void launchProcess(const std::string& full_command);
+    std::map getUuidsFromFile();
+    int writeUuidsToFile(std::map process_uuids);
 
 public:
-    InputHandler(AdminNetworkLayer admin): admin(admin){};// { process_uuids = std::unordered_set();}
+    InputHandler(AdminNetworkLayer admin): admin(admin){};
     void run();
 };
 
