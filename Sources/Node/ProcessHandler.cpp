@@ -78,35 +78,33 @@ void ProcessHandler::runProcessWithCommand(std::shared_ptr<StartProcessCommand> 
     char *params[4]  = {0};
     auto outPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardOutput);
     auto errPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardError);
-    auto processFilePath = FileManager::buildPath(basePath, command->processId);
+    auto processFilePath = FileManager::buildPath(basePath, PathConstants::RunnableScript);
     int stdOutFd = open(outPath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     int stdErrFd = open(errPath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     dup2(stdOutFd, 1);
     dup2(stdErrFd, 2);
+    close(stdOutFd);
+    close(stdErrFd);
 
     execvp(processFilePath.c_str(), params);
   } else {
-//    ProcessMonitoringTask monitoringTask = ProcessMonitoringTask(*this, newProcessId, command, responseCompletion);
-//    std::thread monitoringThread(monitoringTask);
-//    monitoringThread.detach();
+    ProcessMonitoringTask monitoringTask = ProcessMonitoringTask(*this, newProcessId, command, responseCompletion);
+    std::thread monitoringThread(monitoringTask);
+    monitoringThread.detach();
   }
 }
 
 
 
-void ProcessHandler::monitorProcessesEndings(std::shared_ptr<Command>, int pidToWait, ResponseCompletion responseCompletion) {
+void ProcessHandler::monitorProcessesEndings(std::shared_ptr<Command> command, int pidToWait, ResponseCompletion responseCompletion) {
   int status;
   pid_t childPid;
 
   childPid = waitpid(pidToWait, &status, 0);
 
   std::cout << "Process ended" << childPid << std::endl;
-  auto processInfo = runningProcesses.find(int(childPid));
-  if (processInfo == runningProcesses.end()) {
-    std::cout << "Error has occured - element not found in map!";
-    exit(-1);
-  }
-  auto command = processInfo->second;
+
+
   auto basePath = directoryForProcessWithId(command->processId);
   auto stdError = FileManager::readFromFile(FileManager::buildPath(basePath,
                                                                    PathConstants::ProcessStandardError));
