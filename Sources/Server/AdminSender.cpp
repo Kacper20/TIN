@@ -7,15 +7,22 @@
 
 #include <memory>
 #include <thread>
-#include <iostream>
+#include <mutex>
+#include <condition_variable>
+
+std::condition_variable waitingForConnection;
 
 void AdminSender::operator()() {
-  // Wait until adminSocket is not a nullptr, could reimplement this using a condition_variable, because this isn't very good
-  while(!adminSocket) {
-    std::cout << "AdminSender - waiting for socket!\n";
-    std::chrono::duration<int> s(2);
-    std::this_thread::sleep_for(s);
+  // Wait for the AdminListener thread to connect to the Administrator module
+  // But ONLY if the connection hasn't been already established. We need to make sure we won't wait() on this condition
+  // variable after the other thread called notify_one()!
+  if(!adminSocket) {
+    std::mutex m;
+    std::unique_lock<std::mutex> lock(m);
+    std::cout << "Condition_variable address (Sender) : " << &waitingForConnection << std::endl;
+    waitingForConnection.wait(lock);
   }
+
   MessageNetworkManager manager(*adminSocket);
   while(true) {
 

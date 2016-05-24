@@ -9,6 +9,8 @@
 #include <chrono>
 #include <thread>
 
+extern std::condition_variable waitingForConnection;
+
 void AdminListener::operator()() {
   waitForAdminToConnect();
 
@@ -32,6 +34,7 @@ void AdminListener::operator()() {
 }
 
 void AdminListener::waitForAdminToConnect() {
+  std::cout << "Condition_variable address (Listener) : " << &waitingForConnection << std::endl;
   //TODO: Error checking, bool return value for success checking
   TCPSocket listeningSocket;
   SocketAddress myAddress = SocketAddress("127.0.0.1:1666");
@@ -57,5 +60,8 @@ void AdminListener::waitForAdminToConnect() {
   //Close listeningSocket that was listening - we only support one client by design.
   listeningSocket.close();
   std::cout << "Calling completion func" << std::endl;
+
+  // Notify the AdminSender thread
+  waitingForConnection.notify_one();
   return;
 }
