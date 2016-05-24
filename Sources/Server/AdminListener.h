@@ -21,7 +21,7 @@ class AdminListener {
  public:
   AdminListener(TCPSocket*& s, MessagesQueue<std::string>& qq) : q(qq), adminSocket(s) {}
   void operator()();
-  void connectToAdmin();
+  void waitForAdminToConnect();
 };
 
 #endif // TIN_ADMINLISTENER_H
