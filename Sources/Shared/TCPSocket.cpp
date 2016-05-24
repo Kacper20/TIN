@@ -59,6 +59,6 @@ int TCPSocket::shutdownSocket(ShutdownOption option) {
   return shutdown(socketDescriptor, shutdownType);
 }
 
-int TCPSocket::internalDescriptor() {
+int TCPSocket::internalDescriptor() const {
   return socketDescriptor;
 }

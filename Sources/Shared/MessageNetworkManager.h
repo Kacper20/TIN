@@ -12,7 +12,7 @@ class MessageNetworkManager {
  private:
   TCPSocket socket;
  public:
-  MessageNetworkManager();
+  MessageNetworkManager() {};
   MessageNetworkManager(TCPSocket socket): socket(socket) {}
   ssize_t sendMessage(const std::string content) const;
   ssize_t receiveMessage(std::string &buffer, bool = false) const;

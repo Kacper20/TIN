@@ -13,7 +13,7 @@
 #ifndef TIN_NODENETWORKLAYER_H
 #define TIN_NODENETWORKLAYER_H
 
-#define NETWORK_PORT 46030
+#define NETWORK_PORT 40667
 
 
 class NodeNetworkLayer {
