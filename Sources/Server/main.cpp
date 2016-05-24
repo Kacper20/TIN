@@ -2,18 +2,12 @@
 // Created by Rafał Rzeuski on 09.05.16.
 //
 #include "../Shared/Commands/StartProcessCommand.h"
-#include "ServerNetworkLayer.h"
 #include "Server.h"
 
 #include <iostream>
 using namespace std;
 
 int main(int argc, char *argv[]) {
-  /*TODO: Here's an idea. Based on startup parameters, we will launch the server into either the setup mode or work mode.
-   * Setup mode takes Node addresses in and writes them down somewhere. Later, when launched in work mode, the server will connect
-   * to those addresses. This way we can change the configuration of the system.
-  */
-  //TODO: a nice CheckParms() function
   /*
   ServerNetworkLayer networkLayer;
   if (networkLayer.connectToNode("127.0.0.1:46027") != 0) {
@@ -36,6 +30,30 @@ int main(int argc, char *argv[]) {
   }
   return 0;
   */
+
+  // For testing purposes
+//  Json::FastWriter fastWriter;
+//  std::string processContent = "#!/bin/bash\necho \"Hello World\"\necho $(date)\n";
+//  StartProcessCommand command = StartProcessCommand("666", processContent);
+//  std::string output = fastWriter.write(command.generateJSON());
+//
+//  Json::Reader reader;
+//  Json::Value root;
+//  bool success = reader.parse(output, root);
+//  string type = root["commandType"].asString();
+//  string processId;
+//  if(type == "startNewProcess") {
+//    processId = root["processDetails"]["processIdentifier"].asString();
+//  }
+//  cout << "type: " << type << endl;
+//  cout << "processId: " << processId << endl;
+
   Server s;
   s.run();
+
+//  TCPSocket sock;
+//  cout << sock.internalDescriptor() << endl;
+//  TCPSocket fapsock;
+//  cout << fapsock.internalDescriptor() << endl;
+//  cout << "Elo" << endl;
 }
