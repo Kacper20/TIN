@@ -4,8 +4,8 @@
 
 #include "InputHandler.h"
 #include "../Shared/Commands/StartProcessCommand.h"
+#include "../Shared/Commands/LaunchProcessCommand.h"
 #include <iostream>
-#include <cstring>
 #include <fstream>
 
 using namespace std;
@@ -123,7 +123,7 @@ void InputHandler::sendProcess(const string& full_command)
   //getting unique uuid for process name for server to use
   boost::uuids::string_generator gen;
   boost::uuids::uuid u = gen(process_name);
-  process_uuids.insert(std::pair(process_name, u));
+  //process_uuids.insert(std::pair(process_name, u));
 
   //loading process code
   string process_code;
@@ -149,6 +149,8 @@ void InputHandler::launchProcess(const string& full_command)
   }
 
   string process_name = full_command.substr(full_command.find_first_of(" ")+1);
-
-  //TODO send process_name to server to launch
+  LaunchProcessCommand command = LaunchProcessCommand(process_name);
+  Json::FastWriter fastWriter;
+  std::string message = fastWriter.write(command.generateJSON());
+  admin.sendMessage(message);
 }
