@@ -35,9 +35,9 @@ Every message is preceded by number of bytes. This is needed by receiver of the 
 ##### Response
 ```
 {
-	“ResponseType” : “scheduledProcessEnded”;
+	“responseType” : “scheduledProcessEnded”;
 	“processDetails” : {
-	  processIdentifier" : ""
+	  	processIdentifier" : ""
 		"date" : "20-06-1994"
 		"timestamp" : 3600
 	}

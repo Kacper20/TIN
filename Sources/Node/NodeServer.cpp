@@ -34,3 +34,6 @@ void NodeServer::startMonitorForSendings() {
     layer.sendMessage(message);
   }
 }
+void NodeServer::sendResponse(std::shared_ptr<Response> response) {
+  messagesToSendQueue.push(response);
+}
