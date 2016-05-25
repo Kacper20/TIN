@@ -15,28 +15,43 @@
 #include "ServerNetworkLayer.h"
 
 #include <memory>
+#include <condition_variable>
+#include <mutex>
 
 class Server {
-  // Does this make sense?
+  // Queues used for passing messages between threads
+  // Messages receive from the Administrator that should be sent to Nodes
   MessagesQueue<std::string> adminNodeQ;
+  // Messages receive from Nodes that should reach the Administrator
   MessagesQueue<std::string> nodeAdminQ;
 
-  // Maybe these would be more readable, and their initialization would be easier,
-  // if they were just methods of this class and not separate function objects
-  AdminListener aListener;
-  NodeSender nSender;
-  NodeListener nListener;
-  AdminSender aSender;
-
-  // TODO: A container of sockets so we can have multiple nodes in the system
-  std::vector<TCPSocket> nodeSockets;
-  // TODO: (Not sure about this yet, need to discuss with the team) add a way to remember state, as in: which socket each process was sent to
+  // TODO: A container of sockets so we can have multiple nodes in the system (work in progress).
+//  std::vector<TCPSocket*> nodeSockets;
+//  std::vector<SocketAddress> nodeAddresses;
+  // TODO: Add a way to remember state, as in: which socket each process was sent to and the process' id.
+  TCPSocket adminSocket;
   TCPSocket nodeSocket;
-  TCPSocket* adminSocket;
+  MessageNetworkManager adminMessageManager;
+  std::condition_variable adminConnected;
+  bool connectedToAdmin;
+
+  void prepareAddresses();
+  void connectToNodes();
+  void waitForAdminToConnect();
+
+  // Functions that will be run in parallel
+  void receiveFromAdmin();
+  void receiveFromNodes();
+  void sendToAdmin();
+  void sendToNodes();
+
+  // Temporary functions to make testing easier
+  void pushMessage(const std::string);
+  void fakeAdminFunction();
+  bool fake_admin;
 
  public:
-  Server();
-  void connectToNodes();
+  Server(bool);
   void run();
 };
 
