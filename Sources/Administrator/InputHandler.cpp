@@ -120,7 +120,6 @@ void InputHandler::sendProcess(const string& full_command)
   }
   string process_path = process_name.substr(process_name.find_first_of(" ")+1);
   process_name = process_name.substr(0, process_name.length() - process_path.length()-1);
-  cout << process_name << "\t" << process_path << "\n";
   fstream process_file(process_path, ios::in);
   if(!process_file.is_open())
   {
