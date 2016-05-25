@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.5)
 project(TIN)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread -I usr/lib/include/boost")
 
 set(SHARED_FILES Sources/Libraries/jsoncpp.cpp Sources/Libraries/json/json.h Sources/Libraries/json/json-forwards.h
         Sources/Shared/TCPSocket.cpp Sources/Shared/TCPSocket.h Sources/Shared/SocketAddress.cpp
         Sources/Shared/SocketAddress.h Sources/Shared/OSXSpecificHeaders.h Sources/Shared/Commands/Command.cpp
         Sources/Shared/Commands/Command.h Sources/Shared/Commands/StartProcessCommand.cpp
         Sources/Shared/Commands/StartProcessCommand.h Sources/Shared/JSONConstants.h
+        Sources/Shared/Commands/LaunchProcessCommand.cpp Sources/Shared/Commands/LaunchProcessCommand.h
+        Sources/Shared/Commands/DeleteProcessCommand.cpp Sources/Shared/Commands/DeleteProcessCommand.h
         Sources/Shared/MessageNetworkManager.cpp Sources/Shared/MessageNetworkManager.h
         Sources/Shared/MessagesQueue.h
         Sources/Shared/FileManager.h Sources/Shared/FileManager.cpp
@@ -26,7 +28,7 @@ set(SERVER_SOURCE ${SHARED_FILES} Sources/Server/main.cpp Sources/Server/ServerN
         Sources/Server/ServerNetworkLayer.cpp Sources/Server/Server.h Sources/Server/AdminListener.h
         Sources/Server/NodeSender.h Sources/Server/NodeListener.h Sources/Server/AdminSender.h Sources/Server/Server.cpp Sources/Server/AdminListener.cpp Sources/Server/NodeSender.cpp Sources/Server/NodeListener.cpp Sources/Server/AdminSender.cpp)
 
-set(ADMIN_SOURCE ${SHARED_FILES} Sources/Administrator/main.cpp )
+set(ADMIN_SOURCE ${SHARED_FILES} Sources/Administrator/main.cpp  Sources/Administrator/InputHandler.cpp Sources/Administrator/InputHandler.h Sources/Administrator/AdministratorNetworkLayer.cpp Sources/Administrator/AdministratorNetworkLayer.h )
 
 add_executable(Node ${NODE_SOURCE})
 

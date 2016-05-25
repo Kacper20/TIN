@@ -8,6 +8,7 @@
 #include <condition_variable>
 #include <queue>
 #include <iostream>
+#include <memory>
 
 
 template <typename T>

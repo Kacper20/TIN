@@ -7,6 +7,7 @@
 #ifndef TIN_SCHEDULE_H
 #define TIN_SCHEDULE_H
 
+#include<iostream>
 
 class Schedule {
 
@@ -18,7 +19,7 @@ class Schedule {
   Schedule(std::vector<int> timestamps) : timestamps(timestamps) {}
   Json::Value generateJson() {
     Json::Value array;
-    for (auto const &timestamp : array) {
+    for (auto const &timestamp : timestamps) {
       array.append(timestamp);
     }
     return array;

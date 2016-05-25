@@ -9,7 +9,7 @@
 #include "../JSONConstants.h"
 
 enum class CommandType {
-  START_NEW_PROCESS, START_NEW_PROCESS_WITH_SCHEDULE
+  START_NEW_PROCESS, START_NEW_PROCESS_WITH_SCHEDULE, LAUNCH_PROCESS, DELETE_PROCESS
 };
 
 static std::string descriptionForCommandType(CommandType type) {
@@ -18,6 +18,10 @@ static std::string descriptionForCommandType(CommandType type) {
       return "startNewProcess";
     case CommandType ::START_NEW_PROCESS_WITH_SCHEDULE:
       return "startNewProcessWithSchedule";
+    case CommandType :: LAUNCH_PROCESS:
+      return "launchProcess";
+    case CommandType :: DELETE_PROCESS:
+      return "deleteProcess";
     }
 }
 
