@@ -14,14 +14,32 @@
 
 using namespace std;
 
+InputHandler::InputHandler(AdminNetworkLayer admin){
+    this->admin = admin;
+    string line, name;
+    boost::uuids::uuid u;
+    ifstream uuids_file ("uuids_file.txt"); //unsure where to get this file from :/
+
+    if (uuids_file.is_open())
+    {
+        while ( getline(uuids_file,line) )
+        {
+            int index = line.find_first_of(" ");
+            name = line.substr(0, index);
+            string uuid_string = line.substr(index+1);
+            u = boost::lexical_cast<boost::uuids::uuid>(uuid_string);
+            process_uuids.insert(std::pair<std::string,boost::uuids::uuid>(name, u));
+        }
+        uuids_file.close();
+    }
+}
+
 void InputHandler::run()
 {
   cout << "Waiting for a command:\n";
   string command;
   string name;
 
-  // get set of uuids from the file
-  process_uuids = getUuidsFromFile();
 
   do
   {
@@ -42,6 +60,9 @@ void InputHandler::run()
     }
     else if ( name == "disconnect") {
       handleDisconnect();
+    }
+    else if ( name == "show_uploaded") {
+        showUploaded();
     }
     else if ( name == "send_process" ) {
       sendProcess(command);
@@ -73,6 +94,7 @@ void InputHandler::printHelp()
   cout << "\t and saves it to the server with the name specified in 'name' argument" << "\n";
   cout << "launch_process <name> - Tells the server to start chosen process." << "\n"; // Needs improvement
   cout << "delete_process <name> - Tells the server to delete chosen process.\n";
+  cout << "show_uploaded - Shows process uploaded to server.\n";
   cout << "disconnect - Disconnects from the server." << "\n";
   cout << "help - Shows this message." << "\n";
   cout << "exit - Exits from the administrator process, closes connections." << "\n";
@@ -164,30 +186,6 @@ void InputHandler::sendProcess(const string& full_command)
 
 }
 
-std::map<std::string, boost::uuids::uuid> InputHandler::getUuidsFromFile()
-{
-  std::map<std::string, boost::uuids::uuid> temp;
-  string line, name;
-  boost::uuids::uuid u;
-  ifstream uuids_file ("uuids_file.txt"); //unsure where to get this file from :/
-
-  if (uuids_file.is_open())
-  {
-    while ( getline(uuids_file,line) )
-    {
-      int index = line.find_first_of(" ");
-      name = line.substr(0, index);
-      string uuid_string = line.substr(index+1);
-      u = boost::lexical_cast<boost::uuids::uuid>(uuid_string);
-    }
-    uuids_file.close();
-  }
-  else
-    cout << "Unable to open file";
-
-  return temp;
-}
-
 int InputHandler::writeUuidsToFile(std::map<std::string, boost::uuids::uuid> process_uuids)
 {
   if (!process_uuids.empty())
@@ -268,4 +266,13 @@ void InputHandler::deleteProcess(const std::string& full_command) {
   Json::FastWriter fastWriter;
   std::string message = fastWriter.write(command.generateJSON());
   admin.sendMessage(message);
+}
+
+void InputHandler::showUploaded(){
+    std::map<std::string, boost::uuids::uuid>::iterator it;
+    std::cout << "Uploaded process: \n";
+    for(it = process_uuids.begin(); it != process_uuids.end(); ++it){
+        std::cout << it->first << "\n";
+    }
+    std::cout << "\n";
 }
