@@ -36,7 +36,7 @@ class ProcessHandler {
   ResponseCompletion responseCompletion;
   void runProcess(std::shared_ptr<StartProcessCommand> process);
   void startMonitoringForProcessesToRun();
-  void monitorProcessesEndings(std::shared_ptr<Command>, int pidToWait, ResponseCompletion responseCompletion);
+  void monitorProcessesEndings(std::shared_ptr<StartProcessCommand>, int pidToWait, ResponseCompletion responseCompletion);
 //TODO: Later, we'll be writing process with its harmonogram to the file(json)
 };
 

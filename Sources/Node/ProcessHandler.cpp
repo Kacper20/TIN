@@ -20,8 +20,8 @@ struct ProcessMonitoringTask {
   ProcessHandler& processHandler;
   int pidToWait;
   ResponseCompletion &completion;
-  std::shared_ptr<Command> command;
-  ProcessMonitoringTask(ProcessHandler &handler, int pidToWait, std::shared_ptr<Command> command,  ResponseCompletion& completion) : processHandler(handler),
+  std::shared_ptr<StartProcessCommand> command;
+  ProcessMonitoringTask(ProcessHandler &handler, int pidToWait, std::shared_ptr<StartProcessCommand> command,  ResponseCompletion& completion) : processHandler(handler),
                                                                                                                                      pidToWait(pidToWait),
                                                                                                                                      completion(completion), command(command) {}
   void operator() () {
@@ -96,7 +96,7 @@ void ProcessHandler::runProcessWithCommand(std::shared_ptr<StartProcessCommand> 
 
 
 
-void ProcessHandler::monitorProcessesEndings(std::shared_ptr<Command> command, int pidToWait, ResponseCompletion responseCompletion) {
+void ProcessHandler::monitorProcessesEndings(std::shared_ptr<StartProcessCommand> command, int pidToWait, ResponseCompletion responseCompletion) {
   int status;
   pid_t childPid;
 

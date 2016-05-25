@@ -29,7 +29,7 @@ void Server::prepareSockets() {
 
 void Server::connectToNodes() {
   // TODO: Multiple nodes
-  SocketAddress nodeAddress("127.0.0.1:40667");
+  SocketAddress nodeAddress("127.0.0.1:40668");
   if(nodeSocket.connect(nodeSocket.internalDescriptor(), nodeAddress) == -1) {
     perror("Couldn't connect to Node, exiting");
     exit(-1);
