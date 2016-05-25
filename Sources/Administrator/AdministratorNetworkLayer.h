@@ -23,7 +23,6 @@ public:
     AdminNetworkLayer() : serverConnectionSocket(TCPSocket()), networkManager(serverConnectionSocket) {}
     int connectToServer(const std::string addressWithPort);
     int sendMessage(const std::string message) const;
-    int launchProcess(const std::string processName) const;
     int disconnectFromServer();
 };
 

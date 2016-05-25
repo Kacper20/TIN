@@ -25,11 +25,6 @@ int AdminNetworkLayer::sendMessage(const std::string message) const {
     return networkManager.sendMessage(message);
 }
 
-int AdminNetworkLayer::launchProcess(const std::string message) const {
-    std::cout << "Launching process " << message << std::endl;
-    return networkManager.sendMessage(message);
-}
-
 int AdminNetworkLayer::disconnectFromServer() {
     serverConnectionSocket.close();
     return 0;

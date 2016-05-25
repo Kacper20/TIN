@@ -9,6 +9,7 @@ set(SHARED_FILES Sources/Libraries/jsoncpp.cpp Sources/Libraries/json/json.h Sou
         Sources/Shared/Commands/Command.h Sources/Shared/Commands/StartProcessCommand.cpp
         Sources/Shared/Commands/StartProcessCommand.h Sources/Shared/JSONConstants.h
         Sources/Shared/Commands/LaunchProcessCommand.cpp Sources/Shared/Commands/LaunchProcessCommand.h
+        Sources/Shared/Commands/DeleteProcessCommand.cpp Sources/Shared/Commands/DeleteProcessCommand.h
         Sources/Shared/MessageNetworkManager.cpp Sources/Shared/MessageNetworkManager.h
         Sources/Shared/MessagesQueue.h
         Sources/Shared/FileManager.h Sources/Shared/FileManager.cpp
