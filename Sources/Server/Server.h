@@ -26,9 +26,11 @@ class Server {
   MessagesQueue<std::string> nodeAdminQ;
 
   // TODO: A container of sockets so we can have multiple nodes in the system (work in progress).
-//  std::vector<TCPSocket*> nodeSockets;
-//  std::vector<SocketAddress> nodeAddresses;
-  // TODO: Add a way to remember state, as in: which socket each process was sent to and the process' id.
+  std::vector<TCPSocket> nodeSockets;
+  std::vector<SocketAddress> nodeAddresses;
+  std::vector<MessageNetworkManager> nodeManagers;
+  // TODO: Add a way to remember state, as in: which socket each process was sent to and the process' id (work in progress).
+  std::map<int, int> processNodeMap;
   TCPSocket adminSocket;
   TCPSocket nodeSocket;
   MessageNetworkManager adminMessageManager;
@@ -37,6 +39,7 @@ class Server {
 
   void prepareAddresses();
   void connectToNodes();
+  void prepareNodeManagers();
   void waitForAdminToConnect();
 
   // Functions that will be run in parallel
@@ -44,6 +47,7 @@ class Server {
   void receiveFromNodes();
   void sendToAdmin();
   void sendToNodes();
+  int checkAdminMessageContents(const std::string& message);
 
   // Temporary functions to make testing easier
   void pushMessage(const std::string);

@@ -7,11 +7,12 @@
 #include "../Shared/Commands/StartProcessWithScheduleCommand.h"
 
 #include <thread>
-#include <cassert>
+#include <fcntl.h>
 
 Server::Server(bool admin) : connectedToAdmin(false), fake_admin(admin) {
-//  prepareAddresses();
+  prepareAddresses();
   connectToNodes();
+  prepareNodeManagers();
 
   // For testing purposes
 //  Json::FastWriter fastWriter;
@@ -54,18 +55,44 @@ void Server::fakeAdminFunction() {
 }
 
 void Server::prepareAddresses() {
-  // TODO: Implement
-//  nodeAddresses.push_back(SocketAddress("127.0.0.1:40666"));
-//  nodeAddresses.push_back(SocketAddress("127.0.0.1:40667"));
-//  nodeAddresses.push_back(SocketAddress("127.0.0.1:40668"));
+  // 3 seems like a reasonable number of nodes for now
+  nodeAddresses.push_back(SocketAddress("127.0.0.1:40617"));
+  nodeAddresses.push_back(SocketAddress("127.0.0.1:40667"));
+  nodeAddresses.push_back(SocketAddress("127.0.0.1:40668"));
 }
 
 void Server::connectToNodes() {
   // TODO: Multiple nodes
-  SocketAddress nodeAddress("127.0.0.1:40668");
-  if(nodeSocket.connect(nodeSocket.internalDescriptor(), nodeAddress) == -1) {
-    perror("Couldn't connect to Node, exiting");
-    exit(-1);
+//  SocketAddress nodeAddress("127.0.0.1:40666");
+//  if(nodeSocket.connect(nodeSocket.internalDescriptor(), nodeAddress) == -1) {
+//    perror("Couldn't connect to Node, exiting");
+//    exit(-1);
+//  }
+
+  // Make the sockets non-blocking so we can perform a receive() on all of them in succession.
+  // TODO: Use select() when receiving instead of making the sockets non-blocking?
+  for(auto p : nodeSockets) {
+    fcntl(p.internalDescriptor(), F_SETFL, O_NONBLOCK);
+  }
+
+  for(int i = 0; i < nodeAddresses.size(); i++) {
+    nodeSockets.push_back(TCPSocket());
+    if(nodeSockets[i].connect(nodeSockets[i].internalDescriptor(), nodeAddresses[i]) == -1) {
+//      perror("Couldn't connect to a Node, exiting");
+//      exit(-1);
+      // If we can't connect to a Node, we can just pop it out of the vector!
+      std::cerr << "Couldn't connect to one of the Nodes, ignore it" << std::endl;
+      nodeSockets.pop_back();
+    }
+    else {
+      std::cout << "Connected to Node under the index of: " << i << std::endl;
+    }
+  }
+}
+
+void Server::prepareNodeManagers() {
+  for(auto p : nodeSockets) {
+    nodeManagers.push_back(MessageNetworkManager(p));
   }
 }
 
@@ -157,35 +184,60 @@ void Server::receiveFromNodes() {
   // TODO: Make this a loop that checks all Node sockets for messages using non-blocking read()
   // I should probably change the sockets used for talking with Nodes to be non-blocking when I first set them up
   // That would require adjusting the MessageNetworkManager class a a bit
+  // Or just implement it here.
+  // Actually, MessageNetworkManager already returns -1 if it gets a -1 form the receive function (which is just a wrapper for recv(),
+  // So I'm _probably_ good if I just check for that.
   // Ooor use the select() function and decide which sockets to ask for stuff based on its results
 
   // ...
 
-  // But for now, since we only have one socket, let's just ask it to receive some stuff for us
-  MessageNetworkManager manager(nodeSocket);
   std::string buffer;
   while(true) {
-    ssize_t messageSize = manager.receiveMessage(buffer, true);
-    if(messageSize < 0) {
-      // TODO: error checking
+    ssize_t messageSize = nodeManagers[0].receiveMessage(buffer, true);
+    if (messageSize < 0) {
       continue;
     }
-    if(messageSize != 0) {
+    if (messageSize != 0) {
       std::cout << "Receive From Nodes, message received : " << buffer << std::endl;
-      // Put the message into the queue
       std::shared_ptr<std::string> message(new std::string(buffer));
       nodeAdminQ.push(message);
     }
   }
+//
+//  while(true) {
+//    for(int i = 0; i < nodeSockets.size(); i++) {
+//      ssize_t messageSize = nodeManagers[i].receiveMessage(buffer, true);
+//      if(messageSize == -1) {
+//         Nothing to receive, go to next socket
+//        continue;
+//      }
+//      if(messageSize != 0) {
+//        std::cout << "Receive From Nodes, message received : " << buffer << std::endl;
+//        std::shared_ptr<std::string> message(new std::string(buffer));
+//        nodeAdminQ.push(message);
+//      }
+//    }
+//  }
 }
 
 void Server::sendToNodes() {
-  // TODO: Make the MessageNetworkManagers part of the class, so we don't create multiple for the same socket?
-  MessageNetworkManager manager(nodeSocket);
+  static int currentNode = 0;
   while(true) {
     // MessagesQueue does all the concurrency work for us - no need to worry about it
     std::shared_ptr<std::string> message = adminNodeQ.pop();
     // TODO: Decide which Node we should send the message to!
-    manager.sendMessage(*message);
+    nodeManagers[0].sendMessage(*message);
   }
+}
+
+int Server::checkAdminMessageContents(const std::string& msg) {
+  // TODO: Work in progress.
+  Json::Reader reader;
+  Json::Value root;
+  reader.parse(msg, root);
+  if(root["commandType"] == "startNewProcess" || root["commandType"] == "startNewProcessWithSchedule") {
+    // It's a new process - send it to a Node
+    return -1;
+  }
+  // It's a query - choose which Node to send it to
 }
