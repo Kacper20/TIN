@@ -15,6 +15,7 @@ class InputHandler
 {
 private:
     AdminNetworkLayer admin;
+    boost::uuids::uuid dns_namespace_uuid;
     std::map<std::string, boost::uuids::uuid> process_uuids;
     void printHelp();
     int checkAddress(const std::string& address_with_port);
@@ -22,8 +23,8 @@ private:
     void handleDisconnect();
     void sendProcess(const std::string& full_command);
     void launchProcess(const std::string& full_command);
-    std::map getUuidsFromFile();
-    int writeUuidsToFile(std::map process_uuids);
+    std::map<std::string, boost::uuids::uuid> getUuidsFromFile();
+    int writeUuidsToFile(std::map<std::string, boost::uuids::uuid> process_uuids);
 
 public:
     InputHandler(AdminNetworkLayer admin): admin(admin){};

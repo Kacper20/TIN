@@ -8,6 +8,7 @@
 #include <fstream>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/lexical_cast.hpp>
+#include <iostream>
 
 
 using namespace std;
@@ -134,8 +135,8 @@ void InputHandler::sendProcess(const string& full_command)
 
   if ( it == process_uuids.end() )
   {
-    boost::uuids::string_generator gen;
-    boost::uuids::uuid u = gen(process_name);
+    boost::uuids::name_generator gen(dns_namespace_uuid);
+    boost::uuids::uuid u = gen(std::string(process_name));
     process_uuids.insert(std::pair<std::string,boost::uuids::uuid>(process_name, u));
     u_to_send = u;
   }
@@ -143,7 +144,6 @@ void InputHandler::sendProcess(const string& full_command)
   {
     u_to_send = it->second;
   }
-
   //loading process code
   string process_code;
   process_file.seekg(0, std::ios::end);
@@ -151,8 +151,7 @@ void InputHandler::sendProcess(const string& full_command)
   process_file.seekg(0, std::ios::beg);
   process_code.assign((std::istreambuf_iterator<char>(process_file)), std::istreambuf_iterator<char>());
   process_file.close();
-
-  StartProcessCommand command = StartProcessCommand(process_name, process_code); //TODO change so it will send u_to_send (type uuid)
+  StartProcessCommand command = StartProcessCommand(boost::uuids::to_string(u_to_send), process_code);
   Json::FastWriter fastWriter;
   std::string message = fastWriter.write(command.generateJSON());
   admin.sendMessage(message);
@@ -216,9 +215,25 @@ void InputHandler::launchProcess(const string& full_command)
     cout << "Please try again. \n";
     return;
   }
-
   string process_name = full_command.substr(full_command.find_first_of(" ")+1);
-  LaunchProcessCommand command = LaunchProcessCommand(process_name);
+
+  std::map<std::string,boost::uuids::uuid>::iterator it;
+  it = process_uuids.find(process_name);
+  boost::uuids::uuid u_to_send;
+
+  if ( it == process_uuids.end() )
+  {
+    boost::uuids::name_generator gen(dns_namespace_uuid);
+    boost::uuids::uuid u = gen(std::string(process_name));
+    process_uuids.insert(std::pair<std::string,boost::uuids::uuid>(process_name, u));
+    u_to_send = u;
+  }
+  else
+  {
+    u_to_send = it->second;
+  }
+
+  LaunchProcessCommand command = LaunchProcessCommand(boost::uuids::to_string(u_to_send));
   Json::FastWriter fastWriter;
   std::string message = fastWriter.write(command.generateJSON());
   admin.sendMessage(message);
