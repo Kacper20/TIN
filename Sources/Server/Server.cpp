@@ -4,23 +4,56 @@
 
 #include "Server.h"
 #include "../Shared/Commands/StartProcessCommand.h"
+#include "../Shared/Commands/StartProcessWithScheduleCommand.h"
 
 #include <thread>
 #include <cassert>
 
-Server::Server() : connectedToAdmin(false) {
-  prepareSockets();
+Server::Server(bool admin) : connectedToAdmin(false), fake_admin(admin) {
+//  prepareAddresses();
   connectToNodes();
 
   // For testing purposes
-  Json::FastWriter fastWriter;
-  std::string processContent = "#!/bin/bash\necho \"Hello World\"\necho $(date)\n";
-  StartProcessCommand command = StartProcessCommand("666", processContent);
-  std::string output = fastWriter.write(command.generateJSON());
-  adminNodeQ.push(std::shared_ptr<std::string>(new std::string(output)));
+//  Json::FastWriter fastWriter;
+//  std::string processContent = "#!/bin/bash\necho \"Hello World\"\necho $(date)\n";
+//  StartProcessCommand command = StartProcessCommand("666", processContent);
+//  std::string output = fastWriter.write(command.generateJSON());
+//  adminNodeQ.push(std::shared_ptr<std::string>(new std::string(output)));
 }
 
-void Server::prepareSockets() {
+void Server::pushMessage(const std::string s) {
+  static int processId = 666;
+  std::stringstream ss;
+  ss << processId;
+  std::string finalId = ss.str();
+  processId++;
+  Json::FastWriter fastWriter;
+  std::string processContent = "#!/bin/bash\necho \"Hello World\"\necho $(date)\n";
+  if(s == "s") {
+    StartProcessCommand command(finalId, processContent);
+    std::string output = fastWriter.write(command.generateJSON());
+    std::cout << "Pushing message : " << output << std::endl;
+    adminNodeQ.push(std::shared_ptr<std::string>(new std::string(output)));
+  }
+  else if(s == "h") {
+    std::vector<int> timeStamps{3600, 4800};
+    Schedule sched(timeStamps);
+    StartProcessWithScheduleCommand command(finalId, processContent, sched);
+    std::string output = fastWriter.write(command.generateJSON());
+    std::cout << "Pushing message : " << output << std::endl;
+    adminNodeQ.push(std::shared_ptr<std::string>(new std::string(output)));
+  }
+}
+
+void Server::fakeAdminFunction() {
+  while(true) {
+    std::string input;
+    std::cin >> input;
+    pushMessage(input);
+  }
+}
+
+void Server::prepareAddresses() {
   // TODO: Implement
 //  nodeAddresses.push_back(SocketAddress("127.0.0.1:40666"));
 //  nodeAddresses.push_back(SocketAddress("127.0.0.1:40667"));
@@ -37,7 +70,6 @@ void Server::connectToNodes() {
 }
 
 void Server::waitForAdminToConnect() {
-  // TODO: Condition variable for the sender thread
   //TODO: Error checking, bool return value for success checking?
   TCPSocket listeningSocket;
   SocketAddress myAddress = SocketAddress("127.0.0.1:1666");
@@ -67,7 +99,13 @@ void Server::waitForAdminToConnect() {
 }
 
 void Server::run() {
-  std::thread receiveFromAdminThread(&Server::receiveFromAdmin, this);
+  std::thread receiveFromAdminThread;
+  if(fake_admin) {
+    receiveFromAdminThread = std::thread(&Server::fakeAdminFunction, this);
+  }
+  else {
+    receiveFromAdminThread = std::thread(&Server::receiveFromAdmin, this);
+  }
   std::thread sendToAdminThread(&Server::sendToAdmin, this);
   std::thread receiveFromNodesThread(&Server::receiveFromNodes, this);
   std::thread sendToNodesThread(&Server::sendToNodes, this);
@@ -78,22 +116,17 @@ void Server::run() {
   sendToAdminThread.join();
   receiveFromNodesThread.join();
   sendToNodesThread.join();
-
 }
 
 void Server::receiveFromAdmin() {
-  waitForAdminToConnect(); // TODO: Move to constructor/somewhere else entirely?
+  waitForAdminToConnect();
   adminMessageManager = MessageNetworkManager(adminSocket);
   adminConnected.notify_one();
   std::string buffer;
 
-  while(true) {
-    std::cout << "Receive From Admin!\n";
-    std::chrono::duration<int> s(2);
-    std::this_thread::sleep_for(s);
-
+  while (true) {
     ssize_t messageSize = adminMessageManager.receiveMessage(buffer);
-    if(messageSize < 0) {
+    if (messageSize < 0) {
       //Something's wrong!
       continue;
     }
@@ -115,9 +148,6 @@ void Server::sendToAdmin() {
   }
 
   while(true) {
-    std::cout << "Send To Admin!\n";
-    std::chrono::duration<int> s(2);
-    std::this_thread::sleep_for(s);
     std::shared_ptr<std::string> message = nodeAdminQ.pop();
     adminMessageManager.sendMessage(*message);
   }
@@ -135,11 +165,6 @@ void Server::receiveFromNodes() {
   MessageNetworkManager manager(nodeSocket);
   std::string buffer;
   while(true) {
-
-    std::cout << "Receive From Nodes!\n";
-    std::chrono::duration<int> s(2);
-    std::this_thread::sleep_for(s);
-
     ssize_t messageSize = manager.receiveMessage(buffer, true);
     if(messageSize < 0) {
       // TODO: error checking
@@ -158,7 +183,6 @@ void Server::sendToNodes() {
   // TODO: Make the MessageNetworkManagers part of the class, so we don't create multiple for the same socket?
   MessageNetworkManager manager(nodeSocket);
   while(true) {
-    std::cout << "Send To Nodes!\n";
     // MessagesQueue does all the concurrency work for us - no need to worry about it
     std::shared_ptr<std::string> message = adminNodeQ.pop();
     // TODO: Decide which Node we should send the message to!

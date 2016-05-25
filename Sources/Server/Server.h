@@ -35,7 +35,7 @@ class Server {
   std::condition_variable adminConnected;
   bool connectedToAdmin;
 
-  void prepareSockets();
+  void prepareAddresses();
   void connectToNodes();
   void waitForAdminToConnect();
 
@@ -45,8 +45,13 @@ class Server {
   void sendToAdmin();
   void sendToNodes();
 
+  // Temporary functions to make testing easier
+  void pushMessage(const std::string);
+  void fakeAdminFunction();
+  bool fake_admin;
+
  public:
-  Server();
+  Server(bool);
   void run();
 };
 

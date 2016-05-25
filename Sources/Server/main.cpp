@@ -8,6 +8,11 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-  Server s;
+  bool fake_admin = true;
+  if(argc > 1 && argv[1] == "real_admin") {
+    fake_admin = false;
+  }
+  cout << "fake_admin : " << fake_admin << endl;
+  Server s(fake_admin);
   s.run();
 }
