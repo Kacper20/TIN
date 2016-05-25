@@ -22,6 +22,7 @@ private:
     void handleConnect(const std::string& full_command);
     void handleDisconnect();
     void sendProcess(const std::string& full_command);
+    void sendScheluedProcess(const std::string& full_command);
     void launchProcess(const std::string& full_command);
     void deleteProcess(const std::string& full_command);
     void showUploaded();
