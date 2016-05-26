@@ -25,7 +25,10 @@ private:
     void sendScheluedProcess(const std::string& full_command);
     void launchProcess(const std::string& full_command);
     void deleteProcess(const std::string& full_command);
+    void requestData(const std::string& full_command);
     void showUploaded();
+    int isDate(const std::string& date);
+    int isNumber(const char& c);
     int writeUuidsToFile(std::map<std::string, boost::uuids::uuid> process_uuids);
 
 public:

@@ -15,7 +15,7 @@ namespace JSONConstants {
   const std::string StandardOutput = "standardOutput";
   const std::string SchedulesIdentifier = "schedules";
   const std::string Date = "date";
-  const std::string Timestamp = "date";
+  const std::string Timestamp = "timestamp";
 }
 
 #endif //TIN_JSONCONSTANTS_H
