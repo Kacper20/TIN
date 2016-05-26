@@ -3,27 +3,24 @@
 // Modified by Daria Danilenko on 20.05.2016
 //
 
-#include <iostream>
-#include <cstring>
-#include "../Shared/SocketAddress.h"
 #include <thread>
 #include "InputHandler.h"
 
 struct InputHandlingTask {
-    InputHandler* handler;
-    InputHandlingTask(InputHandler* handler) {
-      this->handler = handler;
-    }
+    InputHandler handler;
+    InputHandlingTask(InputHandler handler): handler(handler) {}
     void operator() () {
-      handler->run();
+        handler.run();
     }
 };
 
 
 int main(int argc, char* argv[]) {
-  InputHandler handler;
-  InputHandlingTask inputTask(&handler);
-  std::thread inputThread(inputTask);
+    AdminNetworkLayer admin;
+    InputHandler handler(admin);
 
-  inputThread.join();
+    InputHandlingTask inputTask(handler);
+    std::thread inputThread(inputTask);
+
+    inputThread.join();
 }
