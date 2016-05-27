@@ -22,9 +22,7 @@ set(NODE_SOURCE ${SHARED_FILES} Sources/Node/main.cpp  Sources/Node/WorkerNode.c
         Sources/Node/NodeServer.cpp Sources/Node/NodeServer.h Sources/Node/CommandDispatcher.h
         Sources/Node/CommandDispatcher.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.h Sources/Node/PathConstants.h)
 
-set(SERVER_SOURCE ${SHARED_FILES} Sources/Server/main.cpp Sources/Server/ServerNetworkLayer.h
-        Sources/Server/ServerNetworkLayer.cpp Sources/Server/Server.h Sources/Server/AdminListener.h
-        Sources/Server/NodeSender.h Sources/Server/NodeListener.h Sources/Server/AdminSender.h Sources/Server/Server.cpp Sources/Server/AdminListener.cpp Sources/Server/NodeSender.cpp Sources/Server/NodeListener.cpp Sources/Server/AdminSender.cpp)
+set(SERVER_SOURCE ${SHARED_FILES} Sources/Server/main.cpp Sources/Server/Server.h Sources/Server/Server.cpp)
 
 set(ADMIN_SOURCE ${SHARED_FILES} Sources/Administrator/main.cpp )
 
