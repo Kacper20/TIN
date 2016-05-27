@@ -7,6 +7,7 @@
 
 #include <string>
 #include "AdministratorNetworkLayer.h"
+#include "../Shared/Commands/Command.h"
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <map>
@@ -17,12 +18,15 @@ private:
     AdminNetworkLayer admin;
     boost::uuids::uuid dns_namespace_uuid;
     std::map<std::string, boost::uuids::uuid> process_uuids;
+    std::function<void(std::shared_ptr<Command>)> receivedMessageFunc;
+
     void printHelp();
     int checkAddress(const std::string& address_with_port);
+    void receiveAndLogMessage();
     void handleConnect(const std::string& full_command);
     void handleDisconnect();
     void sendProcess(const std::string& full_command);
-    void sendScheluedProcess(const std::string& full_command);
+    void sendScheduledProcess(const std::string &full_command);
     void launchProcess(const std::string& full_command);
     void deleteProcess(const std::string& full_command);
     void requestData(const std::string& full_command);

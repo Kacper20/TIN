@@ -9,9 +9,8 @@
 #include <functional>
 #include "../Shared/TCPSocket.h"
 #include "../Shared/MessageNetworkManager.h"
-
-#define NETWORK_ADMIN_PORT 46028
-
+#include "../Shared/Commands/Command.h"
+#include <memory>
 
 class AdminNetworkLayer
 {
@@ -24,6 +23,9 @@ public:
     int connectToServer(const std::string addressWithPort);
     int sendMessage(const std::string message) const;
     int disconnectFromServer();
+    void receiveMessage();
+    std::shared_ptr<Command> parseToCommand(std::string json);
+    void showMessage(std::string newMessage);
 };
 
 

@@ -11,7 +11,6 @@
 #include <fstream>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/lexical_cast.hpp>
-#include <iostream>
 
 
 using namespace std;
@@ -20,7 +19,7 @@ InputHandler::InputHandler(AdminNetworkLayer admin){
     this->admin = admin;
     string line, name;
     boost::uuids::uuid u;
-    ifstream uuids_file ("uuids_file.txt"); //unsure where to get this file from :/
+    ifstream uuids_file ("uuids_file.txt");
 
     if (uuids_file.is_open())
     {
@@ -43,7 +42,6 @@ void InputHandler::run()
   cout << "Waiting for a command:\n";
   string command;
   string name;
-
 
   do
   {
@@ -72,7 +70,7 @@ void InputHandler::run()
       sendProcess(command);
     }
     else if ( name == "send_schedule") {
-        sendScheluedProcess(command);
+        sendScheduledProcess(command);
     }
     else if (  name == "launch_process" ) {
       launchProcess(command);
@@ -94,24 +92,23 @@ void InputHandler::run()
   writeUuidsToFile(process_uuids);
 }
 
-
 void InputHandler::printHelp()
 {
-  cout << "Available commands for administrator process:" << "\n";
-  cout << "connect <server address:port> - Connects to server on the specified address." << "\n";
-  cout << "send_process <name> <path to file> - Sends the file you choose to the server" << "\n";
-  cout << "\t and saves it to the server with the name specified in 'name' argument" << "\n";
-  cout << "send_schedule <name> <path to file> <timestamp> [...] <timestamp> - Sends the file you choose" << "\n";
+  cout << "Available commands for administrator process:\n";
+  cout << "connect <server address:port> - Connects to server on the specified address.\n";
+  cout << "send_process <name> <path to file> - Sends the file you choose to the server\n";
+  cout << "\t and saves it to the server with the name specified in 'name' argument\n";
+  cout << "send_schedule <name> <path to file> <timestamp> [...] <timestamp> - Sends the file you choose\n";
   cout << "\t to the server and saves it to the server with name specified in 'name'\n";
   cout << "\t argument. Process is run in specified time (can be many timestamps).\n";
   cout << "\t Timestamps are seconds from 00:00.\n";
-  cout << "launch_process <name> - Tells the server to start chosen process." << "\n"; // Needs improvement
+  cout << "launch_process <name> - Tells the server to start chosen process.n";
   cout << "request_data <name> <date> <timestamp> - Requesting data from server about specific process run.";
   cout << "delete_process <name> - Tells the server to delete chosen process.\n";
   cout << "show_uploaded - Shows processes uploaded to server.\n";
-  cout << "disconnect - Disconnects from the server." << "\n";
-  cout << "help - Shows this message." << "\n";
-  cout << "exit - Exits from the administrator process, closes connections." << "\n";
+  cout << "disconnect - Disconnects from the server.\n";
+  cout << "help - Shows this message.\n";
+  cout << "exit - Exits from the administrator process, closes connections.\n";
 }
 
 int InputHandler::checkAddress(const string& address_with_port)
@@ -122,8 +119,8 @@ int InputHandler::checkAddress(const string& address_with_port)
 void InputHandler::handleConnect(const string& full_command)
 {
   if( full_command.length() <= strlen("connect")) {
-    cout << "Invalid command. The correct call is: connect <server address:port>. \n";
-    cout << "Please try again. \n";
+    cout << "Invalid command. The correct call is: connect <server address:port>.\n";
+    cout << "Please try again.\n";
     return;
   }
 
@@ -148,30 +145,34 @@ void InputHandler::handleDisconnect()
 void InputHandler::sendProcess(const string& full_command)
 {
   if( full_command.length() <= strlen("send_process")) {
-    cout << "Invalid command. The correct call is: send_process <name> <path to file>. \n";
-    cout << "Please try again. \n";
+    cout << "Invalid command. The correct call is: send_process <name> <path to file>.\n";
+    cout << "Please try again.\n";
     return;
   }
 
-  string process_name = full_command.substr(full_command.find_first_of(" ")+1);
+  string process_name = full_command.substr(full_command.find_first_of(" ") + 1);
   if( process_name.find_first_of(" ") == string::npos)
   {
-      cout << "Invalid number of arguments. The correct call is: send_process <name> <path to file>. \n";
-      cout << "Please try again. \n";
+      cout << "Invalid number of arguments. The correct call is: send_process <name> <path to file>.\n";
+      cout << "Please try again.\n";
       return;
   }
-  string process_path = process_name.substr(process_name.find_first_of(" ")+1);
+
+  string process_path = process_name.substr(process_name.find_first_of(" ") + 1);
+
   //checking if file path ends with .sh
   if(process_path[process_path.length()-1] != 'h' || process_path[process_path.length()-2] != 's' || process_path[process_path.length()-3] != '.') {
-      cout << "Invalid file. \nPlease try again. \n";
+      cout << "Invalid file. \nPlease try again.\n";
       return;
   }
+
   process_name = process_name.substr(0, process_name.length() - process_path.length()-1);
   fstream process_file(process_path, ios::in);
+
   if(!process_file.is_open())
   {
-      cout << "File does not exist.  \n";
-      cout << "Please try again. \n";
+      cout << "File does not exist.\n";
+      cout << "Please try again.\n";
       return;
   }
 
@@ -191,6 +192,7 @@ void InputHandler::sendProcess(const string& full_command)
   {
     u_to_send = it->second;
   }
+
   //loading process code
   string process_code;
   process_file.seekg(0, std::ios::end);
@@ -198,11 +200,12 @@ void InputHandler::sendProcess(const string& full_command)
   process_file.seekg(0, std::ios::beg);
   process_code.assign((std::istreambuf_iterator<char>(process_file)), std::istreambuf_iterator<char>());
   process_file.close();
+
   StartProcessCommand command = StartProcessCommand(boost::uuids::to_string(u_to_send), process_code);
   Json::FastWriter fastWriter;
   std::string message = fastWriter.write(command.generateJSON());
-  admin.sendMessage(message);
 
+  admin.sendMessage(message);
 }
 
 int InputHandler::writeUuidsToFile(std::map<std::string, boost::uuids::uuid> process_uuids)
@@ -255,6 +258,7 @@ void InputHandler::launchProcess(const string& full_command) {
   LaunchProcessCommand command = LaunchProcessCommand(boost::uuids::to_string(u_to_send));
   Json::FastWriter fastWriter;
   std::string message = fastWriter.write(command.generateJSON());
+
   admin.sendMessage(message);
 }
 
@@ -284,6 +288,7 @@ void InputHandler::deleteProcess(const std::string& full_command) {
   DeleteProcessCommand command = DeleteProcessCommand(boost::uuids::to_string(u_to_send));
   Json::FastWriter fastWriter;
   std::string message = fastWriter.write(command.generateJSON());
+
   admin.sendMessage(message);
 }
 
@@ -296,25 +301,26 @@ void InputHandler::showUploaded(){
     std::cout << "\n";
 }
 
-
-void InputHandler::sendScheluedProcess(const std::string &full_command) {
+void InputHandler::sendScheduledProcess(const std::string &full_command) {
     if (full_command.length() <= strlen("send_process")) {
-        cout << "Invalid command. The correct call is: send_process <name> <path to file>. \n";
-        cout << "Please try again. \n";
+        cout << "Invalid command. The correct call is: send_process <name> <path to file>.\n";
+        cout << "Please try again.\n";
         return;
     }
 
     string process_name = full_command.substr(full_command.find_first_of(" ") + 1);
     if (process_name.find_first_of(" ") == string::npos) {
-        cout << "Invalid number of arguments. The correct call is: send_process <name> <path to file>. \n";
-        cout << "Please try again. \n";
+        cout << "Invalid number of arguments. The correct call is: send_process <name> <path to file>.\n";
+        cout << "Please try again.\n";
         return;
     }
+
     string process_path = process_name.substr(process_name.find_first_of(" ") + 1);
     if (process_path.find_first_of(" ") == string::npos) {
         std::cout << "Invalid number of arguments. \nPlease try again.\n";
         return;
     }
+
     string process_timestamps = process_path.substr(process_path.find_first_of(" ") + 1);
     process_path = process_path.substr(0, process_path.length() - process_timestamps.length() - 1);
     //checking if file path ends with .sh
@@ -323,6 +329,7 @@ void InputHandler::sendScheluedProcess(const std::string &full_command) {
         cout << "Invalid file. \nPlease try again. \n";
         return;
     }
+
     process_name = process_name.substr(0, process_name.length() - process_path.length() - 1);
     fstream process_file(process_path, ios::in);
     if (!process_file.is_open()) {
@@ -383,12 +390,13 @@ void InputHandler::sendScheluedProcess(const std::string &full_command) {
                                                                               process_code, schedule);
     Json::FastWriter fastWriter;
     std::string message = fastWriter.write(command.generateJSON());
+
     admin.sendMessage(message);
 }
 
 void InputHandler::requestData(const std::string &full_command){
     if( full_command.length() <= strlen("send_process")) {
-        cout << "Invalid command. The correct call is: send_process <name> <path to file>. \n";
+        cout << "Invalid command. The correct call is: request_data <name> <path to file>. \n";
         cout << "Please try again. \n";
         return;
     }
@@ -396,16 +404,18 @@ void InputHandler::requestData(const std::string &full_command){
     string process_name = full_command.substr(full_command.find_first_of(" ")+1);
     if( process_name.find_first_of(" ") == string::npos)
     {
-        cout << "Invalid number of arguments. The correct call is: send_process <name> <path to file>. \n";
+        cout << "Invalid number of arguments. The correct call is: request_data <name> <date> <timestamp> . \n";
         cout << "Please try again. \n";
         return;
     }
+
     string date = process_name.substr(process_name.find_first_of(" ")+1);
     if( date.find_first_of(" ") == string::npos){
-        cout << "Invalid number of arguments. The correct call is: send_process <name> <path to file>. \n";
+        cout << "Invalid number of arguments. The correct call is: request_data <name>  <date> <timestamp> . \n";
         cout << "Please try again. \n";
         return;
     }
+
     process_name = process_name.substr(0, process_name.length() - date.length()-1);
     string timestamp = date.substr(date.find_first_of(" ")+1);
     date = date.substr(0, date.length() - timestamp.length()-1);
@@ -414,6 +424,7 @@ void InputHandler::requestData(const std::string &full_command){
         cout << "Please try again.\n";
         return;
     }
+
     for(int i = 0; i < timestamp.length(); ++i){
         if(!isNumber(timestamp[i])) {
             cout << "Invalid timestamp.\n";
@@ -421,32 +432,41 @@ void InputHandler::requestData(const std::string &full_command){
             return;
         }
     }
+
     boost::uuids::uuid u_to_send;
     boost::uuids::name_generator gen(dns_namespace_uuid);
     boost::uuids::uuid u = gen(std::string(process_name));
     process_uuids.insert(std::pair<std::string,boost::uuids::uuid>(process_name, u));
     u_to_send = u;
+
     RequestDataCommand command = RequestDataCommand(boost::uuids::to_string(u_to_send), date, timestamp);
     Json::FastWriter fastWriter;
     std::string message = fastWriter.write(command.generateJSON());
+
     admin.sendMessage(message);
+    admin.receiveMessage();
 }
 
 int InputHandler::isDate(const std::string &date){
     for(int i = 0 ; i < 10; ++i){
         if(i == 2 || i == 5)
             ++i;
+
         if(!isNumber(date[i]))
             return 0;
     }
+
     if(date[2] != '-' || date[5]!='-')
         return 0;
+
     int temp = 10 * (date[0] - '0') + date[1] - '0';
     if(temp > 31)
         return 0;
+
     temp = 10 * (date[3] - '0') + date[4] - '0';
     if(temp > 12)
         return 0;
+
     return 1;
 }
 

@@ -8,7 +8,7 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-  bool fake_admin = true;
+  bool fake_admin = false;
   if(argc > 1 && argv[1] == "real_admin") {
     fake_admin = false;
   }
