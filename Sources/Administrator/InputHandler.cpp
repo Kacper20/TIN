@@ -102,8 +102,8 @@ void InputHandler::printHelp()
   cout << "\t to the server and saves it to the server with name specified in 'name'\n";
   cout << "\t argument. Process is run in specified time (can be many timestamps).\n";
   cout << "\t Timestamps are seconds from 00:00.\n";
-  cout << "launch_process <name> - Tells the server to start chosen process.n";
-  cout << "request_data <name> <date> <timestamp> - Requesting data from server about specific process run.";
+  cout << "launch_process <name> - Tells the server to start chosen process.\n";
+  cout << "request_data <name> <date> <timestamp> - Requesting data from server about specific process run.\n";
   cout << "delete_process <name> - Tells the server to delete chosen process.\n";
   cout << "show_uploaded - Shows processes uploaded to server.\n";
   cout << "disconnect - Disconnects from the server.\n";
