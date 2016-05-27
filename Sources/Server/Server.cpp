@@ -7,22 +7,14 @@
 #include "../Shared/Commands/StartProcessWithScheduleCommand.h"
 
 #include <thread>
-#include <fcntl.h>
 
 Server::Server(bool admin) : connectedToAdmin(false), fake_admin(admin) {
   prepareAddresses();
   connectToNodes();
   prepareNodeManagers();
-
-  // For testing purposes
-//  Json::FastWriter fastWriter;
-//  std::string processContent = "#!/bin/bash\necho \"Hello World\"\necho $(date)\n";
-//  StartProcessCommand command = StartProcessCommand("666", processContent);
-//  std::string output = fastWriter.write(command.generateJSON());
-//  adminNodeQ.push(std::shared_ptr<std::string>(new std::string(output)));
 }
 
-void Server::pushMessage(const std::string s) {
+void Server::pushFakeMessage(const std::string s) {
   static int processId = 666;
   std::stringstream ss;
   ss << processId;
@@ -30,7 +22,10 @@ void Server::pushMessage(const std::string s) {
   processId++;
   Json::FastWriter fastWriter;
   std::string processContent = "#!/bin/bash\necho \"Hello World\"\necho $(date)\n";
-  if(s == "s") {
+  if(s == "q") {
+    exit(0);
+  }
+  else if(s == "s") {
     StartProcessCommand command(finalId, processContent);
     std::string output = fastWriter.write(command.generateJSON());
     std::cout << "Pushing message : " << output << std::endl;
@@ -44,49 +39,50 @@ void Server::pushMessage(const std::string s) {
     std::cout << "Pushing message : " << output << std::endl;
     adminNodeQ.push(std::shared_ptr<std::string>(new std::string(output)));
   }
+  else if(s[0] == 'd') {
+    std::string deleteMsg = "{\"commandType\" : \"deleteProcess\"\"processDetails\" : {\"processIdentifier\" :";
+    deleteMsg += s[1];
+    deleteMsg += s[2];
+    deleteMsg += s[3];
+    deleteMsg += ";}}";
+    std::cout << "Pushing message : " << deleteMsg << std::endl;
+    adminNodeQ.push(std::shared_ptr<std::string>(new std::string(deleteMsg)));
+  }
 }
 
 void Server::fakeAdminFunction() {
   while(true) {
     std::string input;
     std::cin >> input;
-    pushMessage(input);
+    pushFakeMessage(input);
   }
 }
 
 void Server::prepareAddresses() {
   // 3 seems like a reasonable number of nodes for now
-  nodeAddresses.push_back(SocketAddress("127.0.0.1:40617"));
-  nodeAddresses.push_back(SocketAddress("127.0.0.1:40667"));
-  nodeAddresses.push_back(SocketAddress("127.0.0.1:40668"));
+  nodeAddresses.push_back(SocketAddress("127.0.0.1:40500"));
+  nodeAddresses.push_back(SocketAddress("127.0.0.1:40666"));
+  nodeAddresses.push_back(SocketAddress("127.0.0.1:40646"));
+  nodeAddresses.push_back(SocketAddress("127.0.0.1:40636"));
 }
 
+// Connect to all the (hardcoded) addresses. If we can't connect to one of them, it's not a problem - this function can handle it.
+// If we can't connect to any of them, the application will exit with an error message.
 void Server::connectToNodes() {
-  // TODO: Multiple nodes
-//  SocketAddress nodeAddress("127.0.0.1:40666");
-//  if(nodeSocket.connect(nodeSocket.internalDescriptor(), nodeAddress) == -1) {
-//    perror("Couldn't connect to Node, exiting");
-//    exit(-1);
-//  }
-
-  // Make the sockets non-blocking so we can perform a receive() on all of them in succession.
-  // TODO: Use select() when receiving instead of making the sockets non-blocking?
-  for(auto p : nodeSockets) {
-    fcntl(p.internalDescriptor(), F_SETFL, O_NONBLOCK);
-  }
-
   for(int i = 0; i < nodeAddresses.size(); i++) {
     nodeSockets.push_back(TCPSocket());
-    if(nodeSockets[i].connect(nodeSockets[i].internalDescriptor(), nodeAddresses[i]) == -1) {
-//      perror("Couldn't connect to a Node, exiting");
-//      exit(-1);
-      // If we can't connect to a Node, we can just pop it out of the vector!
+    if(nodeSockets.back().connect(nodeSockets.back().internalDescriptor(), nodeAddresses[i]) == -1) {
+       // If we can't connect to a Node, we can just pop it out of the vector!
       std::cerr << "Couldn't connect to one of the Nodes, ignore it" << std::endl;
       nodeSockets.pop_back();
     }
     else {
-      std::cout << "Connected to Node under the index of: " << i << std::endl;
+      std::cout << "Connected to the node with the index of: " << nodeSockets.size() - 1 << std::endl;
     }
+  }
+  if(nodeSockets.empty()) {
+    std::cerr << "Couldn't connect to any of the nodes, exiting!" << std::endl;
+    exit(-1);
   }
 }
 
@@ -97,7 +93,6 @@ void Server::prepareNodeManagers() {
 }
 
 void Server::waitForAdminToConnect() {
-  //TODO: Error checking, bool return value for success checking?
   TCPSocket listeningSocket;
   SocketAddress myAddress = SocketAddress("127.0.0.1:1666");
   std::cout << "Binding listeningSocket to address\n";
@@ -125,6 +120,7 @@ void Server::waitForAdminToConnect() {
   return;
 }
 
+// Creates a separate thread for each part of the system's communication
 void Server::run() {
   std::thread receiveFromAdminThread;
   if(fake_admin) {
@@ -181,63 +177,68 @@ void Server::sendToAdmin() {
 }
 
 void Server::receiveFromNodes() {
-  // TODO: Make this a loop that checks all Node sockets for messages using non-blocking read()
-  // I should probably change the sockets used for talking with Nodes to be non-blocking when I first set them up
-  // That would require adjusting the MessageNetworkManager class a a bit
-  // Or just implement it here.
-  // Actually, MessageNetworkManager already returns -1 if it gets a -1 form the receive function (which is just a wrapper for recv(),
-  // So I'm _probably_ good if I just check for that.
-  // Ooor use the select() function and decide which sockets to ask for stuff based on its results
-
-  // ...
-
-  std::string buffer;
   while(true) {
-    ssize_t messageSize = nodeManagers[0].receiveMessage(buffer, true);
-    if (messageSize < 0) {
-      continue;
+    fd_set readyToRead;
+    int top_fd = -100;
+    for(auto p : nodeSockets) {
+      FD_SET(p.internalDescriptor(), &readyToRead);
+      if(p.internalDescriptor() > top_fd) {
+        top_fd = p.internalDescriptor();
+      }
     }
-    if (messageSize != 0) {
-      std::cout << "Receive From Nodes, message received : " << buffer << std::endl;
-      std::shared_ptr<std::string> message(new std::string(buffer));
-      nodeAdminQ.push(message);
+    struct timeval timeout;
+    // Timeout immediately - just poll
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 0;
+    select(top_fd + 1, &readyToRead, nullptr, nullptr, &timeout);
+    // readyToRead should now contain all the fd-s that we can read from, so let's do that
+    // Am I making any sense?
+    for(auto p : nodeSockets) {
+      if(FD_ISSET(p.internalDescriptor(), &readyToRead)) {
+        // The socket's fd is in the set, so let's call receive on it
+        // We need to find it's MessageMenager, which sucks. But those are not that important! It will be easier and probably faster
+        // to just make a new one here.
+        MessageNetworkManager manager(p);
+        std::string buffer;
+        manager.receiveMessage(buffer, true);
+        std::cout << "Received a message from a node : \n" << buffer << std::endl;
+        std::shared_ptr<std::string> message(new std::string(buffer));
+        nodeAdminQ.push(message);
+      }
     }
   }
-//
-//  while(true) {
-//    for(int i = 0; i < nodeSockets.size(); i++) {
-//      ssize_t messageSize = nodeManagers[i].receiveMessage(buffer, true);
-//      if(messageSize == -1) {
-//         Nothing to receive, go to next socket
-//        continue;
-//      }
-//      if(messageSize != 0) {
-//        std::cout << "Receive From Nodes, message received : " << buffer << std::endl;
-//        std::shared_ptr<std::string> message(new std::string(buffer));
-//        nodeAdminQ.push(message);
-//      }
-//    }
-//  }
 }
 
 void Server::sendToNodes() {
-  static int currentNode = 0;
+  static int currentNodeIndex = 0;
   while(true) {
-    // MessagesQueue does all the concurrency work for us - no need to worry about it
     std::shared_ptr<std::string> message = adminNodeQ.pop();
-    // TODO: Decide which Node we should send the message to!
-    nodeManagers[0].sendMessage(*message);
+    auto messageInfo = analyzeJson(*message);
+    std::string processId = messageInfo.first;
+    if(processNodeMap.find(processId) != processNodeMap.end()) {
+      // The process already exists in the system, so we need to send the message to the correct Node
+      nodeManagers[processNodeMap[processId]].sendMessage(*message);
+      // If the command says to delete the process, we need to remove it from our map, too. The second element of the pair that
+      // analyzeJson returned tells us about it.
+      if(messageInfo.second) {
+        processNodeMap.erase(processId);
+      }
+    }
+    else {
+      // It's a new process - it doesn't matter where we send it. However, we need to remember it.
+      nodeManagers[currentNodeIndex].sendMessage(*message);
+      processNodeMap[processId] = currentNodeIndex;
+      currentNodeIndex = (currentNodeIndex + 1) % nodeManagers.size();
+    }
   }
 }
 
-int Server::checkAdminMessageContents(const std::string& msg) {
-  // TODO: Work in progress.
+std::pair<std::string, bool> Server::analyzeJson(const std::string& msg) {
   Json::Reader reader;
   Json::Value root;
   reader.parse(msg, root);
-  if(root["commandType"] == "startNewProcess" || root["commandType"] == "startNewProcessWithSchedule") {
-    // It's a new process - send it to a Node
-    return -1;
+  if(root["commandType"].asString() == "deleteProcess") {
+    return std::make_pair(root["processDetails"]["processIdentifier"].asString(), true);
   }
-  // It's a query - choose which Node to send it to
+  return std::make_pair(root["processDetails"]["processIdentifier"].asString(), false);
 }
