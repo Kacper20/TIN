@@ -73,7 +73,7 @@ void Server::connectToNodes() {
     nodeSockets.push_back(TCPSocket());
     if(nodeSockets.back().connect(nodeSockets.back().internalDescriptor(), nodeAddresses[i]) == -1) {
        // If we can't connect to a Node, we can just pop it out of the vector!
-      std::cerr << "Couldn't connect to one of the Nodes, ignore it" << std::endl;
+      std::cerr << "Couldn't connect to one of the Nodes, ignoring it" << std::endl;
       nodeSockets.pop_back();
     }
     else {
@@ -95,28 +95,25 @@ void Server::prepareNodeManagers() {
 void Server::waitForAdminToConnect() {
   TCPSocket listeningSocket;
   SocketAddress myAddress = SocketAddress("127.0.0.1:1666");
-  std::cout << "Binding listeningSocket to address\n";
   if (listeningSocket.bind(myAddress) == -1) {
-    perror("Error while binding occured");
+    perror("ADMIN : Error while binding occured");
     exit(-1);
   }
-  std::cout <<"Binded successfuly\n";
   if (listeningSocket.listen(1) == -1 ) {
-    perror("Error while listening occured");
+    perror("ADMIN : Error while listening occured");
     exit(-1);
   }
-  std::cout << "Listen called\n";
+  std::cout << "Listening for connection from ADMIN\n";
   int newDescriptor = listeningSocket.accept();
   if (newDescriptor == -1) {
-    perror("Error while accepting connection");
+    perror("ADMIN : Error while accepting connection");
     exit(-1);
   }
   adminSocket = TCPSocket(newDescriptor);
 
-  std::cout << "Accepted connection\n";
+  std::cout << "Accepted connection from ADMIN\n";
   //Close listeningSocket that was listening - we only support one client by design.
   listeningSocket.close();
-  std::cout << "Closing listeningSocket" << std::endl;
   return;
 }
 
@@ -154,6 +151,7 @@ void Server::receiveFromAdmin() {
       continue;
     }
     // Put the message into outgoing queue
+    std::cout << "Received message from ADMIN!" << std::endl;
     std::shared_ptr<std::string> message(new std::string(buffer));
     adminNodeQ.push(message);
   }
@@ -164,7 +162,7 @@ void Server::sendToAdmin() {
   // But ONLY if the connection hasn't been already established. We need to make sure we won't wait() on this condition
   // variable after the other thread called notify_one()!
   if(!connectedToAdmin) {
-    std::cout << "Send To Admin: waiting for admin to connect!" << std::endl;
+    std::cout << "Send To Admin Thread: waiting for admin to connect!" << std::endl;
     std::mutex m;
     std::unique_lock<std::mutex> lock(m);
     adminConnected.wait(lock);
@@ -172,6 +170,7 @@ void Server::sendToAdmin() {
 
   while(true) {
     std::shared_ptr<std::string> message = nodeAdminQ.pop();
+    std::cout << "Sending a message to ADMIN" << std::endl;
     adminMessageManager.sendMessage(*message);
   }
 }
