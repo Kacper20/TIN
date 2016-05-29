@@ -21,8 +21,6 @@ private:
     std::function<void(std::shared_ptr<Command>)> receivedMessageFunc;
 
     void printHelp();
-    int checkAddress(const std::string& address_with_port);
-    void receiveAndLogMessage();
     void handleConnect(const std::string& full_command);
     void handleDisconnect();
     void sendProcess(const std::string& full_command);
@@ -31,8 +29,11 @@ private:
     void deleteProcess(const std::string& full_command);
     void requestData(const std::string& full_command);
     void showUploaded();
+
     int isDate(const std::string& date);
     int isNumber(const char& c);
+    int checkAddress(const std::string& address_with_port);
+    bool isFile(std::string path);
     int writeUuidsToFile(std::map<std::string, boost::uuids::uuid> process_uuids);
 
 public:
