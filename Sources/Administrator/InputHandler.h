@@ -1,5 +1,6 @@
 //
 // Created by daria on 21.05.16.
+// modified by dawid
 //
 
 #ifndef TIN_INPUTHANDLER_H

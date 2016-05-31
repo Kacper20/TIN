@@ -19,7 +19,7 @@ class StartProcessWithScheduleCommand : public Command {
   Schedule schedule;
 
   StartProcessWithScheduleCommand (Json::Value json);
-  StartProcessWithScheduleCommand (std::string processId, std::string processContent, Schedule schedule): Command(CommandType::START_NEW_PROCESS),
+  StartProcessWithScheduleCommand (std::string processId, std::string processContent, Schedule schedule): Command(CommandType::START_NEW_PROCESS_WITH_SCHEDULE),
   processId(processId), processContent(processContent), schedule(schedule) {}
   Json::Value generateJSON();
 
