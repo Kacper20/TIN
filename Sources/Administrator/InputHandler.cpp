@@ -1,5 +1,6 @@
 //
 // Created by daria on 21.05.16.
+// modifie by dwid
 //
 
 #include "InputHandler.h"
@@ -11,6 +12,7 @@
 #include <fstream>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/lexical_cast.hpp>
+#include <sys/stat.h>
 
 
 using namespace std;
@@ -96,9 +98,9 @@ void InputHandler::printHelp()
 {
   cout << "Available commands for administrator process:\n";
   cout << "connect <server address:port> - Connects to server on the specified address.\n";
-  cout << "send_process <name> <path to file> - Sends the file you choose to the server\n";
+  cout << "send_process <name> \"path to file\" - Sends the file you choose to the server\n";
   cout << "\t and saves it to the server with the name specified in 'name' argument\n";
-  cout << "send_schedule <name> <path to file> <timestamp> [...] <timestamp> - Sends the file you choose\n";
+  cout << "send_schedule <name> \"path to file\" <timestamp> [...] <timestamp> - Sends the file you choose\n";
   cout << "\t to the server and saves it to the server with name specified in 'name'\n";
   cout << "\t argument. Process is run in specified time (can be many timestamps).\n";
   cout << "\t Timestamps are seconds from 00:00.\n";
@@ -145,7 +147,7 @@ void InputHandler::handleDisconnect()
 void InputHandler::sendProcess(const string& full_command)
 {
   if( full_command.length() <= strlen("send_process")) {
-    cout << "Invalid command. The correct call is: send_process <name> <path to file>.\n";
+    cout << "Invalid command. The correct call is: send_process <name> \"path to file\".\n";
     cout << "Please try again.\n";
     return;
   }
@@ -153,16 +155,30 @@ void InputHandler::sendProcess(const string& full_command)
   string process_name = full_command.substr(full_command.find_first_of(" ") + 1);
   if( process_name.find_first_of(" ") == string::npos)
   {
-      cout << "Invalid number of arguments. The correct call is: send_process <name> <path to file>.\n";
+      cout << "Invalid number of arguments. The correct call is: send_process <name> \"path to file\".\n";
       cout << "Please try again.\n";
       return;
   }
 
-  string process_path = process_name.substr(process_name.find_first_of(" ") + 1);
+  if (process_name.at(process_name.find_first_of(" ") + 1) != '"')
+  {
+      cout << "Please put path to file in quotes.\nTry again.\n";
+      return;
+  }
 
-  //checking if file path ends with .sh
-  if(process_path[process_path.length()-1] != 'h' || process_path[process_path.length()-2] != 's' || process_path[process_path.length()-3] != '.') {
-      cout << "Invalid file. \nPlease try again.\n";
+  string process_path = process_name.substr(process_name.find_first_of(" ") + 2);
+
+  if (process_path.find_first_of("\"") == string::npos)
+  {
+      cout << "Please put path to file in quotes.\nTry again.\n";
+      return;
+  }
+
+  process_path = process_path.erase(process_path.find_first_of("\""));
+  if (!isFile(process_path))
+  {
+      cout << "Given argument is not a file!.\n";
+      cout << "Please try again.\n";
       return;
   }
 
@@ -208,33 +224,8 @@ void InputHandler::sendProcess(const string& full_command)
   admin.sendMessage(message);
 }
 
-int InputHandler::writeUuidsToFile(std::map<std::string, boost::uuids::uuid> process_uuids)
+void InputHandler::launchProcess(const string& full_command)
 {
-  if (!process_uuids.empty())
-  {
-    std::map<std::string, boost::uuids::uuid>::iterator it;
-    ofstream uuids_file ("uuids_file.txt"); //not sure where to put this file
-
-    if (uuids_file.is_open())
-    {
-      for (it = process_uuids.begin(); it != process_uuids.end(); ++it)
-      {
-          uuids_file << it->first << " ";
-          uuids_file << to_string(it->second) << "\n";
-      }
-      uuids_file.close();
-    }
-    else
-    {
-      cout << "Unable to open file with uuids.\n";
-      return -1;
-    }
-  }
-
-  return 0;
-}
-
-void InputHandler::launchProcess(const string& full_command) {
   if (full_command.length() <= strlen("launch_process")) {
     cout << "Invalid command. The correct call is: launch_process <name>. \n";
     cout << "Please try again. \n";
@@ -262,7 +253,8 @@ void InputHandler::launchProcess(const string& full_command) {
   admin.sendMessage(message);
 }
 
-void InputHandler::deleteProcess(const std::string& full_command) {
+void InputHandler::deleteProcess(const std::string& full_command)
+{
   if (full_command.length() <= strlen("delete_process")) {
     cout << "Invalid command. The correct call is: delete_process <name>. \n";
     cout << "Please try again. \n";
@@ -292,7 +284,8 @@ void InputHandler::deleteProcess(const std::string& full_command) {
   admin.sendMessage(message);
 }
 
-void InputHandler::showUploaded(){
+void InputHandler::showUploaded()
+{
     std::map<std::string, boost::uuids::uuid>::iterator it;
     std::cout << "Uploaded processes: \n";
     for(it = process_uuids.begin(); it != process_uuids.end(); ++it){
@@ -301,42 +294,69 @@ void InputHandler::showUploaded(){
     std::cout << "\n";
 }
 
-void InputHandler::sendScheduledProcess(const std::string &full_command) {
+void InputHandler::sendScheduledProcess(const std::string &full_command)
+{
     if (full_command.length() <= strlen("send_process")) {
-        cout << "Invalid command. The correct call is: send_process <name> <path to file>.\n";
+        cout << "Invalid command. The correct call is: send_schedule <name> \"path to file\" <timestamp> [...] <timestamp>.\n";
         cout << "Please try again.\n";
         return;
     }
 
     string process_name = full_command.substr(full_command.find_first_of(" ") + 1);
     if (process_name.find_first_of(" ") == string::npos) {
-        cout << "Invalid number of arguments. The correct call is: send_process <name> <path to file>.\n";
+        cout << "Invalid number of arguments. The correct call is: send_schedule <name> \"path to file\" <timestamp> [...] <timestamp>.\n";
         cout << "Please try again.\n";
         return;
     }
 
     string process_path = process_name.substr(process_name.find_first_of(" ") + 1);
-    if (process_path.find_first_of(" ") == string::npos) {
-        std::cout << "Invalid number of arguments. \nPlease try again.\n";
+    int quote_index = process_path.find_first_of('"');
+    int second_quote_index = process_path.find_last_of('"');
+    string process_timestamps;
+
+    if ( quote_index == string::npos) {
+        cout << "Please put path to file in quotes.\nTry again.\n";
+        return;
+    }
+    else if (second_quote_index == quote_index)
+    {
+        cout << "Please put path to file in quotes.\nTry again.\n";
         return;
     }
 
-    string process_timestamps = process_path.substr(process_path.find_first_of(" ") + 1);
+    if (process_path.length() - 1  <= second_quote_index) //There are no timestamps
+    {
+        cout << "Invalid number of arguments. The correct call is: send_schedule <name> \"path to file\" <timestamp> [...] <timestamp>.\n";
+        cout << "Please try again.\n";
+        return;
+    }
+
+    process_path = process_path.erase(quote_index, 1); // delete first quote
+    process_timestamps = process_path.substr(second_quote_index + 1);
+
     process_path = process_path.substr(0, process_path.length() - process_timestamps.length() - 1);
-    //checking if file path ends with .sh
-    if (process_path[process_path.length() - 1] != 'h' || process_path[process_path.length() - 2] != 's' ||
-        process_path[process_path.length() - 3] != '.') {
-        cout << "Invalid file. \nPlease try again. \n";
+    process_path = process_path.erase(second_quote_index - 1 , 1); //delete second quote
+
+    if (!isFile(process_path))
+    {
+        cout << "Given argument is not a file!.\n";
+        cout << "Please try again.\n";
         return;
     }
 
-    process_name = process_name.substr(0, process_name.length() - process_path.length() - 1);
+    int i = process_name.length();
+    int j = process_path.length();
+    int k = process_timestamps.length();
+
+    process_name = process_name.substr(0, process_name.length() - process_path.length() - process_timestamps.length() - 4);  // minus quotes and two spaces
     fstream process_file(process_path, ios::in);
     if (!process_file.is_open()) {
         cout << "File does not exist.  \n";
         cout << "Please try again. \n";
         return;
     }
+
+    cout << process_name << " " << process_path << " " << process_timestamps << endl;
 
     //loading process code
     string process_code;
@@ -394,9 +414,10 @@ void InputHandler::sendScheduledProcess(const std::string &full_command) {
     admin.sendMessage(message);
 }
 
-void InputHandler::requestData(const std::string &full_command){
+void InputHandler::requestData(const std::string &full_command)
+{
     if( full_command.length() <= strlen("send_process")) {
-        cout << "Invalid command. The correct call is: request_data <name> <path to file>. \n";
+        cout << "Invalid command. The correct call is: request_data <name> \"path to file\". \n";
         cout << "Please try again. \n";
         return;
     }
@@ -447,7 +468,34 @@ void InputHandler::requestData(const std::string &full_command){
     admin.receiveMessage();
 }
 
-int InputHandler::isDate(const std::string &date){
+int InputHandler::writeUuidsToFile(std::map<std::string, boost::uuids::uuid> process_uuids)
+{
+    if (!process_uuids.empty())
+    {
+        std::map<std::string, boost::uuids::uuid>::iterator it;
+        ofstream uuids_file ("uuids_file.txt"); //not sure where to put this file
+
+        if (uuids_file.is_open())
+        {
+            for (it = process_uuids.begin(); it != process_uuids.end(); ++it)
+            {
+                uuids_file << it->first << " ";
+                uuids_file << to_string(it->second) << "\n";
+            }
+            uuids_file.close();
+        }
+        else
+        {
+            cout << "Unable to open file with uuids.\n";
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+int InputHandler::isDate(const std::string &date)
+{
     for(int i = 0 ; i < 10; ++i){
         if(i == 2 || i == 5)
             ++i;
@@ -470,8 +518,17 @@ int InputHandler::isDate(const std::string &date){
     return 1;
 }
 
-int InputHandler::isNumber(const char &c){
+int InputHandler::isNumber(const char &c)
+{
     if(c>='0' && c <='9')
         return 1;
     return 0;
+}
+
+bool InputHandler::isFile(std::string path)
+{
+  struct stat buf;
+  stat(path.data(), &buf);
+
+  return S_ISREG(buf.st_mode);
 }
