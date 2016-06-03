@@ -29,9 +29,8 @@ static std::string descriptionForCommandType(CommandType type) {
 
 class Command {
 
- private:
-  CommandType commandType;
  public:
+  CommandType commandType;
   Command(CommandType commandType) : commandType(commandType) {}
   virtual Json::Value generateJSON();
 

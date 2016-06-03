@@ -54,7 +54,7 @@ int main() {
 
   ProcessInstantRunHandler instantRunHandler;
   ProcessScheduledRunHandler scheduledRunHandler;
-  CommandDispatcher dispatcher(instantRunHandler);
+  CommandDispatcher dispatcher(instantRunHandler, scheduledRunHandler);
 
   std::shared_ptr<NodeServer> server = std::make_shared<NodeServer>([&dispatcher](std::shared_ptr<Command> commandToDispatch) {
     //WARN: It's called from another thread -
@@ -62,6 +62,10 @@ int main() {
   });
 
   instantRunHandler.responseCompletion = [&server](std::shared_ptr<Response> response) {
+    server->sendResponse(response);
+  };
+
+  scheduledRunHandler.responseCompletion = [&server](std::shared_ptr<Response> response) {
     server->sendResponse(response);
   };
 

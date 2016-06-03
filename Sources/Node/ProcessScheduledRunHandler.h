@@ -15,7 +15,6 @@ typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
 
 class ProcessScheduledRunHandler {
 
-
   struct ProcessScheduledRunMonitoringTask {
     ProcessScheduledRunHandler &processHandler;
     int pidToWait;
@@ -28,8 +27,7 @@ class ProcessScheduledRunHandler {
                                                                       pidToWait(pidToWait),
                                                                       completion(completion), command(command) { }
     void operator()() {
-      //TODO: TASK run!
-//      processHandler.monitorProcessesEndings(command, pidToWait, completion);
+      processHandler.monitorScheduledProcessesEndings(command, pidToWait, completion);
     }
   };
 
@@ -49,11 +47,15 @@ class ProcessScheduledRunHandler {
   //Internal scheduler queue
   std::priority_queue<TimestampWithSchedule, std::vector<TimestampWithSchedule>, PqueueTypeCompare > schedulerPriorityQueue;
 
+  //Helper functions
   std::pair<time_t, int> closestTimeFromCommand(std::shared_ptr<StartProcessWithScheduleCommand> command);
 
  public:
+  ResponseCompletion responseCompletion;
+  void monitorScheduledProcessesEndings(std::shared_ptr<StartProcessWithScheduleCommand>, int pidToWait, ResponseCompletion responseCompletion);
   void scheduleProcess(std::shared_ptr<StartProcessWithScheduleCommand> process);
   void monitorScheduledProcessesToRun();
+  void removeProcessData(std::string processId);
 
 };
 

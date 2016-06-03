@@ -31,6 +31,13 @@ void ProcessScheduledRunHandler::scheduleProcess(std::shared_ptr<StartProcessWit
   queueOfCommandsToSchedule.push(process);
 }
 
+void ProcessScheduledRunHandler::monitorScheduledProcessesEndings(std::shared_ptr<StartProcessWithScheduleCommand>,
+                                                                  int pidToWait,
+                                                                  ResponseCompletion responseCompletion) {
+
+
+}
+
 void ProcessScheduledRunHandler::monitorScheduledProcessesToRun() {
   while (1) {
     std::vector<std::shared_ptr<StartProcessWithScheduleCommand> > processesFromQueue;
@@ -59,4 +66,8 @@ void ProcessScheduledRunHandler::monitorScheduledProcessesToRun() {
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(SCHEDULER_SLEEP_TIME));
   }
+}
+
+void ProcessScheduledRunHandler::removeProcessData(std::string processId) {
+  //TODO: To implement
 }
