@@ -4,6 +4,10 @@
 
 #include <fstream>
 #include "FileManager.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <uuid/uuid.h>
 
 int FileManager::createDirectoryAtPath(const std::string& path) {
   return mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
@@ -24,4 +28,17 @@ std::string FileManager::readFromFile(const std::string &path) {
 
 std::string FileManager::buildPath(const std::string &base, const std::string &subpath) {
   return base + "/" + subpath;
+}
+
+int FileManager::deleteDirectoryAtPath(const std::string &path) {
+  return rmdir(path.c_str());
+}
+
+std::string FileManager::homeDir() {
+  const char *homedir;
+
+  if ((homedir = getenv("HOME")) == NULL) {
+    homedir = getpwuid(getuid())->pw_dir;
+  }
+  return std::string(homedir);
 }

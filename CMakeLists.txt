@@ -17,13 +17,13 @@ set(SHARED_FILES Sources/Libraries/jsoncpp.cpp Sources/Libraries/json/json.h Sou
         Sources/Shared/Responses/Response.cpp Sources/Shared/Responses/Response.h
         Sources/Shared/Responses/StartProcessResponse.cpp Sources/Shared/Responses/StartProcessResponse.h
         Sources/Shared/Commands/StartProcessWithScheduleCommand.cpp Sources/Shared/Commands/StartProcessWithScheduleCommand.h
-        Sources/Shared/Schedule/Schedule.cpp Sources/Shared/Schedule/Schedule.h)
+        Sources/Shared/Schedule/Schedule.cpp Sources/Shared/Schedule/Schedule.h Sources/Shared/DateUtilities.cpp Sources/Shared/DateUtilities.h)
 
 set(NODE_SOURCE ${SHARED_FILES} Sources/Node/main.cpp  Sources/Node/WorkerNode.cpp Sources/Node/WorkerNode.h
-        Sources/Node/NodeNetworkLayer.cpp Sources/Node/NodeNetworkLayer.h Sources/Node/ProcessHandler.cpp
-        Sources/Node/ProcessHandler.h Sources/Node/CommandsDeserializer.cpp Sources/Node/CommandsDeserializer.h
+        Sources/Node/NodeNetworkLayer.cpp Sources/Node/NodeNetworkLayer.h Sources/Node/ProcessInstantRunHandler.cpp
+        Sources/Node/ProcessInstantRunHandler.h Sources/Node/CommandsDeserializer.cpp Sources/Node/CommandsDeserializer.h
         Sources/Node/NodeServer.cpp Sources/Node/NodeServer.h Sources/Node/CommandDispatcher.h
-        Sources/Node/CommandDispatcher.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.h Sources/Node/PathConstants.h)
+        Sources/Node/CommandDispatcher.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.h Sources/Node/PathConstants.h Sources/Node/ProcessUtilities.cpp Sources/Node/ProcessUtilities.h Sources/Node/ProcessScheduledRunHandler.cpp Sources/Node/ProcessScheduledRunHandler.h)
 
 set(SERVER_SOURCE ${SHARED_FILES} Sources/Server/main.cpp Sources/Server/Server.h Sources/Server/Server.cpp)
 

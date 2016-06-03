@@ -11,10 +11,8 @@
 
 class Schedule {
 
- private:
-  std::vector<int> timestamps;
-
  public:
+  std::vector<int> timestamps;
   Schedule() {}
   Schedule(std::vector<int> timestamps) : timestamps(timestamps) {}
   Json::Value generateJson() {

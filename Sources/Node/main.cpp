@@ -4,6 +4,8 @@
 #include "CommandDispatcher.h"
 #include "NodeServer.h"
 #import "../Shared/Responses/Response.h"
+#include "../Shared/DateUtilities.h"
+#include "ProcessScheduledRunHandler.h"
 using namespace std;
 
 typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
@@ -25,10 +27,18 @@ struct CommandsDispatchingTask {
 };
 
 struct ProcessRunningTask {
-  ProcessHandler &processHandler;
-  ProcessRunningTask(ProcessHandler &handler): processHandler(handler) {}
+  ProcessInstantRunHandler &processHandler;
+  ProcessRunningTask(ProcessInstantRunHandler &handler): processHandler(handler) {}
   void operator() () {
-    processHandler.startMonitoringForProcessesToRun();
+    processHandler.startMonitoringForProcessesToInstantRun();
+  }
+};
+
+struct ProcessSchedulingTask {
+  ProcessScheduledRunHandler &processHandler;
+  ProcessSchedulingTask(ProcessScheduledRunHandler &handler): processHandler(handler) {}
+  void operator() () {
+    processHandler.monitorScheduledProcessesToRun();
   }
 };
 
@@ -42,23 +52,27 @@ struct ServerSendingTask {
 
 int main() {
 
-  ProcessHandler handler;
-  CommandDispatcher dispatcher(handler);
+  ProcessInstantRunHandler instantRunHandler;
+  ProcessScheduledRunHandler scheduledRunHandler;
+  CommandDispatcher dispatcher(instantRunHandler);
 
   std::shared_ptr<NodeServer> server = std::make_shared<NodeServer>([&dispatcher](std::shared_ptr<Command> commandToDispatch) {
     //WARN: It's called from another thread -
     dispatcher.processCommand(commandToDispatch);
   });
 
-  handler.responseCompletion = [&server](std::shared_ptr<Response> response) {
+  instantRunHandler.responseCompletion = [&server](std::shared_ptr<Response> response) {
     server->sendResponse(response);
   };
+
+  ProcessSchedulingTask processSchedulingTask(scheduledRunHandler);
+  std::thread processSchedulingThread(processSchedulingTask);
 
   ServerSendingTask serverSendingTask(*server);
   std::thread serverSendingThread(serverSendingTask);
 
 
-  ProcessRunningTask processRunningTask(handler);
+  ProcessRunningTask processRunningTask(instantRunHandler);
   std::thread processRunningThread(processRunningTask);
 
   CommandsDispatchingTask dispatcherTask(dispatcher);
@@ -67,6 +81,7 @@ int main() {
   ServerReceivingTask serverTask(*server);
   std::thread serverThread(serverTask);
 
+  processSchedulingThread.join();
   serverSendingThread.join();
   processRunningThread.join();
   serverThread.join();

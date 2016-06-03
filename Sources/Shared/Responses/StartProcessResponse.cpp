@@ -4,7 +4,8 @@
 
 #include "StartProcessResponse.h"
 
-StartProcessResponse::StartProcessResponse(Json::Value json) : Response(ResponseType::START_NEW_PROCESS) {
+StartProcessResponse::StartProcessResponse(Json::Value json) : Response(ResponseType::START_NEW_PROCESS,
+ResponseStatus::SUCCESS) {
   Json::Value processDetails = json[JSONConstants::ProcessDetails];
   standardError = processDetails[JSONConstants::StandardError].asString();
   standardOutput = processDetails[JSONConstants::StandardOutput].asString();
