@@ -5,7 +5,7 @@
 #include "ScheduledProcessEndedResponse.h"
 
 ScheduledProcessEndedResponse::ScheduledProcessEndedResponse(Json::Value json):
-    Response(ResponseType::SCHEDULED_PROCESS_ENDED) {
+    Response(ResponseType::SCHEDULED_PROCESS_ENDED, ResponseStatus::SUCCESS) {
   Json::Value processDetails = json[JSONConstants::ProcessDetails];
   processId = processDetails[JSONConstants::ProcessIdentifier].asString();
   dayDate = processDetails[JSONConstants::Date].asString();

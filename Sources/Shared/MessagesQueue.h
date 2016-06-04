@@ -48,6 +48,15 @@ class MessagesQueue {
     return receivedObject;
   }
 
+  //Returns null if it's not nil
+  std::shared_ptr<T> tryPop() {
+    std::unique_lock<std::mutex> lock(mutex);
+    if (queue.size() != 0) {
+      return queue.front();
+    }
+    return std::shared_ptr<T>();
+  }
+
   unsigned long size() {
     return queue.size();
   }

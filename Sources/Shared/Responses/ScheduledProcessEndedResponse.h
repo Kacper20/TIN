@@ -15,7 +15,7 @@ class ScheduledProcessEndedResponse: public Response {
   int timestamp;
   ScheduledProcessEndedResponse (Json::Value json);
   ScheduledProcessEndedResponse (string processId, string dayDate, int timestamp):
-  Response(ResponseType::START_NEW_PROCESS), processId(processId), dayDate(dayDate), timestamp(timestamp) {}
+  Response(ResponseType::START_NEW_PROCESS, ResponseStatus::SUCCESS), processId(processId), dayDate(dayDate), timestamp(timestamp) {}
   Json::Value generateJSON();
 };
 

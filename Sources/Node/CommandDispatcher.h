@@ -10,7 +10,8 @@
 #include <queue>
 #include <condition_variable>
 #include <mutex>
-#include "ProcessHandler.h"
+#include "ProcessInstantRunHandler.h"
+#include "ProcessScheduledRunHandler.h"
 /*
  * Class that takes care of dispatching methods ie. recognizes them, and performs all of the logic.
  */
@@ -21,13 +22,16 @@ class CommandDispatcher {
  private:
   MessagesQueue<Command> queue;
   void processCommandsInfinitely();
-  ProcessHandler& handler;
+  ProcessInstantRunHandler& processInstantRunHandler;
+  ProcessScheduledRunHandler& processScheduledRunHandler;
+
  public:
 
-  CommandDispatcher(ProcessHandler& handler): handler(handler) {}
+  CommandDispatcher(ProcessInstantRunHandler &processInstantRunHandler,
+                    ProcessScheduledRunHandler &processScheduledRunHandler) :
+      processInstantRunHandler(processInstantRunHandler), processScheduledRunHandler(processScheduledRunHandler) { }
   void processCommand(std::shared_ptr<Command>);
   void startDispatching();
-
 };
 
 

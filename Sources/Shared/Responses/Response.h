@@ -10,9 +10,15 @@
 
 #include <string>
 
+
 enum class ResponseType {
   START_NEW_PROCESS,
-  SCHEDULED_PROCESS_ENDED
+  SCHEDULED_PROCESS_ENDED,
+  DELETE_PROCESS
+};
+
+enum class ResponseStatus {
+  SUCCESS, FAIL
 };
 
 static std::string descriptionForResponseType(ResponseType type) {
@@ -21,14 +27,18 @@ static std::string descriptionForResponseType(ResponseType type) {
       return "startNewProcess";
     case ResponseType ::SCHEDULED_PROCESS_ENDED:
       return "scheduledProcessEnded";
+    case ResponseType::DELETE_PROCESS:
+      return "";
   }
 }
 
 class Response {
- private:
-  ResponseType responseType;
  public:
-  Response(ResponseType responseType) : responseType(responseType) {}
+  ResponseType responseType;
+  ResponseStatus responseStatus;
+  std::string message;
+  Response(ResponseType responseType, ResponseStatus responseStatus)
+      : responseType(responseType), responseStatus(responseStatus) { }
   virtual Json::Value generateJSON();
 };
 
