@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
-#include <uuid/uuid.h>
+#include <boost/uuid/uuid.hpp>
 
 int FileManager::createDirectoryAtPath(const std::string& path) {
   return mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);

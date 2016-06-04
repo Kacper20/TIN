@@ -14,13 +14,24 @@ struct InputHandlingTask {
     }
 };
 
+struct ReceiveMessagesTask{
+    AdminNetworkLayer layer;
+    ReceiveMessagesTask(AdminNetworkLayer layer): layer(layer) {}
+    void operator() () {
+        layer.receiveMessage();
+    }
+};
+
 
 int main(int argc, char* argv[]) {
     AdminNetworkLayer admin;
     InputHandler handler(admin);
 
     InputHandlingTask inputTask(handler);
+    ReceiveMessagesTask receiveMessageTask(admin);
     std::thread inputThread(inputTask);
+    std::thread messagesThread(receiveMessageTask);
 
     inputThread.join();
+    messagesThread.join();
 }

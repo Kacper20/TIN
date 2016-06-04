@@ -1,6 +1,6 @@
 //
 // Created by daria on 21.05.16.
-// modifie by dwid
+// modified by dawid
 //
 
 #include "InputHandler.h"
@@ -13,6 +13,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/lexical_cast.hpp>
 #include <sys/stat.h>
+#include <thread>
 
 
 using namespace std;
@@ -466,7 +467,6 @@ void InputHandler::requestData(const std::string &full_command)
     std::string message = fastWriter.write(command.generateJSON());
 
     admin.sendMessage(message);
-    admin.receiveMessage();
 }
 
 int InputHandler::writeUuidsToFile(std::map<std::string, boost::uuids::uuid> process_uuids)
