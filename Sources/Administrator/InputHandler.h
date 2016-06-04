@@ -16,7 +16,7 @@
 class InputHandler
 {
 private:
-    AdminNetworkLayer admin;
+    AdminNetworkLayer *admin;
     boost::uuids::uuid dns_namespace_uuid;
     std::map<std::string, boost::uuids::uuid> process_uuids;
     std::function<void(std::shared_ptr<Command>)> receivedMessageFunc;
@@ -38,7 +38,7 @@ private:
     int writeUuidsToFile(std::map<std::string, boost::uuids::uuid> process_uuids);
 
 public:
-    InputHandler(AdminNetworkLayer admin);
+    InputHandler(AdminNetworkLayer *admin);
     void run();
 };
 

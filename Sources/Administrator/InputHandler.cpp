@@ -18,7 +18,7 @@
 
 using namespace std;
 
-InputHandler::InputHandler(AdminNetworkLayer admin){
+InputHandler::InputHandler(AdminNetworkLayer *admin){
     this->admin = admin;
     string line, name;
     boost::uuids::uuid u;
@@ -131,7 +131,7 @@ void InputHandler::handleConnect(const string& full_command)
   int result = checkAddress(address_with_port);
 
   if(result == 0) {
-    admin.connectToServer(address_with_port);
+    admin->connectToServer(address_with_port);
   }
   else
   {
@@ -142,7 +142,7 @@ void InputHandler::handleConnect(const string& full_command)
 
 void InputHandler::handleDisconnect()
 {
-  admin.disconnectFromServer();
+  admin->disconnectFromServer();
 }
 
 void InputHandler::sendProcess(const string& full_command)
@@ -222,7 +222,7 @@ void InputHandler::sendProcess(const string& full_command)
   Json::FastWriter fastWriter;
   std::string message = fastWriter.write(command.generateJSON());
 
-  admin.sendMessage(message);
+  admin->sendMessage(message);
 }
 
 void InputHandler::launchProcess(const string& full_command)
@@ -251,7 +251,7 @@ void InputHandler::launchProcess(const string& full_command)
   Json::FastWriter fastWriter;
   std::string message = fastWriter.write(command.generateJSON());
 
-  admin.sendMessage(message);
+  admin->sendMessage(message);
 }
 
 void InputHandler::deleteProcess(const std::string& full_command)
@@ -282,7 +282,7 @@ void InputHandler::deleteProcess(const std::string& full_command)
   Json::FastWriter fastWriter;
   std::string message = fastWriter.write(command.generateJSON());
 
-  admin.sendMessage(message);
+  admin->sendMessage(message);
 }
 
 void InputHandler::showUploaded()
@@ -412,7 +412,7 @@ void InputHandler::sendScheduledProcess(const std::string &full_command)
     Json::FastWriter fastWriter;
     std::string message = fastWriter.write(command.generateJSON());
 
-    admin.sendMessage(message);
+    admin->sendMessage(message);
 }
 
 void InputHandler::requestData(const std::string &full_command)
@@ -466,7 +466,7 @@ void InputHandler::requestData(const std::string &full_command)
     Json::FastWriter fastWriter;
     std::string message = fastWriter.write(command.generateJSON());
 
-    admin.sendMessage(message);
+    admin->sendMessage(message);
 }
 
 int InputHandler::writeUuidsToFile(std::map<std::string, boost::uuids::uuid> process_uuids)

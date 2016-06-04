@@ -61,6 +61,7 @@ void AdminNetworkLayer::receiveMessage()
             continue;
         }
         else {
+            cout << "jestem tu\n";
             ssize_t messageSize = networkManager.receiveMessage(buffer);
             if (messageSize > 0) {
                 cout << "Received message from Server!\n";

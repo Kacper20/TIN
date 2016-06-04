@@ -15,16 +15,16 @@ struct InputHandlingTask {
 };
 
 struct ReceiveMessagesTask{
-    AdminNetworkLayer layer;
-    ReceiveMessagesTask(AdminNetworkLayer layer): layer(layer) {}
+    AdminNetworkLayer *layer;
+    ReceiveMessagesTask(AdminNetworkLayer *layer): layer(layer) {}
     void operator() () {
-        layer.receiveMessage();
+        layer->receiveMessage();
     }
 };
 
 
 int main(int argc, char* argv[]) {
-    AdminNetworkLayer admin;
+    AdminNetworkLayer *admin = new AdminNetworkLayer();
     InputHandler handler(admin);
 
     InputHandlingTask inputTask(handler);
@@ -34,4 +34,5 @@ int main(int argc, char* argv[]) {
 
     inputThread.join();
     messagesThread.join();
+    delete(admin);
 }
