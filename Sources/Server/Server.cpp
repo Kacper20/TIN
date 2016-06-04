@@ -59,7 +59,6 @@ void Server::fakeAdminFunction() {
 }
 
 void Server::prepareAddresses() {
-  // 3 seems like a reasonable number of nodes for now
   nodeAddresses.push_back(SocketAddress("127.0.0.1:40500"));
   nodeAddresses.push_back(SocketAddress("127.0.0.1:40666"));
   nodeAddresses.push_back(SocketAddress("127.0.0.1:40646"));
@@ -110,6 +109,7 @@ void Server::waitForAdminToConnect() {
     exit(-1);
   }
   adminSocket = TCPSocket(newDescriptor);
+  connectedToAdmin = true;
 
   std::cout << "Accepted connection from ADMIN\n";
   //Close listeningSocket that was listening - we only support one client by design.
@@ -139,39 +139,62 @@ void Server::run() {
 }
 
 void Server::receiveFromAdmin() {
-  waitForAdminToConnect();
-  adminMessageManager = MessageNetworkManager(adminSocket);
-  adminConnected.notify_one();
   std::string buffer;
-
   while (true) {
-    ssize_t messageSize = adminMessageManager.receiveMessage(buffer);
-    if (messageSize < 0) {
-      //Something's wrong!
-      continue;
+    if(!connectedToAdmin) {
+      waitForAdminToConnect();
+      adminMessageManager = MessageNetworkManager(adminSocket);
+      adminConnected.notify_one();
     }
-    // Put the message into outgoing queue
-    std::cout << "Received message from ADMIN!" << std::endl;
-    std::shared_ptr<std::string> message(new std::string(buffer));
-    adminNodeQ.push(message);
+    else {
+      ssize_t messageSize = adminMessageManager.receiveMessage(buffer);
+      if (messageSize > 0) {
+        // We received a message, now we need to put it into the right queue
+        std::cout << "Received message from ADMIN!" << std::endl;
+        std::shared_ptr<std::string> message(new std::string(buffer));
+        adminNodeQ.push(message);
+      }
+      else if (messageSize == 0) {
+        // recv() returns 0 if the remote side has closed the connection on us!
+        // If the Administrator module decided to disconnect, we need to handle it and start listening for a new connection
+        std::cout << "ADMIN disconnected! Starting to listen for new connection..." << std::endl;
+        connectedToAdmin = false;
+        adminSocket.close(); // close this socket, we don't need it anymore
+      }
+    }
   }
 }
 
 void Server::sendToAdmin() {
-  // Wait for the AdminListener thread to connect to the Administrator module
-  // But ONLY if the connection hasn't been already established. We need to make sure we won't wait() on this condition
-  // variable after the other thread called notify_one()!
-  if(!connectedToAdmin) {
-    std::cout << "Send To Admin Thread: waiting for admin to connect!" << std::endl;
-    std::mutex m;
-    std::unique_lock<std::mutex> lock(m);
-    adminConnected.wait(lock);
-  }
-
   while(true) {
-    std::shared_ptr<std::string> message = nodeAdminQ.pop();
-    std::cout << "Sending a message to ADMIN" << std::endl;
-    adminMessageManager.sendMessage(*message);
+    // Wait for the AdminListener thread to connect to the Administrator module
+    // But ONLY if the connection hasn't been already established. We need to make sure we won't wait() on this condition
+    // variable after the other thread called notify_one()!
+    if(!connectedToAdmin) {
+      std::cout << "Send To Admin Thread: waiting for admin to connect!" << std::endl;
+      std::mutex m;
+      std::unique_lock<std::mutex> lock(m);
+      adminConnected.wait(lock);
+    }
+    // We are connected and can proceed with sending messages to the administrator
+    else {
+      std::shared_ptr<std::string> message = nodeAdminQ.pop();
+      std::cout << "Sending a message to ADMIN" << std::endl;
+      if (adminMessageManager.sendMessage(*message) == -1) {
+        // send() returns -1 and sets errno to EPIPE (broken pipe) if the other side decided to give us the boot
+        if (errno == EPIPE) {
+          // We better put the message back into the queue, lest we lose it!
+          nodeAdminQ.push(message);
+          // We are tired and want to catch some z's.
+          // Making sure the boolean connectedToAdmin is false will allow us to do that on the next iteration of the while loop.
+          connectedToAdmin = false;
+        }
+        else {
+          // Something bad happened - an error occurred while sending, but it's not EPIPE. What now?
+          exit(-616);
+        }
+      }
+    }
   }
 }
 
