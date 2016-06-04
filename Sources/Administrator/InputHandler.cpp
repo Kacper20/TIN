@@ -455,6 +455,7 @@ void InputHandler::requestData(const std::string &full_command)
     }
 
     boost::uuids::uuid u_to_send;
+
     boost::uuids::name_generator gen(dns_namespace_uuid);
     boost::uuids::uuid u = gen(std::string(process_name));
     process_uuids.insert(std::pair<std::string,boost::uuids::uuid>(process_name, u));

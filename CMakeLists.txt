@@ -25,6 +25,9 @@ set(NODE_SOURCE ${SHARED_FILES} Sources/Node/main.cpp  Sources/Node/WorkerNode.c
         Sources/Node/NodeServer.cpp Sources/Node/NodeServer.h Sources/Node/CommandDispatcher.h
         Sources/Node/CommandDispatcher.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.h Sources/Node/PathConstants.h Sources/Node/ProcessUtilities.cpp Sources/Node/ProcessUtilities.h Sources/Node/ProcessScheduledRunHandler.cpp Sources/Node/ProcessScheduledRunHandler.h)
 
+
+include_directories("/usr/local/include")
+
 set(SERVER_SOURCE ${SHARED_FILES} Sources/Server/main.cpp Sources/Server/Server.h Sources/Server/Server.cpp)
 
 set(ADMIN_SOURCE ${SHARED_FILES} Sources/Administrator/main.cpp  Sources/Administrator/InputHandler.cpp Sources/Administrator/InputHandler.h Sources/Administrator/AdministratorNetworkLayer.cpp Sources/Administrator/AdministratorNetworkLayer.h )
