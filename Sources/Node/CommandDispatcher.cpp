@@ -7,6 +7,7 @@
 #include "../Shared/Commands/StartProcessCommand.h"
 #include "../Shared/Commands/DeleteProcessCommand.h"
 #include "../Shared/Commands/LaunchProcessCommand.h"
+#include "../Shared/Commands/RequestProcessStatisticsCommand.h"
 
 
 void CommandDispatcher::startDispatching() {
@@ -48,6 +49,13 @@ void CommandDispatcher::processCommandsInfinitely()  {
       std::shared_ptr<LaunchProcessCommand> processCommand = std::static_pointer_cast<LaunchProcessCommand>(command);
       if (processCommand != nullptr) {
         processInstantRunHandler.launchProcess(processCommand);
+      }
+    }
+
+    if (command->commandType == CommandType::REQUEST_STATISTICS) {
+      std::shared_ptr<RequestProcessStatisticsCommand> processCommand = std::static_pointer_cast<RequestProcessStatisticsCommand>(command);
+      if (processCommand != nullptr) {
+        collector.requestStatisticsForProcess(processCommand->processId);
       }
     }
 

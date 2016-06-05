@@ -14,6 +14,8 @@ class ProcessStatisticsCollector {
   ResponseCompletion responseCompletion;
   //Function called when someone
 
+  //Function that takes care of gathering stats and sending it to server
+  void requestStatisticsForProcess(std::string processId);
 };
 
 
