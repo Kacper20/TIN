@@ -15,15 +15,15 @@ enum class CommandType {
 static std::string descriptionForCommandType(CommandType type) {
   switch (type) {
     case CommandType::START_NEW_PROCESS:
-      return "startNewProcess";
+      return JSONConstants::CommandStartNewProcess;
     case CommandType ::START_NEW_PROCESS_WITH_SCHEDULE:
-      return "startNewProcessWithSchedule";
+      return JSONConstants::CommandStartNewProcessWithSchedule;
     case CommandType :: LAUNCH_PROCESS:
-      return "launchProcess";
+      return JSONConstants::CommandLaunchProcess;
     case CommandType :: DELETE_PROCESS:
-      return "deleteProcess";
+      return JSONConstants::CommandDeleteProcess;
     case CommandType :: REQUEST_DATA:
-      return "getRunData";
+      return JSONConstants::CommandRequestData;
     }
 }
 

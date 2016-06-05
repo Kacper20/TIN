@@ -7,8 +7,9 @@
 #include "Command.h"
 
 
+//Command that is send, when user wants to run process in a one time way and immediately see the result.
+//Response that is sent to the user is of class StartProcessResponse
 class LaunchProcessCommand: public Command {
-
 private:
 
 public:

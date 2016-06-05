@@ -1,0 +1,22 @@
+//
+// Created by Kacper Harasim on 05.06.2016.
+//
+
+#ifndef TIN_FAILEDRESPONSE_H
+#define TIN_FAILEDRESPONSE_H
+
+#import "Response.h"
+
+using namespace std;
+class FailedResponse: public Response {
+  string errorMessage;
+  FailedResponse (Json::Value json);
+
+  FailedResponse (ResponseType responseType, string errorMessage):
+  Response(responseType, ResponseStatus::SUCCESS), errorMessage(errorMessage) {}
+  Json::Value generateJSON();
+};
+
+
+
+#endif //TIN_FAILEDRESPONSE_H

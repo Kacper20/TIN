@@ -12,6 +12,18 @@ This part looks as follows:
 ### Message boundaries
 Every message is preceded by number of bytes. This is needed by receiver of the message in order to properly read it.
 
+### Failed response
+Every response has it's failed form - because errors could in any of the requests.
+It's format is as follows:
+```
+{
+	“commandType” : “startNewProcess”;
+	"errorMessage": "Error has occured..."
+}
+```
+*commandType* - type of command that fail concerns
+
+
 
 ### Node - Server Communication
 

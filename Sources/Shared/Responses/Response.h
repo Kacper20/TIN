@@ -14,7 +14,8 @@
 enum class ResponseType {
   START_NEW_PROCESS,
   SCHEDULED_PROCESS_ENDED,
-  DELETE_PROCESS
+  DELETE_PROCESS,
+  LAUNCH_PROCESS
 };
 
 enum class ResponseStatus {
@@ -24,11 +25,13 @@ enum class ResponseStatus {
 static std::string descriptionForResponseType(ResponseType type) {
   switch (type) {
     case ResponseType::START_NEW_PROCESS:
-      return "startNewProcess";
-    case ResponseType ::SCHEDULED_PROCESS_ENDED:
-      return "scheduledProcessEnded";
+      return JSONConstants::ResponseStartNewProcess;
+    case ResponseType::SCHEDULED_PROCESS_ENDED:
+      return JSONConstants::ResponseScheduledProcessEnded;
     case ResponseType::DELETE_PROCESS:
-      return "";
+      return JSONConstants::ResponseProcessDeleted;
+    case ResponseType::LAUNCH_PROCESS:
+      return JSONConstants::ResponseProcessLaunched;
   }
 }
 

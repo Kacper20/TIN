@@ -16,6 +16,16 @@ namespace JSONConstants {
   const std::string SchedulesIdentifier = "schedules";
   const std::string Date = "date";
   const std::string Timestamp = "timestamp";
+  const std::string Error = "errorMessage";
+  const std::string ResponseStartNewProcess = "startNewProcess";
+  const std::string ResponseScheduledProcessEnded = "scheduledProcessEnded";
+  const std::string ResponseProcessDeleted = "processDelete";
+  const std::string ResponseProcessLaunched = "processLaunch";
+  const std::string CommandStartNewProcess = "startNewProcess";
+  const std::string CommandStartNewProcessWithSchedule = "startNewProcessWithSchedule";
+  const std::string CommandLaunchProcess = "launchProcess";
+  const std::string CommandDeleteProcess = "deleteProcess";
+  const std::string CommandRequestData = "getRunData";
 }
 
 #endif //TIN_JSONCONSTANTS_H
