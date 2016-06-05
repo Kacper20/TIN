@@ -9,6 +9,7 @@
 
 using namespace std;
 class FailedResponse: public Response {
+ public:
   string errorMessage;
   FailedResponse (Json::Value json);
 

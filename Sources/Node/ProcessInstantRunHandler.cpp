@@ -7,6 +7,10 @@
 #include "../Shared/Responses/StartProcessResponse.h"
 #include "../Shared/DateUtilities.h"
 #include "ProcessUtilities.h"
+#include "../Shared/Commands/LaunchProcessCommand.h"
+#include "../Exceptions/ProcessDoNotExistOnNode.h"
+#include "../Shared/Responses/FailedResponse.h"
+#include "../Shared/Responses/LaunchProcessResponse.h"
 
 #include <fcntl.h>
 #include <iostream>
@@ -23,6 +27,20 @@ void ProcessInstantRunHandler::runProcess(std::shared_ptr<StartProcessCommand> p
   processesToRunQueue.push(process);
 }
 
+void ProcessInstantRunHandler::launchProcess(std::shared_ptr<LaunchProcessCommand> process) {
+  try {
+    std::string content = ProcessUtilities::readProcessContentFromPersistentStorage(process->processId);
+    std::shared_ptr<StartProcessCommand>
+        startCommand = std::make_shared<StartProcessCommand>(process->processId, content);
+    startCommand->startType = StartType::LAUNCHED;
+    processesToRunQueue.push(startCommand);
+  }
+  catch (ProcessDoNotExistOnNode &e) {
+    std::shared_ptr<FailedResponse> response = std::make_shared<FailedResponse>(ResponseType::LAUNCH_PROCESS, "Proces nie został znaleziony w bazie");
+    responseCompletion(response);
+  }
+}
+
 void ProcessInstantRunHandler::startMonitoringForProcessesToInstantRun() {
   while (1) {
     std::shared_ptr<StartProcessCommand> command = processesToRunQueue.pop();
@@ -35,7 +53,8 @@ void ProcessInstantRunHandler::startMonitoringForProcessesToInstantRun() {
 
 
 //TODO: We need to queue this methods calls and provide not mocked locations
-void ProcessInstantRunHandler::runProcessWithCommand(std::shared_ptr<StartProcessCommand> command, const std::string& basePath) {
+void ProcessInstantRunHandler::runProcessWithCommand(std::shared_ptr<StartProcessCommand> command,
+                                                     const std::string &basePath) {
   pid_t newProcessId;
   int childProcessStatus;
   std::cout << "RUN PROCESS!\n";
@@ -43,7 +62,7 @@ void ProcessInstantRunHandler::runProcessWithCommand(std::shared_ptr<StartProces
   if (newProcessId < 0) {
     exit(-1);
   } else if (newProcessId == 0) {
-    char *params[4]  = {0};
+    char *params[4] = {0};
     auto outPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardOutput);
     auto errPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardError);
     auto processFilePath = FileManager::buildPath(basePath, PathConstants::RunnableScript);
@@ -57,7 +76,9 @@ void ProcessInstantRunHandler::runProcessWithCommand(std::shared_ptr<StartProces
     execvp(processFilePath.c_str(), params);
   } else {
     auto monitoringTask = std::make_shared<ProcessOneTimeRunMonitoringTask>(ProcessOneTimeRunMonitoringTask(*this,
-                                                                                        newProcessId, command, responseCompletion));
+                                                                                                            newProcessId,
+                                                                                                            command,
+                                                                                                            responseCompletion));
     std::thread monitoringThread(*monitoringTask);
     std::lock_guard<std::mutex> guard(threadsInfoMutex);
     tasksInProgress.insert(std::make_pair(newProcessId, monitoringTask));
@@ -65,7 +86,9 @@ void ProcessInstantRunHandler::runProcessWithCommand(std::shared_ptr<StartProces
   }
 }
 
-void ProcessInstantRunHandler::monitorProcessesEndings(std::shared_ptr<StartProcessCommand> command, int pidToWait, ResponseCompletion responseCompletion) {
+void ProcessInstantRunHandler::monitorProcessesEndings(std::shared_ptr<StartProcessCommand> command,
+                                                       int pidToWait,
+                                                       ResponseCompletion responseCompletion) {
   int status;
   pid_t childPid;
 
@@ -79,11 +102,14 @@ void ProcessInstantRunHandler::monitorProcessesEndings(std::shared_ptr<StartProc
   auto stdError = FileManager::readFromFile(FileManager::buildPath(basePath,
                                                                    PathConstants::ProcessStandardError));
   auto stdOutput = FileManager::readFromFile(FileManager::buildPath(basePath,
-                                                                       PathConstants::ProcessStandardOutput));
-  auto response = std::make_shared<StartProcessResponse>(command->processId, stdError, stdOutput);
-  responseCompletion(response);
-  if (childPid < 0 ) {
-    perror("Waitpid error");
+                                                                    PathConstants::ProcessStandardOutput));
+
+  if (command->startType == StartType::NEW) {
+      auto response = std::make_shared<StartProcessResponse>(command->processId, stdError, stdOutput);
+      responseCompletion(response);
+  } else {
+    auto response = std::make_shared<LaunchProcessResponse>(command->processId, stdError, stdOutput);
+    responseCompletion(response);
   }
 }
 

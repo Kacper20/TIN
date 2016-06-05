@@ -6,12 +6,16 @@
 #define TIN_ADDPROCESSCOMMAND_H
 #include "Command.h"
 
+enum class StartType {
+  NEW, LAUNCHED
+};
 
 class StartProcessCommand: public Command {
 
  private:
 
  public:
+  StartType startType = StartType::NEW;
   std::string processContent;
   std::string processId;
   StartProcessCommand (Json::Value json);

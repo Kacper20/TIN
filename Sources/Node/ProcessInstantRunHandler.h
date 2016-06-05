@@ -13,6 +13,7 @@
 #include "../Shared/Commands/StartProcessCommand.h"
 #include "../Shared/Responses/Response.h"
 #include "../Shared/Commands/StartProcessWithScheduleCommand.h"
+#include "../Shared/Commands/LaunchProcessCommand.h"
 
 class ProcessInstantRunHandler;
 
@@ -52,7 +53,7 @@ class ProcessInstantRunHandler {
   ProcessInstantRunHandler();
   ResponseCompletion responseCompletion;
   void runProcess(std::shared_ptr<StartProcessCommand> process);
-
+  void launchProcess(std::shared_ptr<LaunchProcessCommand> process);
   void startMonitoringForProcessesToInstantRun();
   void monitorProcessesEndings(std::shared_ptr<StartProcessCommand>, int pidToWait, ResponseCompletion responseCompletion);
   void removeProcessData(std::string processId);

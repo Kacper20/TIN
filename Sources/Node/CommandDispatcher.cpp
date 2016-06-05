@@ -6,6 +6,7 @@
 #include "CommandDispatcher.h"
 #include "../Shared/Commands/StartProcessCommand.h"
 #include "../Shared/Commands/DeleteProcessCommand.h"
+#include "../Shared/Commands/LaunchProcessCommand.h"
 
 
 void CommandDispatcher::startDispatching() {
@@ -42,6 +43,14 @@ void CommandDispatcher::processCommandsInfinitely()  {
         processScheduledRunHandler.scheduleProcess(processCommand);
       }
     }
+
+    if (command->commandType == CommandType::LAUNCH_PROCESS) {
+      std::shared_ptr<LaunchProcessCommand> processCommand = std::static_pointer_cast<LaunchProcessCommand>(command);
+      if (processCommand != nullptr) {
+        processInstantRunHandler.launchProcess(processCommand);
+      }
+    }
+
     //TODO: Add other commands.
   }
 }

@@ -9,6 +9,7 @@
 #include "../../Libraries/json/json.h"
 using namespace std;
 class LaunchProcessResponse: public Response {
+ public:
   string processId;
   string standardError;
   string standardOutput;

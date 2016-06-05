@@ -11,6 +11,7 @@ class ProcessUtilities {
  public:
   static void writeProcessToPersistentStorage(Json::Value commandJson, const std::string& processContent,
                                                 const std::string& identifier);
+  static std::string readProcessContentFromPersistentStorage(std::string identifier);
   static std::string directoryForProcessWithId(const std::string& id);
 };
 
