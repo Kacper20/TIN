@@ -9,22 +9,24 @@
 #include "../JSONConstants.h"
 
 enum class CommandType {
-  START_NEW_PROCESS, START_NEW_PROCESS_WITH_SCHEDULE, LAUNCH_PROCESS, DELETE_PROCESS, REQUEST_DATA
+  START_NEW_PROCESS, START_NEW_PROCESS_WITH_SCHEDULE, LAUNCH_PROCESS, DELETE_PROCESS, REQUEST_DATA, REQUEST_STATISTICS
 };
 
 static std::string descriptionForCommandType(CommandType type) {
   switch (type) {
     case CommandType::START_NEW_PROCESS:
       return JSONConstants::CommandStartNewProcess;
-    case CommandType ::START_NEW_PROCESS_WITH_SCHEDULE:
+    case CommandType::START_NEW_PROCESS_WITH_SCHEDULE:
       return JSONConstants::CommandStartNewProcessWithSchedule;
-    case CommandType :: LAUNCH_PROCESS:
+    case CommandType::LAUNCH_PROCESS:
       return JSONConstants::CommandLaunchProcess;
-    case CommandType :: DELETE_PROCESS:
+    case CommandType::DELETE_PROCESS:
       return JSONConstants::CommandDeleteProcess;
-    case CommandType :: REQUEST_DATA:
+    case CommandType::REQUEST_DATA:
       return JSONConstants::CommandRequestData;
-    }
+    case CommandType::REQUEST_STATISTICS:
+      return JSONConstants::CommandRequestStatistics;
+  }
 }
 
 class Command {

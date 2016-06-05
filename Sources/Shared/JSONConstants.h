@@ -26,6 +26,7 @@ namespace JSONConstants {
   const std::string CommandLaunchProcess = "launchProcess";
   const std::string CommandDeleteProcess = "deleteProcess";
   const std::string CommandRequestData = "getRunData";
+  const std::string CommandRequestStatistics = "getStatistics";
 }
 
 #endif //TIN_JSONCONSTANTS_H

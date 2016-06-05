@@ -12,6 +12,7 @@
 #include <mutex>
 #include "ProcessInstantRunHandler.h"
 #include "ProcessScheduledRunHandler.h"
+#include "ProcessStatisticsCollector.h"
 /*
  * Class that takes care of dispatching methods ie. recognizes them, and performs all of the logic.
  */
@@ -24,12 +25,15 @@ class CommandDispatcher {
   void processCommandsInfinitely();
   ProcessInstantRunHandler& processInstantRunHandler;
   ProcessScheduledRunHandler& processScheduledRunHandler;
+  ProcessStatisticsCollector& collector;
 
  public:
 
   CommandDispatcher(ProcessInstantRunHandler &processInstantRunHandler,
-                    ProcessScheduledRunHandler &processScheduledRunHandler) :
-      processInstantRunHandler(processInstantRunHandler), processScheduledRunHandler(processScheduledRunHandler) { }
+                    ProcessScheduledRunHandler &processScheduledRunHandler,
+                    ProcessStatisticsCollector& collector) :
+      processInstantRunHandler(processInstantRunHandler), processScheduledRunHandler(processScheduledRunHandler),
+      collector(collector) { }
   void processCommand(std::shared_ptr<Command>);
   void startDispatching();
 };

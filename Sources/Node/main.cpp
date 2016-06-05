@@ -6,6 +6,7 @@
 #import "../Shared/Responses/Response.h"
 #include "../Shared/DateUtilities.h"
 #include "ProcessScheduledRunHandler.h"
+#include "ProcessStatisticsCollector.h"
 using namespace std;
 
 typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
@@ -52,22 +53,28 @@ struct ServerSendingTask {
 
 int main() {
 
+
+
+  ProcessStatisticsCollector collector;
   ProcessInstantRunHandler instantRunHandler;
   ProcessScheduledRunHandler scheduledRunHandler;
-  CommandDispatcher dispatcher(instantRunHandler, scheduledRunHandler);
+  CommandDispatcher dispatcher(instantRunHandler, scheduledRunHandler, collector);
+
 
   std::shared_ptr<NodeServer> server = std::make_shared<NodeServer>([&dispatcher](std::shared_ptr<Command> commandToDispatch) {
     //WARN: It's called from another thread -
     dispatcher.processCommand(commandToDispatch);
   });
 
-  instantRunHandler.responseCompletion = [&server](std::shared_ptr<Response> response) {
+
+  std::function<void(std::shared_ptr<Response> response)> completion = [&server](std::shared_ptr<Response> response) {
     server->sendResponse(response);
   };
 
-  scheduledRunHandler.responseCompletion = [&server](std::shared_ptr<Response> response) {
-    server->sendResponse(response);
-  };
+  instantRunHandler.responseCompletion = completion;
+  scheduledRunHandler.responseCompletion = completion;
+  collector.responseCompletion = completion;
+
 
   ProcessSchedulingTask processSchedulingTask(scheduledRunHandler);
   std::thread processSchedulingThread(processSchedulingTask);
