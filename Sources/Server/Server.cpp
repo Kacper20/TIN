@@ -180,7 +180,8 @@ void Server::sendToAdmin() {
     else {
       std::shared_ptr<std::string> message = nodeAdminQ.pop();
       std::cout << "Sending a message to ADMIN" << std::endl;
-      if (adminMessageManager.sendMessage(*message) == -1) {
+      int bytesSent = adminMessageManager.sendMessage(*message);
+      if (bytesSent == -1) {
         // send() returns -1 and sets errno to EPIPE (broken pipe) if the other side decided to give us the boot
         if (errno == EPIPE) {
           // We better put the message back into the queue, lest we lose it!
