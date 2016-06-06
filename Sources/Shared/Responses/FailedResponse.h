@@ -14,7 +14,7 @@ class FailedResponse: public Response {
   FailedResponse (Json::Value json);
 
   FailedResponse (ResponseType responseType, string errorMessage):
-  Response(responseType, ResponseStatus::SUCCESS), errorMessage(errorMessage) {}
+  Response(responseType, ResponseStatus::FAIL), errorMessage(errorMessage) {}
   Json::Value generateJSON();
 };
 

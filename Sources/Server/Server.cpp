@@ -211,7 +211,7 @@ void Server::receiveFromNodes() {
     }
     struct timeval timeout;
     // Timeout immediately - just poll
-    timeout.tv_sec = 0;
+    timeout.tv_sec = INT32_MAX;
     timeout.tv_usec = 0;
     select(top_fd + 1, &readyToRead, nullptr, nullptr, &timeout);
     // readyToRead should now contain all the fd-s that we can read from, so let's do that

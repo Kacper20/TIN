@@ -8,6 +8,9 @@
 namespace JSONConstants {
 const std::string CommandType = "commandType";
 const std::string ResponseType = "responseType";
+const std::string ResponseStatus = "responseStatus";
+const std::string ResponseSuccess = "SUCCESS";
+const std::string ResponseFailed = "FAIL";
 const std::string ProcessContent = "content";
 const std::string ProcessDetails = "processDetails";
 const std::string ProcessIdentifier = "processIdentifier";

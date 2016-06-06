@@ -7,5 +7,6 @@
 Json::Value Response::generateJSON() {
   Json::Value root;
   root[JSONConstants::ResponseType] = descriptionForResponseType(responseType);
+  root[JSONConstants::ResponseStatus] =
   return root;
 }
