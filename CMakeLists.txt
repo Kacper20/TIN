@@ -18,13 +18,13 @@ set(SHARED_FILES Sources/Libraries/jsoncpp.cpp Sources/Libraries/json/json.h Sou
         Sources/Shared/Responses/StartProcessResponse.cpp Sources/Shared/Responses/StartProcessResponse.h
         Sources/Shared/Commands/StartProcessWithScheduleCommand.cpp Sources/Shared/Commands/StartProcessWithScheduleCommand.h
         Sources/Shared/Schedule/Schedule.cpp Sources/Shared/Schedule/Schedule.h Sources/Shared/DateUtilities.cpp Sources/Shared/DateUtilities.h Sources/Shared/Responses/FailedResponse.cpp Sources/Shared/Responses/FailedResponse.cpp Sources/Shared/Responses/FailedResponse.h
-        Sources/Shared/Responses/LaunchProcessResponse.cpp Sources/Shared/Responses/LaunchProcessResponse.h Sources/Exceptions/ErrorCodeMessageExceptionBase.cpp Sources/Exceptions/ErrorCodeMessageExceptionBase.h Sources/Exceptions/ProcessDoNotExistOnNode.cpp Sources/Exceptions/ProcessDoNotExistOnNode.h Sources/Shared/Commands/RequestProcessStatisticsCommand.cpp Sources/Shared/Commands/RequestProcessStatisticsCommand.h)
+        Sources/Shared/Responses/LaunchProcessResponse.cpp Sources/Shared/Responses/LaunchProcessResponse.h Sources/Exceptions/ErrorCodeMessageExceptionBase.cpp Sources/Exceptions/ErrorCodeMessageExceptionBase.h Sources/Exceptions/ProcessDoNotExistOnNode.cpp Sources/Exceptions/ProcessDoNotExistOnNode.h Sources/Shared/Commands/RequestProcessStatisticsCommand.cpp Sources/Shared/Commands/RequestProcessStatisticsCommand.h Sources/Shared/Responses/ProcessStatisticsResponse.cpp Sources/Shared/Responses/ProcessStatisticsResponse.h)
 
 set(NODE_SOURCE ${SHARED_FILES} Sources/Node/main.cpp  Sources/Node/WorkerNode.cpp Sources/Node/WorkerNode.h
         Sources/Node/NodeNetworkLayer.cpp Sources/Node/NodeNetworkLayer.h Sources/Node/ProcessInstantRunHandler.cpp
         Sources/Node/ProcessInstantRunHandler.h Sources/Node/CommandsDeserializer.cpp Sources/Node/CommandsDeserializer.h
         Sources/Node/NodeServer.cpp Sources/Node/NodeServer.h Sources/Node/CommandDispatcher.h
-        Sources/Node/CommandDispatcher.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.h Sources/Node/PathConstants.h Sources/Node/ProcessUtilities.cpp Sources/Node/ProcessUtilities.h Sources/Node/ProcessScheduledRunHandler.cpp Sources/Node/ProcessScheduledRunHandler.h Sources/Node/ProcessStatisticsCollector.cpp Sources/Node/ProcessStatisticsCollector.h)
+        Sources/Node/CommandDispatcher.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.cpp Sources/Shared/Responses/ScheduledProcessEndedResponse.h Sources/Node/PathConstants.h Sources/Node/ProcessUtilities.cpp Sources/Node/ProcessUtilities.h Sources/Node/ProcessScheduledRunHandler.cpp Sources/Node/ProcessScheduledRunHandler.h Sources/Node/ProcessStatisticsCollector.cpp Sources/Node/ProcessStatisticsCollector.h Sources/Node/ProcessRunningTime.h)
 
 
 include_directories("/usr/local/include")

@@ -31,9 +31,15 @@ void ProcessScheduledRunHandler::scheduleProcess(std::shared_ptr<StartProcessWit
   queueOfCommandsToSchedule.push(process);
 }
 
-void ProcessScheduledRunHandler::monitorScheduledProcessesEndings(std::shared_ptr<StartProcessWithScheduleCommand>,
+void ProcessScheduledRunHandler::monitorScheduledProcessesEndings(std::shared_ptr<StartProcessWithScheduleCommand> command,
                                                                   int pidToWait,
                                                                   ResponseCompletion responseCompletion) {
+  //TODO: Implement this.
+  pid_t childPid;
+  int status;
+  struct rusage processUsage;
+  childPid = wait4(pidToWait, &status, 0, &processUsage);
+  collector.addDataForProcessWithId(command->processId, processUsage.ru_utime, processUsage.ru_stime);
 
 
 }

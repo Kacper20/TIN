@@ -5,17 +5,27 @@
 #ifndef TIN_PROCESSSTATISTICSCOLLECTOR_H
 #define TIN_PROCESSSTATISTICSCOLLECTOR_H
 #import "../Shared/Responses/Response.h"
+#include "ProcessRunningTime.h"
 
 typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
 
 class ProcessStatisticsCollector {
 
 public:
-    ResponseCompletion responseCompletion;
-    //Function called when someone
 
-    //Function that takes care of gathering stats and sending it to server
-    void requestStatisticsForProcess(std::string processId);
+ private:
+  std::mutex resourceMutex;
+  //Values of map are in miliseconds
+  std::map<std::string, ProcessRunningTime > processesInfo;
+
+ public:
+  ResponseCompletion responseCompletion;
+  //Function called when someone
+
+  //Function that takes care of gathering stats and sending it to server
+  void requestStatisticsForProcess(std::string processId);
+
+  void addDataForProcessWithId(std::string processId, timeval userTime, timeval systemTime);
 };
 
 

@@ -53,11 +53,9 @@ struct ServerSendingTask {
 
 int main() {
 
-
-
   ProcessStatisticsCollector collector;
-  ProcessInstantRunHandler instantRunHandler;
-  ProcessScheduledRunHandler scheduledRunHandler;
+  ProcessInstantRunHandler instantRunHandler(collector);
+  ProcessScheduledRunHandler scheduledRunHandler(collector);
   CommandDispatcher dispatcher(instantRunHandler, scheduledRunHandler, collector);
 
 
