@@ -4,6 +4,9 @@
 
 #ifndef TIN_PROCESSSTATISTICSCOLLECTOR_H
 #define TIN_PROCESSSTATISTICSCOLLECTOR_H
+
+#include <memory>
+#include <mutex>
 #import "../Shared/Responses/Response.h"
 #include "ProcessRunningTime.h"
 

@@ -5,9 +5,10 @@
 #include "ProcessScheduledRunHandler.h"
 #include "../Shared/DateUtilities.h"
 #include <thread>
-#include <zconf.h>
 #include <cstdio>
 #include <fcntl.h>
+#include<sys/resource.h>
+#include <wait.h>
 #include "../Shared/FileManager.h"
 #include "PathConstants.h"
 #include "ProcessUtilities.h"
