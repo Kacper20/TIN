@@ -1,5 +1,7 @@
+#!/bin/bash
 echo "Starting process (10 sec)."
-
-sleep 10
-
-echo "Finished after 10 sec."
+x=1;
+while [ $x -le 2000000 ]; do
+x=$[x + 1]
+done
+echo "Finished."
