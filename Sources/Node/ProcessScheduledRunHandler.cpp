@@ -13,7 +13,7 @@
 #include "ProcessUtilities.h"
 #include "../Shared/Responses/ScheduledProcessEndedResponse.h"
 
-#define SCHEDULER_SLEEP_TIME 500
+#define SCHEDULER_SLEEP_TIME 400
 
 std::pair<time_t, int> ProcessScheduledRunHandler::closestTimeFromCommand(std::shared_ptr<StartProcessWithScheduleCommand> command) {
   time_t best = -1;
