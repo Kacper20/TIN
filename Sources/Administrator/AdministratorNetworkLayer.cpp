@@ -70,7 +70,6 @@ void AdminNetworkLayer::receiveMessage()
             ssize_t messageSize = networkManager.receiveMessage(buffer);
             if (messageSize > 0) {
                 cout << "Received message from Server!\n";
-                cout << buffer << "\n";
                 int find = buffer.find("\"responseType\"");
                 find += 16;
                 int dl = buffer.find_first_of("\"", find);
