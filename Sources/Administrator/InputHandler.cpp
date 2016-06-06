@@ -32,8 +32,8 @@ InputHandler::InputHandler(AdminNetworkLayer *admin){
             name = line.substr(0, index);
             string uuid_string = line.substr(index+1);
             if(uuid_string[0] >= 33) {
-                u = boost::lexical_cast<boost::uuids::uuid>(uuid_string);
-                process_uuids.insert(std::pair<std::string, boost::uuids::uuid>(name, u));
+                //u = boost::lexical_cast<boost::uuids::uuid>(uuid_string);
+                //process_uuids.insert(std::pair<std::string, boost::uuids::uuid>(name, u));
             }
         }
         uuids_file.close();
@@ -371,7 +371,7 @@ void InputHandler::sendScheduledProcess(const std::string &full_command)
     vector<int> timestamps;
     int z = 0;
     while (z < process_timestamps.length()) {
-        if(z + 8 >= process_timestamps.length())
+        if(z + 8 > process_timestamps.length())
                 break;
             int h = 10*(process_timestamps[z] - '0') + process_timestamps[z+1] - '0';
             int min = 10*(process_timestamps[z+3] - '0') + process_timestamps[z+4] - '0';
