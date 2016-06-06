@@ -21,6 +21,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <sys/wait.h>
+#include <sys/resource.h>
 
 
 void ProcessInstantRunHandler::runProcess(std::shared_ptr<StartProcessCommand> process) {

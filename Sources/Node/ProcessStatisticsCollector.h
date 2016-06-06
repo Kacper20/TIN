@@ -7,6 +7,10 @@
 #import "../Shared/Responses/Response.h"
 #include "ProcessRunningTime.h"
 
+#include <functional>
+#include <memory>
+#include <mutex>
+
 typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
 
 class ProcessStatisticsCollector {
