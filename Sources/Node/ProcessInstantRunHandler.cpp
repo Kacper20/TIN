@@ -92,8 +92,9 @@ void ProcessInstantRunHandler::monitorProcessesEndings(std::shared_ptr<StartProc
   int status;
   pid_t childPid;
 
-  childPid = waitpid(pidToWait, &status, 0);
-
+  struct rusage processUsage;
+  childPid = wait4(pidToWait, &status, 0, &processUsage);
+  collector.addDataForProcessWithId(command->processId, processUsage.ru_utime, processUsage.ru_stime);
   std::lock_guard<std::mutex> guard(threadsInfoMutex);
   tasksInProgress.erase(childPid);
 
@@ -117,6 +118,6 @@ void ProcessInstantRunHandler::removeProcessData(std::string processId) {
   FileManager::deleteDirectoryAtPath(ProcessUtilities::directoryForProcessWithId(processId));
 }
 
-ProcessInstantRunHandler::ProcessInstantRunHandler() {
+ProcessInstantRunHandler::ProcessInstantRunHandler(ProcessStatisticsCollector &collector) : collector(collector) { 
   FileManager::createDirectoryAtPath(FileManager::homeDir() + "/TIN_NODE");
 }

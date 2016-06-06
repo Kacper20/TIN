@@ -9,6 +9,7 @@
 #include "../Shared/Commands/StartProcessWithScheduleCommand.h"
 #include "../Shared/MessagesQueue.h"
 #include "../Shared/Responses/Response.h"
+#include "ProcessStatisticsCollector.h"
 
 typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
 
@@ -46,12 +47,13 @@ class ProcessScheduledRunHandler {
   MessagesQueue<StartProcessWithScheduleCommand> queueOfCommandsToSchedule;
   //Internal scheduler queue
   std::priority_queue<TimestampWithSchedule, std::vector<TimestampWithSchedule>, PqueueTypeCompare > schedulerPriorityQueue;
-
-  //Helper functions
   std::pair<time_t, int> closestTimeFromCommand(std::shared_ptr<StartProcessWithScheduleCommand> command);
-
+  ProcessStatisticsCollector& collector;
  public:
+  ProcessScheduledRunHandler(ProcessStatisticsCollector &collector) : collector(collector) { }
+
   ResponseCompletion responseCompletion;
+
   void monitorScheduledProcessesEndings(std::shared_ptr<StartProcessWithScheduleCommand>, int pidToWait, ResponseCompletion responseCompletion);
   void scheduleProcess(std::shared_ptr<StartProcessWithScheduleCommand> process);
   void monitorScheduledProcessesToRun();

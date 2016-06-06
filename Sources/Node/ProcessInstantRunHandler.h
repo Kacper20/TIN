@@ -14,6 +14,7 @@
 #include "../Shared/Responses/Response.h"
 #include "../Shared/Commands/StartProcessWithScheduleCommand.h"
 #include "../Shared/Commands/LaunchProcessCommand.h"
+#include "ProcessStatisticsCollector.h"
 
 class ProcessInstantRunHandler;
 
@@ -41,17 +42,19 @@ class ProcessInstantRunHandler {
 
  private:
   std::mutex threadsInfoMutex;
+  std::map<int, std::shared_ptr<ProcessOneTimeRunMonitoringTask> > tasksInProgress;
+  MessagesQueue<StartProcessCommand> processesToRunQueue;
+  ProcessStatisticsCollector& collector;
 
   void runProcessWithCommand(std::shared_ptr<StartProcessCommand> command, const std::string& basePath);
 
-  std::map<int, std::shared_ptr<ProcessOneTimeRunMonitoringTask> > tasksInProgress;
-  MessagesQueue<StartProcessCommand> processesToRunQueue;
-
  public:
 
-//TODO: Think about transforming StartProcessCommand -> Process to run structure.
-  ProcessInstantRunHandler();
+  ProcessInstantRunHandler(ProcessStatisticsCollector &collector);
+
   ResponseCompletion responseCompletion;
+
+
   void runProcess(std::shared_ptr<StartProcessCommand> process);
   void launchProcess(std::shared_ptr<LaunchProcessCommand> process);
   void startMonitoringForProcessesToInstantRun();
