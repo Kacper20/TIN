@@ -31,7 +31,7 @@ include_directories("/usr/local/include")
 
 set(SERVER_SOURCE ${SHARED_FILES} Sources/Server/main.cpp Sources/Server/Server.h Sources/Server/Server.cpp)
 
-set(ADMIN_SOURCE ${SHARED_FILES} Sources/Administrator/main.cpp  Sources/Administrator/InputHandler.cpp Sources/Administrator/InputHandler.h Sources/Administrator/AdministratorNetworkLayer.cpp Sources/Administrator/AdministratorNetworkLayer.h )
+set(ADMIN_SOURCE ${SHARED_FILES} Sources/Administrator/main.cpp  Sources/Administrator/InputHandler.cpp Sources/Administrator/InputHandler.h Sources/Administrator/AdministratorNetworkLayer.cpp Sources/Administrator/AdministratorNetworkLayer.h Sources/Administrator/ResponseDeserializer.cpp Sources/Administrator/ResponseDeserializer.h)
 
 add_executable(Node ${NODE_SOURCE})
 

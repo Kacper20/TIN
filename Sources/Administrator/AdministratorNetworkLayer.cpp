@@ -14,6 +14,12 @@
 #include "../Shared/Commands/Command.h"
 #include "../Shared/Commands/StartProcessCommand.h"
 #include "../Node/CommandsDeserializer.h"
+#include "../Shared/Responses/Response.h"
+#include "ResponseDeserializer.h"
+#include "../Shared/Responses/StartProcessResponse.h"
+#include "../Shared/Responses/ScheduledProcessEndedResponse.h"
+#include "../Shared/Responses/LaunchProcessResponse.h"
+#include "../Shared/Responses/ProcessStatisticsResponse.h"
 
 using namespace std;
 
@@ -59,7 +65,6 @@ int AdminNetworkLayer::disconnectFromServer() {
 
 void AdminNetworkLayer::receiveMessage()
 {
-    cout << "Jestem w odbieraniu wiadomosci\n";
     string buffer;
     while (true) {
         if(!connected)
@@ -67,81 +72,40 @@ void AdminNetworkLayer::receiveMessage()
             continue;
         }
         else {
-            cout << "jestem tu\n";
             ssize_t messageSize = networkManager.receiveMessage(buffer);
             if (messageSize > 0) {
-                cout << "Received message from Server!\n";
-                int find = buffer.find("\"responseType\"");
-                find += 16;
-                int dl = buffer.find_first_of("\"", find);
-                dl -= find;
-                string response = buffer.substr(find, dl);
-                cout << response << "\n";
-                if(response == "startNewProcess"){
-                    cout << "Started new process.\n";
-                }
-                else if(response == "scheduledProcessEnded"){
-                    cout << "Scheduled process ended.\n";
-                }
-                else if(response == "processDelete"){
-                    cout << "Delete process.\n";
-                }
-                else if(response == "processLaunch"){
-                    cout << "Launched prcess.\n";
-                }
-                find = buffer.find("processIden");
-                if(find != std::string::npos) {
-                    find += 20;
-                    dl = buffer.find_first_of("\"");
-                    dl -= find;
-                    string pName = buffer.substr(find, dl);
-                    boost::uuids::string_generator gen;
-                    boost::uuids::uuid a = gen(pName);
-                    cout << "Process name: " << a << "\n";
-                }
-
-                find = buffer.find("errorMessage");
-                if(find != string::npos){
-                    find += 15;
-                    dl = buffer.find_first_of("\"", find);
-                    dl -= find;
-                    cout<< "Error message: " << buffer.substr(find, dl) << "\n";
-                }
-
-                find = buffer.find("standardError");
-                if(find != string::npos) {
-
-                    cout << "Standard error: ";
-                    find += 16;
-                    dl = buffer.find_first_of("\"", find);
-                    dl -= find;
-                    if (dl > 1) {
-                        cout << buffer.substr(find, dl) << "\n";
-                    }
-                    else {
-                        cout << "none\n";
+                std::shared_ptr<Response> response = ResponseDeserializer::parseToResponse(buffer);
+                if(response->responseType == ResponseType::START_NEW_PROCESS){
+                    std::shared_ptr<StartProcessResponse> processResponse = std::static_pointer_cast<StartProcessResponse>(response);
+                    if(processResponse != nullptr){
+                        cout << "\n\nProcess UUID: " << processResponse->processId <<"\n";
+                        cout << "Standard error: " << processResponse->standardError << "\n";
+                        cout << "Standard output: " << processResponse->standardOutput << "\n\n\n";
                     }
                 }
-                find = buffer.find("standardOut");
-                if(find != string::npos) {
-                    find += 17;
-                    dl = buffer.find_first_of("\"", find);
-                    dl -= find;
-                    cout << "Standard output: " << buffer.substr(find, dl) << "\n";
+                if(response->responseType == ResponseType::SCHEDULED_PROCESS_ENDED) {
+                    std::shared_ptr<ScheduledProcessEndedResponse> scheduleResponse = std::static_pointer_cast<ScheduledProcessEndedResponse>(response);
+                    if (scheduleResponse != nullptr) {
+                        //TODO: wez sprawdz czemu scheduleResponse nie ma odpowiednich pol
+                    }
                 }
-                find = buffer.find("date");
-                if(find != string::npos){
-                    find += 7;
-                    dl = buffer.find_first_of("\"");
-                    dl -= find;
-                    cout << "Date: " << buffer.substr(find, dl) << "\n";
+                if(response->responseType == ResponseType::LAUNCH_PROCESS) {
+                    std::shared_ptr<LaunchProcessResponse> launchResponse = std::static_pointer_cast<LaunchProcessResponse>(
+                            response);
+                    if (launchResponse != nullptr) {
+                        cout << "\n\nProcess UUID: " << launchResponse->processId << "\n";
+                        cout << "Standard error: " << launchResponse->standardError << "\n";
+                        cout << "Standard output: " << launchResponse->standardOutput << "\n\n\n";
+                    }
                 }
-                find = buffer.find("timestamp");
-                if(find != string::npos){
-                    find += 12;
-                    dl = buffer.find_first_of("\"");
-                    dl -= find;
-                    cout << "Timestamp: " << buffer.substr(find, dl) << "\n";
+                if(response->responseType == ResponseType::GET_STATISTICS_ABOUT_PROCESS){
+                    std::shared_ptr<ProcessStatisticsResponse> statResponse = std::static_pointer_cast<ProcessStatisticsResponse>(
+                            response);
+                    if(statResponse != nullptr){
+                        cout << "\n\nProcess UUID: " << statResponse->processId <<"\n";
+                        cout << "Process system run: " << statResponse->secondsSystemRun << "s " << statResponse->millisecondsSystemRun << "ms\n";
+                        cout << "User run time: " << statResponse->secondsUserRun << "s " << statResponse->millisecondsUserRun << "ms\n\n\n";
+                    }
                 }
 
             }
