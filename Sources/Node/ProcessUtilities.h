@@ -13,6 +13,7 @@ class ProcessUtilities {
                                                 const std::string& identifier);
   static std::string readProcessContentFromPersistentStorage(std::string identifier);
   static std::string directoryForProcessWithId(const std::string& id);
+  static int runProcess(std::string basePath, std::string additionToPath);
 };
 
 

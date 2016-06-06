@@ -55,35 +55,16 @@ void ProcessInstantRunHandler::startMonitoringForProcessesToInstantRun() {
 //TODO: We need to queue this methods calls and provide not mocked locations
 void ProcessInstantRunHandler::runProcessWithCommand(std::shared_ptr<StartProcessCommand> command,
                                                      const std::string &basePath) {
-  pid_t newProcessId;
-  int childProcessStatus;
-  std::cout << "RUN PROCESS!\n";
-  newProcessId = fork();
-  if (newProcessId < 0) {
-    exit(-1);
-  } else if (newProcessId == 0) {
-    char *params[4] = {0};
-    auto outPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardOutput);
-    auto errPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardError);
-    auto processFilePath = FileManager::buildPath(basePath, PathConstants::RunnableScript);
-    int stdOutFd = open(outPath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-    int stdErrFd = open(errPath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-    dup2(stdOutFd, 1);
-    dup2(stdErrFd, 2);
-    close(stdOutFd);
-    close(stdErrFd);
 
-    execvp(processFilePath.c_str(), params);
-  } else {
-    auto monitoringTask = std::make_shared<ProcessOneTimeRunMonitoringTask>(ProcessOneTimeRunMonitoringTask(*this,
+  int newProcessId = ProcessUtilities::runProcess(basePath, "");
+  auto monitoringTask = std::make_shared<ProcessOneTimeRunMonitoringTask>(ProcessOneTimeRunMonitoringTask(*this,
                                                                                                             newProcessId,
                                                                                                             command,
                                                                                                             responseCompletion));
-    std::thread monitoringThread(*monitoringTask);
-    std::lock_guard<std::mutex> guard(threadsInfoMutex);
-    tasksInProgress.insert(std::make_pair(newProcessId, monitoringTask));
-    monitoringThread.detach();
-  }
+  std::thread monitoringThread(*monitoringTask);
+  std::lock_guard<std::mutex> guard(threadsInfoMutex);
+  tasksInProgress.insert(std::make_pair(newProcessId, monitoringTask));
+  monitoringThread.detach();
 }
 
 void ProcessInstantRunHandler::monitorProcessesEndings(std::shared_ptr<StartProcessCommand> command,

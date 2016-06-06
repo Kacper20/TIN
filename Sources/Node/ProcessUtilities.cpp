@@ -2,11 +2,21 @@
 // Created by Kacper Harasim on 02.06.2016.
 //
 
-#include <fstream>
 #include "ProcessUtilities.h"
 #include "../Shared/FileManager.h"
 #include "PathConstants.h"
 #include "../Exceptions/ProcessDoNotExistOnNode.h"
+
+#include <fcntl.h>
+#include <iostream>
+#include <thread>
+#include <csignal>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <sys/wait.h>
+#include <fstream>
+
 
 void ProcessUtilities::writeProcessToPersistentStorage(Json::Value commandJson,
                                                        const std::string &processContent,
@@ -44,4 +54,31 @@ std::string ProcessUtilities::readProcessContentFromPersistentStorage(std::strin
 std::string ProcessUtilities::directoryForProcessWithId(const std::string &id) {
   std::string base = FileManager::homeDir();
   return base + "/" + "TIN_NODE/"  + id;
+}
+
+int ProcessUtilities::runProcess(std::string basePath, std::string additionToPath) {
+  pid_t newProcessId;
+  int childProcessStatus;
+  newProcessId = fork();
+  if (newProcessId < 0) {
+    exit(-1);
+  } else if (newProcessId == 0) {
+    char *params[4] = {0};
+    auto outPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardOutput);
+    auto errPath = FileManager::buildPath(basePath, PathConstants::ProcessStandardError);
+    if (additionToPath.size() != 0) {
+      outPath += "_" + additionToPath;
+      errPath += "_" + additionToPath;
+    }
+    auto processFilePath = FileManager::buildPath(basePath, PathConstants::RunnableScript);
+    int stdOutFd = open(outPath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    int stdErrFd = open(errPath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    dup2(stdOutFd, 1);
+    dup2(stdErrFd, 2);
+    close(stdOutFd);
+    close(stdErrFd);
+    execvp(processFilePath.c_str(), params);
+  } else {
+    return newProcessId;
+  }
 }

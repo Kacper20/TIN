@@ -19,16 +19,19 @@ class ProcessScheduledRunHandler {
   struct ProcessScheduledRunMonitoringTask {
     ProcessScheduledRunHandler &processHandler;
     int pidToWait;
+    int timestamp;
     ResponseCompletion &completion;
     std::shared_ptr<StartProcessWithScheduleCommand> command;
     ProcessScheduledRunMonitoringTask(ProcessScheduledRunHandler &handler,
                                     int pidToWait,
                                     std::shared_ptr<StartProcessWithScheduleCommand> command,
-                                    ResponseCompletion &completion) : processHandler(handler),
+                                    ResponseCompletion &completion,
+                                    int timestamp) : processHandler(handler),
                                                                       pidToWait(pidToWait),
-                                                                      completion(completion), command(command) { }
+                                                                      completion(completion), command(command),
+                                                                      timestamp(timestamp){ }
     void operator()() {
-      processHandler.monitorScheduledProcessesEndings(command, pidToWait, completion);
+      processHandler.monitorScheduledProcessesEndings(command, pidToWait, timestamp, completion);
     }
   };
 
@@ -49,12 +52,16 @@ class ProcessScheduledRunHandler {
   std::priority_queue<TimestampWithSchedule, std::vector<TimestampWithSchedule>, PqueueTypeCompare > schedulerPriorityQueue;
   std::pair<time_t, int> closestTimeFromCommand(std::shared_ptr<StartProcessWithScheduleCommand> command);
   ProcessStatisticsCollector& collector;
+  std::mutex threadsInfoMutex;
+  std::map<int, std::shared_ptr<ProcessScheduledRunMonitoringTask> > tasksInProgress;
+
+
  public:
   ProcessScheduledRunHandler(ProcessStatisticsCollector &collector) : collector(collector) { }
 
   ResponseCompletion responseCompletion;
 
-  void monitorScheduledProcessesEndings(std::shared_ptr<StartProcessWithScheduleCommand>, int pidToWait, ResponseCompletion responseCompletion);
+  void monitorScheduledProcessesEndings(std::shared_ptr<StartProcessWithScheduleCommand>, int pidToWait, int timestamp, ResponseCompletion responseCompletion);
   void scheduleProcess(std::shared_ptr<StartProcessWithScheduleCommand> process);
   void monitorScheduledProcessesToRun();
   void removeProcessData(std::string processId);

@@ -9,6 +9,7 @@
 #include "../Shared/Commands/LaunchProcessCommand.h"
 #include "../Shared/Commands/RequestDataCommand.h"
 #include "../Shared/Commands/RequestProcessStatisticsCommand.h"
+#include "../Shared/Commands/StartProcessWithScheduleCommand.h"
 
 
 std::shared_ptr<Command> CommandsDeserializer::parseToCommand(std::string json) {
@@ -27,7 +28,7 @@ std::shared_ptr<Command> CommandsDeserializer::parseToCommand(std::string json) 
     return deserializedCommand;
   }
   if (type == descriptionForCommandType(CommandType::START_NEW_PROCESS_WITH_SCHEDULE)) {
-    std::shared_ptr<Command> deserializedCommand = std::make_shared<StartProcessCommand>(root);
+    std::shared_ptr<Command> deserializedCommand = std::make_shared<StartProcessWithScheduleCommand>(root);
     return deserializedCommand;
   }
   if (type == descriptionForCommandType(CommandType::DELETE_PROCESS)) {

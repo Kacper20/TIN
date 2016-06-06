@@ -15,7 +15,9 @@ StartProcessWithScheduleCommand::StartProcessWithScheduleCommand(Json::Value jso
   processId = processDetails[JSONConstants::ProcessIdentifier].asString();
   Json::Value array = processDetails[JSONConstants::SchedulesIdentifier];
   std::vector<int> vectorOfTimestamps;
-  std::transform(array.begin(), array.end(), vectorOfTimestamps.begin(), [](Json::Value& elem) { return elem.asInt(); });
+  for (auto& elem: array) {
+    vectorOfTimestamps.push_back(elem.asInt());
+  }
   schedule = Schedule(vectorOfTimestamps);
 }
 
