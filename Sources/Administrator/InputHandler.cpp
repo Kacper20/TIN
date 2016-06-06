@@ -104,7 +104,7 @@ void InputHandler::printHelp()
   cout << "send_schedule <name> \"path to file\" <timestamp> [...] <timestamp> - Sends the file you choose\n";
   cout << "\t to the server and saves it to the server with name specified in 'name'\n";
   cout << "\t argument. Process is run in specified time (can be many timestamps).\n";
-  cout << "\t Timestamps are seconds from 00:00.\n";
+  cout << "\t Timestamps are HH:MM:SS.\n";
   cout << "launch_process <name> - Tells the server to start chosen process.\n";
   cout << "request_data <name> <date> <timestamp> - Requesting data from server about specific process run.\n";
   cout << "delete_process <name> - Tells the server to delete chosen process.\n";
@@ -369,21 +369,16 @@ void InputHandler::sendScheduledProcess(const std::string &full_command)
 
     //taking integers from string to vector
     vector<int> timestamps;
-    int temp = 0;
-    for (int i = 0; i < process_timestamps.length(); ++i) {
-        if (process_timestamps[i] != ' ') {
-            temp = temp * 10 + (process_timestamps[i] - '0');
-        }
-        else if (process_timestamps[i] == ' ') {
-            timestamps.push_back(temp);
-            temp = 0;
-        }
-        else {
-            temp = 0;
-        }
-        if (i == process_timestamps.length() - 1 && process_timestamps[i] >= '0' && process_timestamps[i] <= '9') {
-            timestamps.push_back(temp);
-        }
+    int z = 0;
+    while (z < process_timestamps.length()) {
+        if(z + 8 >= process_timestamps.length())
+                break;
+            int h = 10*(process_timestamps[z] - '0') + process_timestamps[z+1] - '0';
+            int min = 10*(process_timestamps[z+3] - '0') + process_timestamps[z+4] - '0';
+            int s = 10*(process_timestamps[z+6] - '0') + process_timestamps[z+7] - '0';
+            int time = (60*h + min) * 60 + s;
+            timestamps.push_back(time);
+            z+=9;
     }
     if (timestamps.size() == 0) {
         std::cout << "Inserted invalid timestamps.\nPlease try again.\n";
@@ -404,7 +399,6 @@ void InputHandler::sendScheduledProcess(const std::string &full_command)
     else {
         u_to_send = it->second;
     }
-
     Schedule schedule(timestamps);
 
     StartProcessWithScheduleCommand command = StartProcessWithScheduleCommand(boost::uuids::to_string(u_to_send),
@@ -446,15 +440,15 @@ void InputHandler::requestData(const std::string &full_command)
         cout << "Please try again.\n";
         return;
     }
-
-    for(int i = 0; i < timestamp.length(); ++i){
-        if(!isNumber(timestamp[i])) {
-            cout << "Invalid timestamp.\n";
-            cout << "Please try again.\n";
-            return;
-        }
+    if(timestamp.length() != 8) {
+        cout << "Inserted invalid tmestamps.\nPlease try again.\n";
+        return;
     }
-
+    int h = 10*(timestamp[0] - '0') + timestamp[1] - '0';
+    int min = 10*(timestamp[3] - '0') + timestamp[4] - '0';
+    int s = 10*(timestamp[6] - '0') + timestamp[7] - '0';
+    int time1 = (60*h + min) * 60 + s;
+    string time = std::to_string(time1);
     boost::uuids::uuid u_to_send;
 
     boost::uuids::name_generator gen(dns_namespace_uuid);
@@ -462,7 +456,7 @@ void InputHandler::requestData(const std::string &full_command)
     process_uuids.insert(std::pair<std::string,boost::uuids::uuid>(process_name, u));
     u_to_send = u;
 
-    RequestDataCommand command = RequestDataCommand(boost::uuids::to_string(u_to_send), date, timestamp);
+    RequestDataCommand command = RequestDataCommand(boost::uuids::to_string(u_to_send), date, time);
     Json::FastWriter fastWriter;
     std::string message = fastWriter.write(command.generateJSON());
 
@@ -522,6 +516,8 @@ int InputHandler::isDate(const std::string &date)
 int InputHandler::isNumber(const char &c)
 {
     if(c>='0' && c <='9')
+        return 1;
+    if(c == ' ')
         return 1;
     return 0;
 }
