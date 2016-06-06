@@ -6,7 +6,7 @@
 #include "../Shared/DateUtilities.h"
 #include <thread>
 
-#define SCHEDULER_SLEEP_TIME 1000000
+#define SCHEDULER_SLEEP_TIME 1000
 
 std::pair<time_t, int> ProcessScheduledRunHandler::closestTimeFromCommand(std::shared_ptr<StartProcessWithScheduleCommand> command) {
   time_t best = -1;
@@ -67,7 +67,8 @@ void ProcessScheduledRunHandler::monitorScheduledProcessesToRun() {
       if (topElement.first <= DateUtilities::now()) {
         //It's element that is ready to run
         //TODO: We need to reschedule it
-
+      } else {
+        break;
       }
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(SCHEDULER_SLEEP_TIME));
