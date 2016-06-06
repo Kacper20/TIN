@@ -1,9 +1,15 @@
 //
 // Created by daria on 21.05.16.
+// Modified by Dawid
 //
 
 #include <iostream>
 #include <memory>
+#include <boost/uuid/name_generator.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
 #include "AdministratorNetworkLayer.h"
 #include "../Shared/Commands/Command.h"
 #include "../Shared/Commands/StartProcessCommand.h"
@@ -61,11 +67,83 @@ void AdminNetworkLayer::receiveMessage()
             continue;
         }
         else {
-            cout << "jestem tu\n";
             ssize_t messageSize = networkManager.receiveMessage(buffer);
             if (messageSize > 0) {
                 cout << "Received message from Server!\n";
-                cout << buffer << endl;
+                cout << buffer << "\n";
+                int find = buffer.find("\"responseType\"");
+                find += 16;
+                int dl = buffer.find_first_of("\"", find);
+                dl -= find;
+                string response = buffer.substr(find, dl);
+                cout << response << "\n";
+                if(response == "startNewProcess"){
+                    cout << "Started new process.\n";
+                }
+                else if(response == "scheduledProcessEnded"){
+                    cout << "Scheduled process ended.\n";
+                }
+                else if(response == "processDelete"){
+                    cout << "Delete process.\n";
+                }
+                else if(response == "processLaunch"){
+                    cout << "Launched prcess.\n";
+                }
+                find = buffer.find("processIden");
+                if(find != std::string::npos) {
+                    find += 20;
+                    dl = buffer.find_first_of("\"");
+                    dl -= find;
+                    string pName = buffer.substr(find, dl);
+                    boost::uuids::string_generator gen;
+                    boost::uuids::uuid a = gen(pName);
+                    cout << "Process name: " << a << "\n";
+                }
+
+                find = buffer.find("errorMessage");
+                if(find != string::npos){
+                    find += 15;
+                    dl = buffer.find_first_of("\"", find);
+                    dl -= find;
+                    cout<< "Error message: " << buffer.substr(find, dl) << "\n";
+                }
+
+                find = buffer.find("standardError");
+                if(find != string::npos) {
+
+                    cout << "Standard error: ";
+                    find += 16;
+                    dl = buffer.find_first_of("\"", find);
+                    dl -= find;
+                    if (dl > 1) {
+                        cout << buffer.substr(find, dl) << "\n";
+                    }
+                    else {
+                        cout << "none\n";
+                    }
+                }
+                find = buffer.find("standardOut");
+                if(find != string::npos) {
+                    find += 17;
+                    dl = buffer.find_first_of("\"", find);
+                    dl -= find;
+                    cout << "Standard output: " << buffer.substr(find, dl) << "\n";
+                }
+                find = buffer.find("date");
+                if(find != string::npos){
+                    find += 7;
+                    dl = buffer.find_first_of("\"");
+                    dl -= find;
+                    cout << "Date: " << buffer.substr(find, dl) << "\n";
+                }
+                find = buffer.find("timestamp");
+                if(find != string::npos){
+                    find += 12;
+                    dl = buffer.find_first_of("\"");
+                    dl -= find;
+                    cout << "Timestamp: " << buffer.substr(find, dl) << "\n";
+                }
+
             }
             else if (messageSize == 0) {
                 cout << "Server disconnected... Close the socket\n";
