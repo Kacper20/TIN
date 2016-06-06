@@ -38,7 +38,7 @@ static std::string descriptionForResponseType(ResponseType type) {
   }
 }
 
-std::string descriptionForResponseStatus(ResponseStatus status) {
+static std::string descriptionForResponseStatus(ResponseStatus status) {
   switch (status) {
     case ResponseStatus::FAIL:
       return JSONConstants::ResponseFailed;
