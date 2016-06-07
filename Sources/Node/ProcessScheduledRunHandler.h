@@ -66,7 +66,7 @@ class ProcessScheduledRunHandler {
   void monitorScheduledProcessesEndings(std::shared_ptr<StartProcessWithScheduleCommand>, int pidToWait, int timestamp, ResponseCompletion responseCompletion);
   void scheduleProcess(std::shared_ptr<StartProcessWithScheduleCommand> process);
   void monitorScheduledProcessesToRun();
-  void removeProcessData(std::string processId);
+  bool removeProcessData(std::string processId);
 
 };
 

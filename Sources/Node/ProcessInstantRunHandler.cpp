@@ -11,6 +11,7 @@
 #include "../Exceptions/ProcessDoNotExistOnNode.h"
 #include "../Shared/Responses/FailedResponse.h"
 #include "../Shared/Responses/LaunchProcessResponse.h"
+#include "../Shared/Responses/DeleteProcessResponse.h"
 
 #include <fcntl.h>
 #include <iostream>
@@ -97,8 +98,14 @@ void ProcessInstantRunHandler::monitorProcessesEndings(std::shared_ptr<StartProc
   }
 }
 
-void ProcessInstantRunHandler::removeProcessData(std::string processId) {
-  FileManager::deleteDirectoryAtPath(ProcessUtilities::directoryForProcessWithId(processId));
+bool ProcessInstantRunHandler::removeProcessData(std::string processId) {
+  auto removalResult = FileManager::deleteDirectoryAtPath(ProcessUtilities::directoryForProcessWithId(processId));
+  if (removalResult == 0) {
+    auto deletedResponse = std::make_shared<DeleteProcessResponse>(processId);
+    responseCompletion(deletedResponse);
+  } else {
+    return false;
+  }
 }
 
 ProcessInstantRunHandler::ProcessInstantRunHandler(ProcessStatisticsCollector &collector) : collector(collector) { 

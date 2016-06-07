@@ -16,7 +16,7 @@
 /*
  * Class that takes care of dispatching methods ie. recognizes them, and performs all of the logic.
  */
-
+typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
 
 class CommandDispatcher {
 
@@ -28,6 +28,7 @@ class CommandDispatcher {
   ProcessStatisticsCollector& collector;
 
  public:
+  ResponseCompletion responseCompletion;
 
   CommandDispatcher(ProcessInstantRunHandler &processInstantRunHandler,
                     ProcessScheduledRunHandler &processScheduledRunHandler,

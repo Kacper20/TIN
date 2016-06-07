@@ -8,6 +8,7 @@
 #include "../Shared/Commands/DeleteProcessCommand.h"
 #include "../Shared/Commands/LaunchProcessCommand.h"
 #include "../Shared/Commands/RequestProcessStatisticsCommand.h"
+#include "../Shared/Responses/FailedResponse.h"
 
 
 void CommandDispatcher::startDispatching() {
@@ -32,8 +33,13 @@ void CommandDispatcher::processCommandsInfinitely()  {
           deleteProcessCommand = std::static_pointer_cast<DeleteProcessCommand>(command);
       if (deleteProcessCommand != nullptr) {
         std::cout << "Received delete process command";
-        processScheduledRunHandler.removeProcessData(deleteProcessCommand->processId);
-        processInstantRunHandler.removeProcessData(deleteProcessCommand->processId);
+
+        auto scheduledResult = processScheduledRunHandler.removeProcessData(deleteProcessCommand->processId);
+        if (scheduledResult == false) {
+          auto failedResp = std::make_shared<FailedResponse>("Process is not on the server");
+          responseCompletion(failedResp);
+        }
+
       }
     }
 

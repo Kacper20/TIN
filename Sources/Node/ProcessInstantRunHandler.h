@@ -59,7 +59,7 @@ class ProcessInstantRunHandler {
   void launchProcess(std::shared_ptr<LaunchProcessCommand> process);
   void startMonitoringForProcessesToInstantRun();
   void monitorProcessesEndings(std::shared_ptr<StartProcessCommand>, int pidToWait, ResponseCompletion responseCompletion);
-  void removeProcessData(std::string processId);
+  bool removeProcessData(std::string processId);
 
 };
 

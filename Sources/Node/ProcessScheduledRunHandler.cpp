@@ -20,6 +20,7 @@
 #include "../Exceptions/ProcessDoNotExistOnNode.h"
 #include "../Shared/Responses/FailedResponse.h"
 #include "../Shared/Responses/ProcessRunDataResponse.h"
+#include "../Shared/Responses/DeleteProcessResponse.h"
 
 #include <sys/resource.h>
 #include <sys/wait.h>
@@ -134,6 +135,13 @@ void ProcessScheduledRunHandler::monitorScheduledProcessesToRun() {
   }
 }
 
-void ProcessScheduledRunHandler::removeProcessData(std::string processId) {
-  //TODO: To implement
+bool ProcessScheduledRunHandler::removeProcessData(std::string processId) {
+  //TODO: Killing processes maybe?
+  auto removalResult = FileManager::deleteDirectoryAtPath(ProcessUtilities::directoryForProcessWithId(processId));
+  if (removalResult == 0) {
+    auto deletedResponse = std::make_shared<DeleteProcessResponse>(processId);
+    responseCompletion(deletedResponse);
+  } else {
+    return false;
+  }
 }

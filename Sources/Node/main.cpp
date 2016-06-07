@@ -68,6 +68,7 @@ int main() {
   std::function<void(std::shared_ptr<Response> response)> completion = [&server](std::shared_ptr<Response> response) {
     server->sendResponse(response);
   };
+  dispatcher.responseCompletion = completion;
 
   instantRunHandler.responseCompletion = completion;
   scheduledRunHandler.responseCompletion = completion;
