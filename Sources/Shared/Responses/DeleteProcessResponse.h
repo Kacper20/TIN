@@ -13,7 +13,7 @@ class DeleteProcessResponse: public Response {
   string processId;
 
   DeleteProcessResponse (Json::Value json);
-  DeleteProcessResponse (string processId, string dayDate, int timestamp):
+  DeleteProcessResponse (string processId):
   Response(ResponseType::DELETE_PROCESS, ResponseStatus::SUCCESS), processId(processId) {}
   Json::Value generateJSON();
 

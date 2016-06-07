@@ -16,7 +16,7 @@ class LaunchProcessResponse: public Response {
   LaunchProcessResponse(Json::Value json);
 
   LaunchProcessResponse(string processId, string standardError, string standardOutput) :
-      Response(ResponseType::START_NEW_PROCESS, ResponseStatus::SUCCESS), processId(processId),
+      Response(ResponseType::LAUNCH_PROCESS, ResponseStatus::SUCCESS), processId(processId),
       standardError(standardError),
       standardOutput(standardOutput) { }
   Json::Value generateJSON();
