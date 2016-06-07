@@ -23,6 +23,11 @@ std::shared_ptr<Response> ResponseDeserializer::parseToResponse(std::string json
         std::cout << "Could not parse json" << std::endl;
         return nullptr;
     }
+    const std::string status = root[JSONConstants::ResponseStatus].asString();
+    if (status == descriptionForResponseStatus(ResponseStatus::FAIL)) {
+        std::shared_ptr<Response> deserializedResponse = std::make_shared<FailedResponse>(root);
+        return deserializedResponse;
+    }
     const std::string type = root[JSONConstants::ResponseType].asString();
     if (type == descriptionForResponseType(ResponseType::START_NEW_PROCESS)) {
         std::shared_ptr<Response> deserializedResponse = std::make_shared<StartProcessResponse>(root);
