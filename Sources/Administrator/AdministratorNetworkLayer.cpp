@@ -22,6 +22,7 @@
 #include "../Shared/Responses/ProcessStatisticsResponse.h"
 #include "../Shared/Responses/FailedResponse.h"
 #include "../Shared/Responses/DeleteProcessResponse.h"
+#include "../Shared/Responses/ProcessRunDataResponse.h"
 
 using namespace std;
 
@@ -103,7 +104,12 @@ void AdminNetworkLayer::receiveMessage()
                     if (scheduleResponse != nullptr) {
                         cout << "\n\nScheduled process ended.\n";
                         cout << "Process UUID: " << scheduleResponse->processId << "\n";
-                        cout << "Timestamps: " << scheduleResponse->timestamp << "\n";
+                        int temp = scheduleResponse->timestamp;
+                        int s = temp % 60;
+                        temp = temp/60;
+                        int m = temp%60;
+                        int h = temp/60;
+                        cout << "Timestamps: " << h << ":" << m << ":" << s << "\n\n";
                     }
                 }
                 if(response->responseType == ResponseType::LAUNCH_PROCESS) {
@@ -125,6 +131,21 @@ void AdminNetworkLayer::receiveMessage()
                     }
                 }
 
+                if(response->responseType == ResponseType::PROCESS_RUN_DATA) {
+                    std::shared_ptr<ProcessRunDataResponse> dataResponse = std::static_pointer_cast<ProcessRunDataResponse>(
+                            response);
+                    if (dataResponse != nullptr) {
+                        cout << "\n\nStatistics response.\nProcess UUID: " << dataResponse->processId << "\n";
+                        int temp = dataResponse->timestamp;
+                        int s = temp % 60;
+                        temp = temp / 60;
+                        int m = temp % 60;
+                        int h = temp / 60;
+                        cout << "Timestamps: " << h << ":" << m << ":" << s << "\n";
+                        cout << "Standard error: " << dataResponse->standardError << "\n";
+                        cout << "Standard output: " << dataResponse->standardOutput << "\n\n";
+                    }
+                }
             }
             else if (messageSize == 0) {
                 cout << "Server disconnected... Close the socket\n";
@@ -135,7 +156,7 @@ void AdminNetworkLayer::receiveMessage()
     }
 }
 
-void AdminNetworkLayer::showMessage(std::string newMessage)
+/*void AdminNetworkLayer::showMessage(std::string newMessage)
 {
     cout << "New message received" << newMessage << endl;
     shared_ptr<Command> command = AdminNetworkLayer::parseToCommand(newMessage);
@@ -163,4 +184,4 @@ std::shared_ptr<Command> AdminNetworkLayer::parseToCommand(string json) {
         return deserializedCommand;
     }
     return nullptr;
-}
+}*/
