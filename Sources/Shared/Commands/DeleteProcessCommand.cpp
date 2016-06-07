@@ -12,6 +12,8 @@ DeleteProcessCommand::DeleteProcessCommand(Json::Value json) : Command(CommandTy
 
 Json::Value DeleteProcessCommand::generateJSON() {
     Json::Value root = Command::generateJSON();
-    root[JSONConstants::ProcessIdentifier] = processId;
+    Json::Value details;
+    details[JSONConstants::ProcessIdentifier] = processId;
+    root[JSONConstants::ProcessDetails] = details;
     return root;
 }
