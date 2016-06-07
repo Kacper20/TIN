@@ -19,6 +19,7 @@
 #include <csignal>
 #include <unistd.h>
 #include <sys/types.h>
+#include<sys/resource.h>
 #include <pwd.h>
 #include <sys/wait.h>
 #include <sys/resource.h>

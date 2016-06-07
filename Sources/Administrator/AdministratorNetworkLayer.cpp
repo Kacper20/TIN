@@ -20,6 +20,8 @@
 #include "../Shared/Responses/ScheduledProcessEndedResponse.h"
 #include "../Shared/Responses/LaunchProcessResponse.h"
 #include "../Shared/Responses/ProcessStatisticsResponse.h"
+#include "../Shared/Responses/FailedResponse.h"
+#include "../Shared/Responses/DeleteProcessResponse.h"
 
 using namespace std;
 
@@ -75,25 +77,40 @@ void AdminNetworkLayer::receiveMessage()
             ssize_t messageSize = networkManager.receiveMessage(buffer);
             if (messageSize > 0) {
                 std::shared_ptr<Response> response = ResponseDeserializer::parseToResponse(buffer);
+                if(response->responseStatus == ResponseStatus::FAIL){
+                    std::shared_ptr<FailedResponse> processStatus = std::static_pointer_cast<FailedResponse>(response);
+                    if(processStatus != nullptr){
+                        cout << "\n\nError! " << processStatus->errorMessage << "\n\n\n";
+                    }
+                }
                 if(response->responseType == ResponseType::START_NEW_PROCESS){
                     std::shared_ptr<StartProcessResponse> processResponse = std::static_pointer_cast<StartProcessResponse>(response);
                     if(processResponse != nullptr){
-                        cout << "\n\nProcess UUID: " << processResponse->processId <<"\n";
+                        cout << "\n\nStarting new process response.\nProcess UUID: " << processResponse->processId <<"\n";
                         cout << "Standard error: " << processResponse->standardError << "\n";
                         cout << "Standard output: " << processResponse->standardOutput << "\n\n\n";
+                    }
+                }
+                if(response->responseType == ResponseType::DELETE_PROCESS) {
+                    std::shared_ptr<DeleteProcessResponse> deleteResponse = std::static_pointer_cast<DeleteProcessResponse>(response);
+                    if(deleteResponse != nullptr){
+                        cout << "\n\nDeleting process response.\n";
+                        cout << "Process UUID: " << deleteResponse->processId << "\n";
                     }
                 }
                 if(response->responseType == ResponseType::SCHEDULED_PROCESS_ENDED) {
                     std::shared_ptr<ScheduledProcessEndedResponse> scheduleResponse = std::static_pointer_cast<ScheduledProcessEndedResponse>(response);
                     if (scheduleResponse != nullptr) {
-                        //TODO: wez sprawdz czemu scheduleResponse nie ma odpowiednich pol
+                        cout << "\n\nScheduled process ended.\n";
+                        cout << "Process UUID: " << scheduleResponse->processId << "\n";
+                        cout << "Timestamps: " << scheduleResponse->timestamp << "\n";
                     }
                 }
                 if(response->responseType == ResponseType::LAUNCH_PROCESS) {
                     std::shared_ptr<LaunchProcessResponse> launchResponse = std::static_pointer_cast<LaunchProcessResponse>(
                             response);
                     if (launchResponse != nullptr) {
-                        cout << "\n\nProcess UUID: " << launchResponse->processId << "\n";
+                        cout << "\n\nLaunching process response.\nProcess UUID: " << launchResponse->processId << "\n";
                         cout << "Standard error: " << launchResponse->standardError << "\n";
                         cout << "Standard output: " << launchResponse->standardOutput << "\n\n\n";
                     }
@@ -102,7 +119,7 @@ void AdminNetworkLayer::receiveMessage()
                     std::shared_ptr<ProcessStatisticsResponse> statResponse = std::static_pointer_cast<ProcessStatisticsResponse>(
                             response);
                     if(statResponse != nullptr){
-                        cout << "\n\nProcess UUID: " << statResponse->processId <<"\n";
+                        cout << "\n\nStatistics response.\nProcess UUID: " << statResponse->processId <<"\n";
                         cout << "Process system run: " << statResponse->secondsSystemRun << "s " << statResponse->millisecondsSystemRun << "ms\n";
                         cout << "User run time: " << statResponse->secondsUserRun << "s " << statResponse->millisecondsUserRun << "ms\n\n\n";
                     }
