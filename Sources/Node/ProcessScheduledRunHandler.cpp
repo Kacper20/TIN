@@ -137,11 +137,14 @@ void ProcessScheduledRunHandler::monitorScheduledProcessesToRun() {
 
 bool ProcessScheduledRunHandler::removeProcessData(std::string processId) {
   //TODO: Killing processes maybe?
-  auto removalResult = FileManager::deleteDirectoryAtPath(ProcessUtilities::directoryForProcessWithId(processId));
+  auto path = ProcessUtilities::directoryForProcessWithId(processId);
+  auto removalResult = FileManager::deleteDirectoryAtPath(path);
   if (removalResult == 0) {
     auto deletedResponse = std::make_shared<DeleteProcessResponse>(processId);
     responseCompletion(deletedResponse);
+    return true;
   } else {
+    perror("ERROR WHILE DELETING");
     return false;
   }
 }

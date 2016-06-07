@@ -55,10 +55,10 @@ struct ServerSendingTask {
 //Port num:
 int main(int argc, char**argv) {
 
-//  std::cout << "Podaj numer portu na którym node ma być uruchomiony";
-//  istream& stream = cin;
-//  int portNumber = InputReceiver::getInt(stream);
-  int portNumber = 40500;
+  std::cout << "Podaj numer portu na którym node ma być uruchomion\ny";
+  istream& stream = cin;
+  int portNumber = InputReceiver::getInt(stream);
+//  int portNumber = 40500;
 
   ProcessStatisticsCollector collector;
   ProcessInstantRunHandler instantRunHandler(collector);
