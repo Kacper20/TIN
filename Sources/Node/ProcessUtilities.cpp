@@ -48,7 +48,26 @@ std::string ProcessUtilities::readProcessContentFromPersistentStorage(std::strin
   std::stringstream buffer;
   buffer << file.rdbuf();
   std::string str = buffer.str();
-  return directoryForProcess;
+  return str;
+}
+
+std::string ProcessUtilities::readProcessInfoFromPersistentStorage(std::string identifier, ProcessInfo processInfo) {
+  std::string directoryForProcess = directoryForProcessWithId(identifier);
+  std::string path;
+  switch (processInfo) {
+    case ProcessInfo::Error:
+      path = FileManager::buildPath(directoryForProcess, PathConstants::ProcessStandardError);
+    case ProcessInfo::Output:
+      path = FileManager::buildPath(directoryForProcess, PathConstants::ProcessStandardOutput);
+  }
+  std::ifstream file(path.c_str());
+  if (!file.is_open()) {
+    throw ProcessDoNotExistOnNode("Proces nie istnieje", -1);
+  }
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  std::string str = buffer.str();
+  return str;
 }
 
 std::string ProcessUtilities::directoryForProcessWithId(const std::string &id) {

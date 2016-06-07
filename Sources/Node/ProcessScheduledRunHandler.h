@@ -10,6 +10,7 @@
 #include "../Shared/MessagesQueue.h"
 #include "../Shared/Responses/Response.h"
 #include "ProcessStatisticsCollector.h"
+#include "../Shared/Commands/RequestDataCommand.h"
 
 typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
 
@@ -60,6 +61,7 @@ class ProcessScheduledRunHandler {
   ProcessScheduledRunHandler(ProcessStatisticsCollector &collector) : collector(collector) { }
 
   ResponseCompletion responseCompletion;
+  void processRequestDataCommand(std::shared_ptr<RequestDataCommand> command);
 
   void monitorScheduledProcessesEndings(std::shared_ptr<StartProcessWithScheduleCommand>, int pidToWait, int timestamp, ResponseCompletion responseCompletion);
   void scheduleProcess(std::shared_ptr<StartProcessWithScheduleCommand> process);

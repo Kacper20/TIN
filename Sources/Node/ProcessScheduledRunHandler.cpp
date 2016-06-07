@@ -17,6 +17,9 @@
 #include "PathConstants.h"
 #include "ProcessUtilities.h"
 #include "../Shared/Responses/ScheduledProcessEndedResponse.h"
+#include "../Exceptions/ProcessDoNotExistOnNode.h"
+#include "../Shared/Responses/FailedResponse.h"
+#include "../Shared/Responses/ProcessRunDataResponse.h"
 
 #include <sys/resource.h>
 #include <sys/wait.h>
@@ -59,8 +62,24 @@ void ProcessScheduledRunHandler::monitorScheduledProcessesEndings(std::shared_pt
 
   auto response = std::make_shared<ScheduledProcessEndedResponse>(command->processId, "presentation_day!", timestamp);
   responseCompletion(response);
-
 }
+
+void ProcessScheduledRunHandler::processRequestDataCommand(std::shared_ptr<RequestDataCommand> command) {
+  std::string baseDir = ProcessUtilities::directoryForProcessWithId(command->processId);
+  std::string fullPath = FileManager::buildPath(baseDir, JSONConstants::StandardOutput + "_" +  std::to_string(command->timestamp));
+  try {
+    auto error = ProcessUtilities::readProcessInfoFromPersistentStorage(command->processId, ProcessInfo::Error);
+    auto output = ProcessUtilities::readProcessInfoFromPersistentStorage(command->processId, ProcessInfo::Output);
+
+    auto successResponse = std::make_shared<ProcessRunDataResponse>(command->processId, error, output, command->timestamp);
+    responseCompletion(successResponse);
+  }
+  catch (ProcessDoNotExistOnNode& e) {
+    auto failedResponse = std::make_shared<FailedResponse>("Process run doesn't exist");
+    responseCompletion(failedResponse);
+  }
+}
+
 
 void ProcessScheduledRunHandler::monitorScheduledProcessesToRun() {
   while (1) {

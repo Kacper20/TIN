@@ -29,6 +29,7 @@ const std::string ResponseScheduledProcessEnded = "scheduledProcessEnded";
 const std::string ResponseProcessDeleted = "processDelete";
 const std::string ResponseProcessLaunched = "processLaunch";
 const std::string ResponseProcessStatistics = "processStatistics";
+const std::string ResponseRunData = "runData";
 const std::string CommandStartNewProcess = "startNewProcess";
 const std::string CommandStartNewProcessWithSchedule = "startNewProcessWithSchedule";
 const std::string CommandLaunchProcess = "launchProcess";

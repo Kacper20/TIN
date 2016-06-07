@@ -58,6 +58,13 @@ void CommandDispatcher::processCommandsInfinitely()  {
         collector.requestStatisticsForProcess(processCommand->processId);
       }
     }
+    if (command->commandType == CommandType::REQUEST_DATA) {
+      std::shared_ptr<RequestDataCommand> processCommand = std::static_pointer_cast<RequestDataCommand>(command);
+      if (processCommand != nullptr) {
+
+      }
+    }
+
 
     //TODO: Add other commands.
   }
