@@ -25,7 +25,7 @@ set(NODE_SOURCE ${SHARED_FILES} Sources/Node/main.cpp
         Sources/Node/NodeNetworkLayer.cpp Sources/Node/NodeNetworkLayer.h Sources/Node/ProcessInstantRunHandler.cpp
         Sources/Node/ProcessInstantRunHandler.h Sources/Node/CommandsDeserializer.cpp Sources/Node/CommandsDeserializer.h
         Sources/Node/NodeServer.cpp Sources/Node/NodeServer.h Sources/Node/CommandDispatcher.h
-        Sources/Node/CommandDispatcher.cpp  Sources/Node/PathConstants.h Sources/Node/ProcessUtilities.cpp Sources/Node/ProcessUtilities.h Sources/Node/ProcessScheduledRunHandler.cpp Sources/Node/ProcessScheduledRunHandler.h Sources/Node/ProcessStatisticsCollector.cpp Sources/Node/ProcessStatisticsCollector.h Sources/Node/ProcessRunningTime.h)
+        Sources/Node/CommandDispatcher.cpp  Sources/Node/PathConstants.h Sources/Node/ProcessUtilities.cpp Sources/Node/ProcessUtilities.h Sources/Node/ProcessScheduledRunHandler.cpp Sources/Node/ProcessScheduledRunHandler.h Sources/Node/ProcessStatisticsCollector.cpp Sources/Node/ProcessStatisticsCollector.h Sources/Node/ProcessRunningTime.h Sources/Node/InputReceiver.cpp Sources/Node/InputReceiver.h)
 
 
 include_directories("/usr/local/include")

@@ -7,6 +7,7 @@
 #include "../Shared/DateUtilities.h"
 #include "ProcessScheduledRunHandler.h"
 #include "ProcessStatisticsCollector.h"
+#include "InputReceiver.h"
 using namespace std;
 
 typedef std::function<void(std::shared_ptr<Response>)> ResponseCompletion;
@@ -51,11 +52,13 @@ struct ServerSendingTask {
   }
 };
 
+//Port num:
 int main(int argc, char**argv) {
 
-  std::cout << "Podaj numer portu na którym node ma być uruchomiony";
-  int portNumber;
-  std::cin > portNumber;
+//  std::cout << "Podaj numer portu na którym node ma być uruchomiony";
+//  istream& stream = cin;
+//  int portNumber = InputReceiver::getInt(stream);
+  int portNumber = 40500;
 
   ProcessStatisticsCollector collector;
   ProcessInstantRunHandler instantRunHandler(collector);
@@ -63,7 +66,7 @@ int main(int argc, char**argv) {
   CommandDispatcher dispatcher(instantRunHandler, scheduledRunHandler, collector);
 
 
-  std::shared_ptr<NodeServer> server = std::make_shared<NodeServer>([&dispatcher](std::shared_ptr<Command> commandToDispatch) {
+  std::shared_ptr<NodeServer> server = std::make_shared<NodeServer>(portNumber, [&dispatcher](std::shared_ptr<Command> commandToDispatch) {
     //WARN: It's called from another thread -
     dispatcher.processCommand(commandToDispatch);
   });
