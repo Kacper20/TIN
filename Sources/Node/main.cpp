@@ -51,7 +51,11 @@ struct ServerSendingTask {
   }
 };
 
-int main() {
+int main(int argc, char**argv) {
+
+  std::cout << "Podaj numer portu na którym node ma być uruchomiony";
+  int portNumber;
+  std::cin > portNumber;
 
   ProcessStatisticsCollector collector;
   ProcessInstantRunHandler instantRunHandler(collector);

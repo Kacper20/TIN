@@ -39,7 +39,6 @@ void CommandDispatcher::processCommandsInfinitely()  {
           auto failedResp = std::make_shared<FailedResponse>("Process is not on the server");
           responseCompletion(failedResp);
         }
-
       }
     }
 

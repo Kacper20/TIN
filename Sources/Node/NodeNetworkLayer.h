@@ -13,7 +13,6 @@
 #ifndef TIN_NODENETWORKLAYER_H
 #define TIN_NODENETWORKLAYER_H
 
-#define NETWORK_PORT 40500
 
 
 class NodeNetworkLayer {
@@ -21,8 +20,10 @@ class NodeNetworkLayer {
  private:
   TCPSocket listeningSocket = TCPSocket();
   TCPSocket* clientConnectedSocket;
+  int portNumber;
 
  public:
+  NodeNetworkLayer(int portNumber): portNumber(portNumber) {}
   ~NodeNetworkLayer();
   void listenOnServerConnection();
   void startReceivingMessages(std::function<void(std::string)> messageReceivedCompletion);

@@ -12,12 +12,14 @@
 class NodeServer {
 
  private:
-  //TODO: Maybe give something different like queue to synchronize it in a better way? Reference to queue of commands in which commands will land :-)
   std::function<void(std::shared_ptr<Command>)> receivedMessageFunc;
   MessagesQueue<Response> messagesToSendQueue;
-  NodeNetworkLayer layer = NodeNetworkLayer();
+  NodeNetworkLayer layer;
+  int portNumber;
+
  public:
-  NodeServer(std::function<void(std::shared_ptr<Command>)> completionFunc) : receivedMessageFunc(completionFunc) {}
+  NodeServer(int portNumber, std::function<void(std::shared_ptr<Command>)> completionFunc) : receivedMessageFunc(completionFunc),
+  portNumber(portNumber), layer(NodeNetworkLayer(portNumber)){}
   void startReceiving();
   void sendResponse(std::shared_ptr<Response> response);
   void startMonitorForSendings();

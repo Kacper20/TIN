@@ -11,7 +11,7 @@ NodeNetworkLayer::~NodeNetworkLayer() {
 
 void NodeNetworkLayer::listenOnServerConnection() {
 
-  SocketAddress myAddress = SocketAddress(short(NETWORK_PORT));
+  SocketAddress myAddress = SocketAddress(short(portNumber));
   std::cout << "Binding listeningSocket to address\n";
   if (listeningSocket.bind(myAddress) == -1) {
     perror("Error while binding occured");

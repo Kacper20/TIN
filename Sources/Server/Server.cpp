@@ -60,7 +60,7 @@ void Server::fakeAdminFunction() {
 
 void Server::prepareAddresses() {
   nodeAddresses.push_back(SocketAddress("127.0.0.1:40500"));
-  nodeAddresses.push_back(SocketAddress("127.0.0.1:40666"));
+  nodeAddresses.push_back(SocketAddress("127.0.0.1:40501"));
   nodeAddresses.push_back(SocketAddress("127.0.0.1:40646"));
   nodeAddresses.push_back(SocketAddress("127.0.0.1:40636"));
 }
