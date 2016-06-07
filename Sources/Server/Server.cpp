@@ -7,6 +7,8 @@
 #include "../Shared/Commands/StartProcessWithScheduleCommand.h"
 
 #include <thread>
+#include <fstream>
+#include <regex>
 
 Server::Server(bool admin) : connectedToAdmin(false), fake_admin(admin) {
   prepareAddresses();
@@ -59,10 +61,16 @@ void Server::fakeAdminFunction() {
 }
 
 void Server::prepareAddresses() {
-  nodeAddresses.push_back(SocketAddress("127.0.0.1:40500"));
-  nodeAddresses.push_back(SocketAddress("127.0.0.1:40666"));
-  nodeAddresses.push_back(SocketAddress("127.0.0.1:40646"));
-  nodeAddresses.push_back(SocketAddress("127.0.0.1:40636"));
+  std::cout << "Loading node addresses from file!" << std::endl;
+  std::regex ipv4 {R"((\d.{1,3}){3}\d{1,3}:\d{4,5})"};
+  std::regex ipv6 {R"(\[([[:xdigit:]]{1,4}:)7[[:xdigit:]]{1,4}\]:\d{4,5})"};
+
+  std::ifstream in("NodeAddresses.txt");
+  for(std::string line; std::getline(in, line); ) {
+    if(regex_match(line, ipv4) || regex_match(line, ipv6)) {
+      nodeAddresses.push_back(SocketAddress(line));
+    }
+  }
 }
 
 // Connect to all the (hardcoded) addresses. If we can't connect to one of them, it's not a problem - this function can handle it.
