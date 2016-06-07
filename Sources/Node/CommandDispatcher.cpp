@@ -61,12 +61,9 @@ void CommandDispatcher::processCommandsInfinitely()  {
     if (command->commandType == CommandType::REQUEST_DATA) {
       std::shared_ptr<RequestDataCommand> processCommand = std::static_pointer_cast<RequestDataCommand>(command);
       if (processCommand != nullptr) {
-
+        processScheduledRunHandler.processRequestDataCommand(processCommand);
       }
     }
-
-
-    //TODO: Add other commands.
   }
 }
 

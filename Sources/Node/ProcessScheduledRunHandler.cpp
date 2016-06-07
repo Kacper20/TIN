@@ -109,7 +109,8 @@ void ProcessScheduledRunHandler::monitorScheduledProcessesToRun() {
       auto now = DateUtilities::secondsFromMidnightToNow();
       if (topElement.first <= now) {
         //It's element that is ready to run
-        //TODO: We need to reschedule it - remember about it - another process has to be rescheduled
+        //Reschedule it!
+        queueOfCommandsToSchedule.push(topElement.second);
         schedulerPriorityQueue.pop();
         std::string basePath = ProcessUtilities::directoryForProcessWithId(topElement.second->processId);
         int newProcessId = ProcessUtilities::runProcess(basePath, std::to_string((int)topElement.first));
