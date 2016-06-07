@@ -260,8 +260,8 @@ void InputHandler::launchProcess(const string& full_command)
 }
 
 void InputHandler::requestStat(const std::string &full_command){
-    if (full_command.length() <= strlen("launch_process")) {
-        cout << "Invalid command. The correct call is: launch_process <name>. \n";
+    if (full_command.length() <= strlen("request_stat")) {
+        cout << "Invalid command. The correct call is: request_stat <name>. \n";
         cout << "Please try again. \n";
         return;
     }

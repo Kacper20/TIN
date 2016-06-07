@@ -7,10 +7,10 @@
 ProcessStatisticsResponse::ProcessStatisticsResponse(Json::Value json): Response(ResponseType::GET_STATISTICS_ABOUT_PROCESS,
                                                                          ResponseStatus::SUCCESS) {
   Json::Value processDetails = json[JSONConstants::ProcessDetails];
-  secondsSystemRun = json[JSONConstants::ProcessSecondsSystemRunTime].asInt();
-  millisecondsSystemRun = json[JSONConstants::ProcessMillisecondsSystemRunTime].asInt();
-  secondsUserRun = json[JSONConstants::ProcessSecondsUserRunTime].asInt();
-  millisecondsUserRun = json[JSONConstants::ProcessMillisecondsUserRunTime].asInt();
+  secondsSystemRun = processDetails[JSONConstants::ProcessSecondsSystemRunTime].asInt();
+  millisecondsSystemRun = processDetails[JSONConstants::ProcessMillisecondsSystemRunTime].asInt();
+  secondsUserRun = processDetails[JSONConstants::ProcessSecondsUserRunTime].asInt();
+  millisecondsUserRun = processDetails[JSONConstants::ProcessMillisecondsUserRunTime].asInt();
 
   processId = processDetails[JSONConstants::ProcessIdentifier].asString();
 }
