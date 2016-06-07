@@ -39,7 +39,7 @@ int AdminNetworkLayer::connectToServer(const string addressWithPort) {
 }
 
 int AdminNetworkLayer::sendMessage(const string message) const {
-    cout << "Sending message: " <<  message << endl;
+    //cout << "Sending message: " <<  message << endl;
 
     if (networkManager.sendMessage(message) != -1 )
     {

@@ -14,9 +14,9 @@ private:
 public:
     std::string processId;
     std::string date;
-    std::string timestamp;
+    int timestamp;
     RequestDataCommand (Json::Value json);
-    RequestDataCommand (std::string processId, std::string date, std::string timestamp): Command(CommandType::REQUEST_DATA),
+    RequestDataCommand (std::string processId, std::string date, int timestamp): Command(CommandType::REQUEST_DATA),
                                                                              processId(processId), date(date), timestamp(timestamp) {}
     Json::Value generateJSON();
 };

@@ -9,7 +9,7 @@ RequestDataCommand::RequestDataCommand(Json::Value json) : Command(CommandType::
     Json::Value processDetails = json[JSONConstants::ProcessDetails];
     processId = processDetails[JSONConstants::ProcessIdentifier].asString();
     date = processDetails[JSONConstants::Date].asString();
-    timestamp = processDetails[JSONConstants::Timestamp].asString();
+    timestamp = std::stoi(processDetails[JSONConstants::Timestamp].asString());
 }
 
 Json::Value RequestDataCommand::generateJSON() {
