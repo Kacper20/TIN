@@ -9,6 +9,7 @@
 #include "../Shared/Commands/DeleteProcessCommand.h"
 #include "../Shared/Commands/StartProcessWithScheduleCommand.h"
 #include "../Shared/Commands/RequestDataCommand.h"
+#include "../Shared/Commands/RequestProcessStatisticsCommand.h"
 #include <fstream>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/lexical_cast.hpp>
@@ -84,6 +85,9 @@ void InputHandler::run()
     else if ( name == "request_data"){
         requestData(command);
     }
+    else if ( name == "request_stat" ){
+        requestStat(command);
+    }
     else {
       std::cout << "Incorrect command.\n";
       printHelp();
@@ -107,6 +111,7 @@ void InputHandler::printHelp()
   cout << "\t Timestamps are HH:MM:SS.\n";
   cout << "launch_process <name> - Tells the server to start chosen process.\n";
   cout << "request_data <name> <date> <timestamp> - Requesting data from server about specific process run.\n";
+  cout << "request_stat <name> - Requesting statistics from server about specific process.\n";
   cout << "delete_process <name> - Tells the server to delete chosen process.\n";
   cout << "show_uploaded - Shows processes uploaded to server.\n";
   cout << "disconnect - Disconnects from the server.\n";
@@ -183,7 +188,7 @@ void InputHandler::sendProcess(const string& full_command)
       return;
   }
 
-  process_name = process_name.substr(0, process_name.length() - process_path.length()-1);
+  process_name = process_name.substr(0, process_name.length() - process_path.length()-3);
   fstream process_file(process_path, ios::in);
 
   if(!process_file.is_open())
@@ -252,6 +257,34 @@ void InputHandler::launchProcess(const string& full_command)
   std::string message = fastWriter.write(command.generateJSON());
 
   admin->sendMessage(message);
+}
+
+void InputHandler::requestStat(const std::string &full_command){
+    if (full_command.length() <= strlen("launch_process")) {
+        cout << "Invalid command. The correct call is: launch_process <name>. \n";
+        cout << "Please try again. \n";
+        return;
+    }
+    string process_name = full_command.substr(full_command.find_first_of(" ") + 1);
+
+    std::map<std::string, boost::uuids::uuid>::iterator it;
+    it = process_uuids.find(process_name);
+    boost::uuids::uuid u_to_send;
+
+    if (it == process_uuids.end()) {
+        std::cout<<"Process was not uploaded to server.\n";
+        std::cout << "Please try again.\n";
+        return;
+    }
+    else {
+        u_to_send = it->second;
+    }
+
+    RequestProcessStatisticsCommand command = RequestProcessStatisticsCommand(boost::uuids::to_string(u_to_send));
+    Json::FastWriter fastWriter;
+    std::string message = fastWriter.write(command.generateJSON());
+
+    admin->sendMessage(message);
 }
 
 void InputHandler::deleteProcess(const std::string& full_command)
@@ -357,7 +390,7 @@ void InputHandler::sendScheduledProcess(const std::string &full_command)
         return;
     }
 
-    cout << process_name << " " << process_path << " " << process_timestamps << endl;
+    //cout << process_name << " " << process_path << " " << process_timestamps << endl;
 
     //loading process code
     string process_code;
@@ -447,8 +480,7 @@ void InputHandler::requestData(const std::string &full_command)
     int h = 10*(timestamp[0] - '0') + timestamp[1] - '0';
     int min = 10*(timestamp[3] - '0') + timestamp[4] - '0';
     int s = 10*(timestamp[6] - '0') + timestamp[7] - '0';
-    int time1 = (60*h + min) * 60 + s;
-    string time = std::to_string(time1);
+    int time = (60*h + min) * 60 + s;
     boost::uuids::uuid u_to_send;
 
     boost::uuids::name_generator gen(dns_namespace_uuid);

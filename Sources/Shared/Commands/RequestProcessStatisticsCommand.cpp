@@ -13,5 +13,6 @@ Json::Value RequestProcessStatisticsCommand::generateJSON() {
   Json::Value root = Command::generateJSON();
   Json::Value details;
   details[JSONConstants::ProcessIdentifier] = processId;
+  root[JSONConstants::ProcessDetails] = details;
   return root;
 }
