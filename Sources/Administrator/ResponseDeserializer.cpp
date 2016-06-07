@@ -11,6 +11,7 @@
 #include "../Shared/Responses/StartProcessResponse.h"
 #include "../Shared/Commands/DeleteProcessCommand.h"
 #include "../Shared/Responses/DeleteProcessResponse.h"
+#include "../Shared/Responses/ProcessRunDataResponse.h"
 
 
 std::shared_ptr<Response> ResponseDeserializer::parseToResponse(std::string json){
@@ -47,6 +48,10 @@ std::shared_ptr<Response> ResponseDeserializer::parseToResponse(std::string json
     }
     if (type == descriptionForResponseType(ResponseType::SCHEDULED_PROCESS_ENDED)) {
         std::shared_ptr<Response> deserializedResponse = std::make_shared<ScheduledProcessEndedResponse>(root);
+        return deserializedResponse;
+    }
+    if(type == descriptionForResponseType(ResponseType::PROCESS_RUN_DATA)) {
+        std::shared_ptr<Response> deserializedResponse = std::make_shared<ProcessRunDataResponse>(root);
         return deserializedResponse;
     }
     return nullptr;

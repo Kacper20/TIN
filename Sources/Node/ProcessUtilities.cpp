@@ -51,14 +51,15 @@ std::string ProcessUtilities::readProcessContentFromPersistentStorage(std::strin
   return str;
 }
 
-std::string ProcessUtilities::readProcessInfoFromPersistentStorage(std::string identifier, ProcessInfo processInfo) {
+std::string ProcessUtilities::readProcessInfoFromPersistentStorage(std::string identifier, int timestamp, ProcessInfo processInfo) {
   std::string directoryForProcess = directoryForProcessWithId(identifier);
   std::string path;
+  std::string addition = "_" + std::to_string(timestamp);
   switch (processInfo) {
     case ProcessInfo::Error:
-      path = FileManager::buildPath(directoryForProcess, PathConstants::ProcessStandardError);
+      path = FileManager::buildPath(directoryForProcess, PathConstants::ProcessStandardError + addition);
     case ProcessInfo::Output:
-      path = FileManager::buildPath(directoryForProcess, PathConstants::ProcessStandardOutput);
+      path = FileManager::buildPath(directoryForProcess, PathConstants::ProcessStandardOutput + addition);
   }
   std::ifstream file(path.c_str());
   if (!file.is_open()) {

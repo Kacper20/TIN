@@ -7,8 +7,8 @@
 
 #endif //TIN_PATHCONSTANTS_H
 namespace PathConstants {
-  const std::string ProcessStandardOutput = "output.txt";
-  const std::string ProcessStandardError = "error.txt";
+  const std::string ProcessStandardOutput = "output";
+  const std::string ProcessStandardError = "error";
   const std::string RunnableScript = "script.sh";
   const std::string CommandJSON = "command.json";
 };

@@ -12,7 +12,6 @@ int InputReceiver::getInt(std::istream &stream) {{
     // Otherwise you enter an infinite loop.
     while (stream)
     {
-      std::cout << "Enter an int." << std::endl;
 
       // Read a line of user input.
       std::string line;

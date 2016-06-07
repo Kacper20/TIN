@@ -67,10 +67,9 @@ void ProcessScheduledRunHandler::monitorScheduledProcessesEndings(std::shared_pt
 
 void ProcessScheduledRunHandler::processRequestDataCommand(std::shared_ptr<RequestDataCommand> command) {
   std::string baseDir = ProcessUtilities::directoryForProcessWithId(command->processId);
-  std::string fullPath = FileManager::buildPath(baseDir, JSONConstants::StandardOutput + "_" +  std::to_string(command->timestamp));
   try {
-    auto error = ProcessUtilities::readProcessInfoFromPersistentStorage(command->processId, ProcessInfo::Error);
-    auto output = ProcessUtilities::readProcessInfoFromPersistentStorage(command->processId, ProcessInfo::Output);
+    auto error = ProcessUtilities::readProcessInfoFromPersistentStorage(command->processId, command->timestamp, ProcessInfo::Error);
+    auto output = ProcessUtilities::readProcessInfoFromPersistentStorage(command->processId, command->timestamp, ProcessInfo::Output);
 
     auto successResponse = std::make_shared<ProcessRunDataResponse>(command->processId, error, output, command->timestamp);
     responseCompletion(successResponse);
