@@ -36,7 +36,7 @@ void CommandDispatcher::processCommandsInfinitely()  {
 
         auto scheduledResult = processScheduledRunHandler.removeProcessData(deleteProcessCommand->processId);
         if (scheduledResult == false) {
-          auto failedResp = std::make_shared<FailedResponse>("Process is not on the server");
+          auto failedResp = std::make_shared<FailedResponse>(ResponseType::DELETE_PROCESS, "Process is not on the server");
           responseCompletion(failedResp);
         }
       }
