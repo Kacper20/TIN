@@ -8,7 +8,11 @@
 #include <cstdio>
 #include <fcntl.h>
 #include<sys/resource.h>
+#ifdef __APPLE__
+#include <zconf.h>
+#else
 #include <wait.h>
+#endif
 #include "../Shared/FileManager.h"
 #include "PathConstants.h"
 #include "ProcessUtilities.h"
